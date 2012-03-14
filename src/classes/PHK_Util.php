@@ -139,8 +139,8 @@ return $str;
 
 //---------
 // This function must be called before every file access
-// In PHP 6, magic_quotes_runtime is suppressed and set_magic_quotes_runtime()
-// does not exist any more.
+// Starting with version 5.3.0, 'magic_quotes_runtimes' is deprecated and
+// mustn't be used any more.
 
 private static $mqr_exists=null;
 private static $mqr_level=0;
@@ -149,7 +149,8 @@ private static $mqr_save;
 public static function disable_mqr()
 {
 if (is_null(self::$mqr_exists))
-	self::$mqr_exists=function_exists('set_magic_quotes_runtime');
+	self::$mqr_exists=((PHP_VERSION_ID < 50300)
+		&& function_exists('set_magic_quotes_runtime'));
 
 if (!self::$mqr_exists) return;
 
@@ -167,7 +168,8 @@ self::$mqr_level++;
 public static function restore_mqr()
 {
 if (is_null(self::$mqr_exists))
-	self::$mqr_exists=function_exists('set_magic_quotes_runtime');
+	self::$mqr_exists=((PHP_VERSION_ID < 50300)
+		&& function_exists('set_magic_quotes_runtime'));
 
 if (!self::$mqr_exists) return;
 
