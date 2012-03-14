@@ -1,0 +1,78 @@
+==============================================================================
+= V 0.4.6 - Released 21-DEC-2006
+
+* An embedded package is now autoloaded when one of its symbols is referenced.
+  This feature is recursive, exporting package symbols to the upper layers. It
+  brings an alternative to the 'automount' option which had to be used in
+  previous versions. It also makes PHK closer to a 'PHP runtime linker'.
+
+==============================================================================
+= V 1.0.1 - Released 09-MAY-2007
+
+* Initial stable version
+
+==============================================================================
+= V 1.1.0 - Released 21-MAY-2007
+
+* Minor modifications to create accelerator hooks
+
+==============================================================================
+= V 1.2.0 - 20-JUN-2007
+
+* Introduces the PHK_Cache class, used by PHK_Mgr. Now, when a cache
+  system is present, the runtime code will use it to store a serialized
+  version of the PHK instance, speeding up subsequent mounts.
+  The mount point unicity is obtained by using a combination of dev/inode
+  and modification time (same method as APC). So, if we replace an archive
+  file with a new version, the mount point changes and the previous
+  cached data is ignored. Cache supported: APC
+
+==============================================================================
+= V 1.3.0 - 20-AUG-2007
+
+--* BC break: Due to the change in the way trees are serialized, packages
+  generated with PHK_Creator version 1.3.0 and up need at least
+  version 1.3.0 of the runtime *--
+
+* PHKW renamed to PHK_Webinfo
+* Complete redesign of the PHK_Tree and associated classes (PHK_TNode, PHK_TDir,
+  PHK_TFile). Faster at runtime, as we don't serialize an object tree anymore.
+  Now, we unserialize an array of serialized node objects, and a node object
+  is created only when the path is accessed (lookup).
+* Complet redesign of the PHK instance. Everything splitted in a fast object
+  (PHK) and a 'slow' object (PHK_Proxy) which physically accesses the archive.
+  PHK calls PHK_Proxy through the stream wrapper, and the stream wrapper
+  controls the cache.
+* The caching mechanism supports apc, xcache, memcache, and eaccelerator.
+* Cache IDs are different wether the PHK accelerator is used or not, because
+  the serialized data can become different in the future.
+* Remove explicit CRC check. Now a CRC check is automatically performed
+  before every built-in CLI command, and before accessing Webinfo mode.
+* Suppressed the PHK::F_USE_INCLUDE_PATH mount flag. Include path search is done
+  by PHP before including the archive. As include becomes the usual way of
+  mounting a PHK archive, we don't have to search again.
+* Suppressed the PHK::F_PRELOAD_CACHE mount flag. Useless with the new caching
+  mechanisms.
+* Removed the 'interface' type from the autoloader. It was nonsense as classes
+  and interfaces share the same name space. So, Autoload_Creator now registers
+  interfaces as classes.
+
+
+option disable_cache renamed to no_cache (TODO doc)
+option disable_opcode_cache renamed to no_opcode_cache (TODO doc)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
