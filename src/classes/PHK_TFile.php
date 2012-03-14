@@ -214,7 +214,7 @@ if (!is_null($map)) // This is a real file
 			foreach(file($phk->uri($path)) as $line)
 				{
 				$line=trim($line);
-				if (ereg(Automap_Creator::AUTOMAP_COMMENT,$line,$regs)===false)
+				if (!preg_match(Automap_Creator::AUTOMAP_COMMENT,$line,$regs))
 					continue;
 				// Warning: keep '//' and '<Automap> separate below or it will be
 				// detected as an Automap comment when processing this file.

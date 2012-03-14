@@ -235,8 +235,8 @@ $this->walk('dump',$base);
 
 public static function dir_base_name($path)
 {
-$dir=ereg_replace('/[^/]*$','',$path);
-$base=ereg_replace('^.*/','',$path);
+$dir=preg_replace(',/[^/]*$,','',$path);
+$base=preg_replace(',^.*/,','',$path);
 return array($dir,$base);
 }
 

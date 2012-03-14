@@ -249,7 +249,7 @@ $url=null;
 $newwin=true;
 if (is_null($val=$this->option($opt))) $val=$default;
 
-if ($html && ereg('^(.*)[ 	]<([^ 	]+)>.*$',$val,$regs))
+if ($html && preg_match('/^(.*)\s<(\S+)>.*$/',$val,$regs))
 	{	// If the value contains an URL
 	$str2=trim($regs[1]);
 	$url=$regs[2];
@@ -630,7 +630,7 @@ return unserialize(file_get_contents($this->command_uri(__FUNCTION)));
 public static function subpath_url($path)
 {
 if ($path{0}!='/') $path=PHK::get_subpath().'/'.$path; //-- Make path absolute
-$path=ereg_replace('//+','/',$path);
+$path=preg_replace(',//+,','/',$path);
 
 return PHK_Util::http_base_url().((php_sapi_name()=='cgi')
 	? ('?_PHK_path='.urlencode($path)) : $path);
