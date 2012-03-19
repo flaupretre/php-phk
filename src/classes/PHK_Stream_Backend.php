@@ -176,16 +176,25 @@ $mtime=(is_null($mnt) ? time() : PHK_Mgr::instance($mnt)->mtime());
 
 //----
 // Undocumented
+
+public static function set_tmp_data($str)
+{
+$prev=self::$tmp_data;
+self::$tmp_data=$str;
+return $prev;
+}
+
+//----
+// Undocumented
 // Applies php_strip_whitespace() to a string
 
 public static function _strip_string($str)
 {
 if (getenv('PHK_NO_STRIP')!==false) return $str;
 
-$save=self::$tmp_data;
-self::$tmp_data=$str;
+$save=self::set_tmp_data($str);
 $res=php_strip_whitespace('phk://?tmp');
-self::$tmp_data=$save;
+self::set_tmp_data($save);
 return $res;
 }
 
@@ -195,10 +204,9 @@ return $res;
 
 public static function _include_string($str)
 {
-$save=self::$tmp_data;
-self::$tmp_data=$str;
+$save=self::set_tmp_data($str);
 $res=require('phk://?tmp');
-self::$tmp_data=$save;
+self::set_tmp_data($save);
 return $res;
 }
 
