@@ -9,12 +9,13 @@ NO_FILTER=true
 
 FILTER_SOURCE=$(SOURCE_DIR)
 
-PHK_CREATOR = ./PHK_Creator.phk
-
-KIT_NAME=$(PRODUCT)_building_kit
 
 include ./make.vars
 include ./make.common
+
+PHK_CREATOR = ./PHK_Creator.phk
+
+KIT_NAME=$(PRODUCT)_building_kit
 
 #-------
 
