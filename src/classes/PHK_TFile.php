@@ -185,8 +185,8 @@ if (!is_null($map)) // This is a real file
 		{
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			PHK_Util::msg("	Merging Automap symbols");
-			$map->register_package($phk->uri($path),$path);
+			PHK_Util::msg("Registering Automap symbols from PHK package");
+			$map->register_phk($phk->uri($path),$path);
 			}
 		}
 	elseif ($phk->is_php_source_path($path))
