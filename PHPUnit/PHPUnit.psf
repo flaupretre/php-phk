@@ -1,0 +1,52 @@
+# Package Specification file for PHPUnit
+#
+#==============================================================================
+
+set FLAGS -strip=true -compress=gzip
+#set FLAGS -compress=gzip
+
+#-- Files from the filtered tree
+#-- Files in /Util/Skeleton are just templates -> no symbol autoload / no shrink
+
+merge $(FLAGS) / $(PSF_DIR)/tmp_source
+merge $(FLAGS) / $(PSF_DIR)/tmp_modified
+
+modify -autoload=false -strip=false /Util/Skeleton
+
+#-- Remove the 'Tests' and 'Samples' directories from the current tree
+
+remove /Tests /Samples
+
+#-- The tests (faster and smaller if we compress only once here)
+#-- We don't merge test symbols in the main map.
+
+add -autoload=false -compress=gzip /tests/& $(PSF_DIR)/tests/test.phk
+
+#-- The CLI entry point
+
+add /& $(PSF_DIR)/phpunit.php
+
+#-- The license and the package's icon
+
+add -compress=gzip /& $(PSF_DIR)/license.txt $(PSF_DIR)/license.htm \
+	$(PSF_DIR)/phpunit-logo.gif
+
+#-- The options
+
+%options
+
+return array(
+	'name' => 'PHPUnit',
+	'version' => '3.2.2',
+	'release' => '1',
+	'license' => 'BSD License <http://www.opensource.org/licenses/bsd-license.php>',
+	'copyright' => 'Sebastian Bergman <http://sebastian-bergmann.de/>',
+	'url' => 'http://www.phpunit.de',
+	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+	'icon' => '/phpunit-logo.gif',
+	'license_prefix' => '/license',
+	'phpunit_test_package' => '/tests/test.phk',
+	'cli_run_script' => '/phpunit.php'
+	);
+
+#----------------

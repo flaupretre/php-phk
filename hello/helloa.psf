@@ -1,0 +1,14 @@
+# Add the source files under the root virtual dir
+
+merge / $(SOURCE_DIR)
+
+%options
+
+return array(
+        'name' => 'My first package (with autoload)',
+        'version' => '1.0',
+        'author' => 'your name',
+        'license' => 'Top secret',
+        'cli_run_script' => '/helloa.php', // This is the entry point in CLI mode
+        'web_run_script' => '/helloa.php' // This is the entry point in web mode
+        ); 

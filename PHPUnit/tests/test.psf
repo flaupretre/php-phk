@@ -1,0 +1,24 @@
+
+set FLAGS -strip=true
+#set FLAGS
+
+#-- Files from the filtered tree
+
+merge $(FLAGS) / $(PSF_DIR)/tmp_source $(PSF_DIR)/tmp_modified
+
+#-- The options
+
+%options
+
+return array(
+	'name' => 'PHPUnit tests',
+	'license' => 'BSD License <http://www.opensource.org/licenses/bsd-license.php>',
+	'copyright' => 'Sebastian Bergman <http://sebastian-bergmann.de/>',
+	'url' => 'http://www.phpunit.de',
+	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+//	'lib_run_script' => '/AllTests.php',
+	'no_cache' => true,
+//	'auto_umount' => true // Free mem when tests have run
+	);
+
+#----------------

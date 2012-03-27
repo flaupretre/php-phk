@@ -1,0 +1,42 @@
+# Package Specification file for the Zend Framwork documentation
+#
+# Before building a package from this file, the ZFW_DIR environment variable
+# must be set to the directory where the Zend Framework has been installed.
+# Alternate way: uncomment the 'set ZFW_DIR ...' line below.
+#
+#==============================================================================
+
+#-- Documentation files
+
+merge -strip=true -compress=gzip / \
+	$(SOURCE_DIR)/documentation/$(DOC_TYPE)/$(DOC_DOMAIN)$(DOC_ADDPATH)
+
+#-- The license
+
+add /& $(SOURCE_DIR)/LICENSE.txt
+
+#-- The package's icon
+
+add /& $(PSF_DIR)/zfw_doc.jpg
+
+#-- The options
+
+%options
+
+return array(
+	'name' => 'Zend Framework Documentation ('.getenv('DOC_TYPE').' / '
+		.getenv('DOC_DOMAIN').' / '.getenv('DOC_LANG').')',
+	'version' => '0.6.0',
+	'release' => '6',
+	'license' => 'New BSD License <http://framework.zend.com/license>',
+	'copyright' => 'Copyright (c) 2006, Zend Technologies USA, Inc.',
+	'url' => 'http://framework.zend.com',
+	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+	'icon' => '/zfw_doc.jpg',
+	'license_prefix' => '/LICENSE',
+	'web_run_script' => '/index.html',
+	'web_access' => '/',		//-- Open access
+	'web_main_redirect' => true
+	);
+
+#----------------
