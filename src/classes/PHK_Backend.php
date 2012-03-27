@@ -647,6 +647,7 @@ echo "	- @help             Display package help\n";
 echo "	- @license          Display license\n";
 echo "	- @get <path>       Display a subfile content\n";
 echo "	- @showmap          Display automap, if present\n";
+echo "	- @automap          Run automap commands\n";
 echo "	- @showfiles        List subfiles\n";
 echo "	- @option <name>    Display a package option\n";
 echo "	- @set_interp <string>  Set the first line of the PHK to '#!<string>'\n";
@@ -663,14 +664,15 @@ if (!is_null($msg)) exit(1);
 public function builtin_prolog($file)
 {
 $retcode=0;
+$args=$_SERVER['argv'];
 
 try
 {
 $this->proxy()->crc_check();
 
-$command=PHK_Util::substr($_SERVER['argv'][1],1);
-array_shift($_SERVER['argv']);
-$param=isset($_SERVER['argv'][1]) ? $_SERVER['argv'][1] : null;
+$command=PHK_Util::substr($args[1],1);
+array_shift($args);
+$param=isset($args[1]) ? $args[1] : null;
 
 switch($command)
 	{
@@ -684,6 +686,10 @@ switch($command)
 
 	case 'test':
 		$this->test();
+		break;
+
+	case 'automap':
+		Automap_Cmd::run($args);
 		break;
 
 	case 'showmap':
