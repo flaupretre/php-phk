@@ -28,7 +28,7 @@ require(dirname(__FILE__).'/../classes/PHK_Cache.php');
 // </PLAIN_FILE> //---------------
 
 require(dirname(__FILE__).'/../classes/PHK_PSF.php');
-require(dirname(__FILE__).'/../classes/Automap_Creator.php');
+require(dirname(__FILE__).'/../classes/external/automap/Automap_Creator.php');
 require(dirname(__FILE__).'/../classes/PHK_DataStacker.php');
 require(dirname(__FILE__).'/../classes/PHK_ItemLister.php');
 require(dirname(__FILE__).'/../classes/PHK_Creator.php');

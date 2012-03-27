@@ -27,7 +27,7 @@
 if (!class_exists('PHK_Creator',false))
 {
 // <PLAIN_FILE> //---------------
-require(dirname(__FILE__).'/Automap_Creator.php');
+require(dirname(__FILE__).'/external/automap/Automap_Creator.php');
 require(dirname(__FILE__).'/PHK_Proxy.php');
 require(dirname(__FILE__).'/PHK_Base.php');
 require(dirname(__FILE__).'/PHK_Mgr.php');
@@ -160,7 +160,8 @@ public function build_php_code($dir)
 {
 $this->code='';
 
-$this->code .= PHK_Util::readfile($dir.'/classes/Automap.php');
+$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap.php');
+$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Cmd.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_Util.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_File.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_Cache.php');
