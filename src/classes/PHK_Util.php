@@ -91,7 +91,7 @@ else
 	if (($c==='/') || ($c=='\\')) $dir=rtrim($dir,$c);
 	}
 
-return $dir.$separ.$rpath;
+return (($rpath==='.') ? $dir : $dir.$separ.$rpath);
 }
 
 //---------
