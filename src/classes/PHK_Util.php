@@ -405,7 +405,7 @@ if (PHK_Util::is_windows()) @unlink($path);
 if (!rename($tmpf,$path))
 	{
 	unlink($tmpf);
-	throw new Exception($path,'Cannot replace file');
+	throw new Exception($path.': Cannot replace file');
 	}
 }
 
