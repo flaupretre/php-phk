@@ -22,4 +22,9 @@ KIT_NAME=$(PRODUCT)_building_kit
 PHK_Creator.phk: PHK_Creator.psf
 	SOURCE_DIR=$(SOURCE_DIR) $(PHP) src/scripts/PHK_Builder.php build $@ $<
 
+#------- Dev private
+
+sync_automap:
+	cp -p ../../../automap/public/creator/src/classes/*.php src/classes/external/automap
+
 #-----------------------------------------------------------------------------
