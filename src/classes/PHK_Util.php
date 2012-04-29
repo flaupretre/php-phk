@@ -25,6 +25,15 @@
 * @package PHK
 */
 //=============================================================================
+// Ensures PHP_VERSION_ID is set. If version < 5.2.7, emulate.
+
+if (!defined('PHP_VERSION_ID'))
+	{
+	$v = explode('.',PHP_VERSION);
+	define('PHP_VERSION_ID', ($v[0]*10000+$v[1]*100+$v[2]));
+	}
+
+//=============================================================================
 
 if (!class_exists('PHK_Util',false))
 {
