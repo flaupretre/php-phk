@@ -6,15 +6,18 @@ merge -strip=true /lib $(SOURCE_DIR)/getid3
 
 #-- Administrative & info files
 
-add /& $(SOURCE_DIR)/license.txt $(SOURCE_DIR)/readme.txt \
-	$(SOURCE_DIR)/structure.txt $(SOURCE_DIR)/changelog.txt \
+add /& $(SOURCE_DIR)/license.txt \
+	$(SOURCE_DIR)/readme.txt \
+	$(SOURCE_DIR)/structure.txt \
+	$(SOURCE_DIR)/changelog.txt \
 	$(SOURCE_DIR)/dependencies.txt
 
+#--------------------------------------------------------------------------
 %options
 
 return array(
 	'name' => 'getID3',
-	'summary' => 'A library that extracts useful information from MP3s & other multimedia files',
+	'summary' => 'A library that extracts useful information from MP3 & other multimedia files',
 	'version' => '1.9.1',
 	'release' => '20110810',
 	'min_php_version' => '5.0.5',
@@ -30,3 +33,5 @@ return array(
 		'Structure' => '/auto_file/structure.txt',
 		'Dependencies' => '/auto_file/dependencies.txt')
 	);
+
+#--------------------------------------------------------------------------
