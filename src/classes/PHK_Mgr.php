@@ -231,6 +231,26 @@ throw new Exception($path.': path is not mounted');
 
 //---------
 /**
+* Given a PHK uri, returns the path of the first-level package for
+* this path. The function recurses until it finds a physical path.
+*
+* @param string $path A path typically set as '__FILE__'
+* @return the physical path of the 1st-level package containing this path
+*/
+
+public static function toplevel_path($path)
+{
+while (self::is_a_phk_uri($path))
+	{
+	$mnt=self::uri_to_mnt($path);
+	$map=self::instance($mnt);
+	$path=$map->path();
+	}
+return $path;
+}
+
+//---------
+/**
 * Mount a PHK package and returns the new (or previous, if already loaded)
 * PHK mount point.
 *
