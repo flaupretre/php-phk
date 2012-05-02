@@ -194,37 +194,14 @@ if (!is_null($map)) // This is a real file
 		//--- Register in automap
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			PHK_Util::msg("	Registering Automap symbols");
+			// PHK_Util::msg("	Registering Automap symbols");
 			$map->register_script($phk->uri($path),$path);
 			}
 
-		//--- Strip script files
+		//--- Script pre-processor
 
-		if ($this->flags & self::TN_STRIP_SOURCE)
-			{
-			PHK_Util::msg("	Stripping script");
+		$this->process_php_script();
 
-			// We must save the Automap comments from php_strip_whitespace()
-			// because we must be able to rebuild the Automap (when upgrading
-			// the package, for instance).
-			// If there are Automap comments in the file, we put them in a PHP
-			// block after the stripped script.
-
-			$comment_buf='';
-			foreach(file($phk->uri($path)) as $line)
-				{
-				$line=trim($line);
-				if (!preg_match(Automap_Creator::AUTOMAP_COMMENT,$line,$regs))
-					continue;
-				// Warning: keep '//' and '<Automap> separate below or it will be
-				// detected as an Automap comment when processing this file.
-				$comment_buf .= '//'.' <Automap>:'.$regs[1].$regs[2]."\n";
-				}
-			// Keep '<?'.'php' or it will be translated when building the
-			// runtime code
-			if ($comment_buf!='') $comment_buf="<?"."php\n".$comment_buf."?".">";
-			$this->set_data(php_strip_whitespace($phk->uri($path)).$comment_buf);
-			}
 		}
 	else
 		{
@@ -234,6 +211,34 @@ if (!is_null($map)) // This is a real file
 	}
 
 return $this->tnode_export($this->dc->export($phk,$stacker));
+}
+
+//---------------
+/*
+* Called only for PHP scripts. Replaces current data buffer */
+
+private function process_php_script()
+{
+$buf='';
+
+foreach(explode("\n",$this->read()) as $line)
+	{
+	
+	$buf .= $line."\n";
+	}
+$buf=substr($buf,0,-1);
+
+$this->set_data($buf);
+	
+//--- Strip
+
+if ($this->flags & self::TN_STRIP_SOURCE)
+	{
+	// PHK_Util::msg("	Stripping script");
+	$buf=php_strip_whitespace($phk->uri($path));
+	}
+
+$this->set_data($buf);
 }
 
 // </CREATOR> //---------------
