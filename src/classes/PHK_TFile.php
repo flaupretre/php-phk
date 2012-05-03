@@ -185,7 +185,7 @@ if (!is_null($map)) // This is a real file
 		{
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			PHK_Util::msg("Registering Automap symbols from PHK package");
+			//PHK_Util::msg("Registering Automap symbols from PHK package");
 			$map->register_phk($phk->uri($path),$path);
 			}
 		}
@@ -198,10 +198,7 @@ if (!is_null($map)) // This is a real file
 			$map->register_script($phk->uri($path),$path);
 			}
 
-		//--- Script pre-processor
-
-		$this->process_php_script();
-
+		$this->process_php_script();	//--- Script pre-processor
 		}
 	else
 		{
@@ -214,8 +211,7 @@ return $this->tnode_export($this->dc->export($phk,$stacker));
 }
 
 //---------------
-/*
-* Called only for PHP scripts. Replaces current data buffer */
+// Called only for PHP scripts. Replaces current data buffer
 
 private function process_php_script()
 {
@@ -223,19 +219,17 @@ $buf='';
 
 foreach(explode("\n",$this->read()) as $line)
 	{
-	
+	//TODO
 	$buf .= $line."\n";
 	}
 $buf=substr($buf,0,-1);
 
-$this->set_data($buf);
-	
 //--- Strip
 
 if ($this->flags & self::TN_STRIP_SOURCE)
 	{
 	// PHK_Util::msg("	Stripping script");
-	$buf=php_strip_whitespace($phk->uri($path));
+	$buf=PHK_Stream_Backend::_strip_string($buf);
 	}
 
 $this->set_data($buf);
