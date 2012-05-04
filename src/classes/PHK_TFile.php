@@ -213,13 +213,59 @@ return $this->tnode_export($this->dc->export($phk,$stacker));
 //---------------
 // Called only for PHP scripts. Replaces current data buffer
 
+const ST_OUT=0;
+const ST_ADD=1;
+const ST_IGNORE=2;
+
 private function process_php_script()
 {
-$buf='';
+$buf=$this->read();
 
-foreach(explode("\n",$this->read()) as $line)
+//--- Normalize line breaks (Unix-style)
+
+$buf=preg_replace('/\r+\n/','\n',$buf);
+$buf=str_replace("\r","\n",$buf);
+
+//--- Process '// <PHK:' directives
+
+$rbuf=$buf;
+$buf='';
+$lnum=0;
+$state=self::ST_OUT;
+$regs=null;
+foreach(explode("\n",$rbuf) as $line)
 	{
-	//TODO
+	$lnum++;
+	if (preg_match(',^\s*//\s*<PHK:(\S+)>,',$line,$regs))
+		{
+		$keyword=strtolower($regs[1]);
+		switch ($keyword)
+			{
+			case 'end':
+				$state=self::ST_OUT;
+				break;
+			case 'ignore':
+				$state=self::ST_IGNORE;
+				break;
+			case 'add':
+				$state=self::ST_ADD;
+				break;
+			default:
+				throw new Exception($this->path."($lnum): Unknown preprocessor keyword: $keyword - valid keywords are ignore, add, end - ignoring line");
+			}
+		continue;
+		}
+	if ($state==self::ST_IGNORE) continue;
+	if ($state==self::ST_ADD)
+		{
+		$line=ltrim($line);
+		if (strlen($line)!=0) // Ignore empty lines
+			{
+			if ((strlen($line)>=2)&&(substr($line,0,2)==='//'))
+				$line=substr($line,2);
+			else throw new Exception($this->path."($lnum): in an 'add' block, line should start with '//' - copying line as-is");
+			}
+		}
 	$buf .= $line."\n";
 	}
 $buf=substr($buf,0,-1);
