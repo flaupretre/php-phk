@@ -128,7 +128,7 @@ private function get_word(&$line,$error_flag=true)
 {
 if (($line=trim($line))=='')
 	{
-	if ($error_flag) send_error('Short line');
+	if ($error_flag) $this->send_error('Short line');
 	else return null;
 	}
 $pos=strpos($line,' ');
