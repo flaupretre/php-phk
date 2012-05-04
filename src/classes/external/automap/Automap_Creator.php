@@ -110,8 +110,6 @@ $this->options=$options;
 
 private function add_entry($va)
 {
-if (!isset($va['T'])) throw new Exception();
-
 $key=Automap::key($va['T'],$va['n']);
 if (isset($this->symbols[$key]))
 	{
