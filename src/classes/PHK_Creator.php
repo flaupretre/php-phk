@@ -298,7 +298,7 @@ $this->add_section('BUILD_INFO',serialize($this->build_info()));
 
 // Now, dump the section tree
 
-PHK_Util::msg('--- Sections');
+PHK_Util::trace('--- Sections');
 
 list($sections_structure,$sections_data)=$this->proxy()->stree()->export($this);
 
@@ -328,7 +328,7 @@ $buf=PHK_Proxy::fix_crc(PHK_Proxy::interp_block($this->interp)
 	.' ?>'
 	.$this->prolog.$this->code.$sections_structure.$sections_data.$files_data);
 
-PHK_Util::msg('Writing PHK file to '.$path);
+PHK_Util::trace('Writing PHK file to '.$path);
 PHK_Util::atomic_write($path,$buf);
 }
 

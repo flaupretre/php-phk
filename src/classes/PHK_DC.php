@@ -211,7 +211,7 @@ return pack('vV3',$this->flags,$this->csz,$this->rsz,$this->off);
 
 private function deny_compress($msg,$buf)
 {
-PHK_Util::msg("	No compression: $msg");
+PHK_Util::trace("	No compression: $msg");
 $this->flags &= ~self::COMPRESS_TYPE; // Set to COMPRESS_NONE
 return $buf;
 }
@@ -236,14 +236,14 @@ switch($ctype)
 	{
 	case self::COMPRESS_BZIP2:
 		PHK_Util::load_extension('bz2');
-		PHK_Util::msg("	Compressing (bzip2)");
+		PHK_Util::trace("	Compressing (bzip2)");
 		if(is_int($cbuf=bzcompress($buf,9)))
 			throw new Exception("Cannot bzcompress data - Error code $buf");
 		break;
 
 	case self::COMPRESS_GZIP:
 		PHK_Util::load_extension('zlib');
-		PHK_Util::msg("	Compressing (gzip)");
+		PHK_Util::trace("	Compressing (gzip)");
 		if(($cbuf=gzcompress($buf))===false) 
 			throw new Exception("Cannot gzcompress data");
 		break;

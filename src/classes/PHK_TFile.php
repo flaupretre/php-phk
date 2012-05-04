@@ -165,7 +165,7 @@ public function export(PHK_Creator $phk,PHK_DataStacker $stacker,$map)
 {
 $path=$this->path;
 
-PHK_Util::msg('Processing '.$path);
+PHK_Util::trace('Processing '.$path);
 
 if (!is_null($map)) // This is a real file
 	{
@@ -185,7 +185,7 @@ if (!is_null($map)) // This is a real file
 		{
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			//PHK_Util::msg("Registering Automap symbols from PHK package");
+			PHK_Util::trace("Registering Automap symbols from PHK package");
 			$map->register_phk($phk->uri($path),$path);
 			}
 		}
@@ -194,7 +194,7 @@ if (!is_null($map)) // This is a real file
 		//--- Register in automap
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			// PHK_Util::msg("	Registering Automap symbols");
+			PHK_Util::trace("	Registering Automap symbols");
 			$map->register_script($phk->uri($path),$path);
 			}
 
