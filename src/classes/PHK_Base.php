@@ -59,7 +59,7 @@ abstract class PHK_Base
 
 /** Class version */
 
-const VERSION='1.4.0';
+const VERSION='2.0.0';
 
 //-----
 // Mount flags
