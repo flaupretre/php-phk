@@ -15,7 +15,7 @@ add /etc/& $(PSF_DIR)/src/etc/license.txt
 
 return array(
 	'name' => 'PHK API reference',
-	'version' => 1.4,
+	'version' => 2.0,
 	'release' => '0',
 	'license' => 'Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>',
 	'copyright' => '(c) F. Laupretre',

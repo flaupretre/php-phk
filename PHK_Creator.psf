@@ -6,7 +6,7 @@ merge / $(PSF_DIR)/src
 return array(
 	'name' => 'PHK Creator',
 	'summary' => 'PHK Creator tool',
-	'version' => '1.5',
+	'version' => '2.0',
 	'release' => '0',
 	'icon' => '/etc/phk_logo.png',
 	'crc_check' => true,
