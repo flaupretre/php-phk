@@ -91,6 +91,10 @@ const CRC_OFFSET=200;
 
 //========== Instance data ===============
 
+/** @var string Package path */
+
+private	$path;
+
 /** @var PHK_Tree	Section tree */
 
 protected	$stree=null;
@@ -131,6 +135,7 @@ PHK_Util::slow_path();
 
 //PHK_Util::trace("Starting proxy init");//TRACE
 
+$this->path=$path;
 $this->flags=$flags;
 
 if (!($this->flags & PHK::F_CREATOR))
@@ -186,7 +191,14 @@ catch (Exception $e)
 
 public function crc_check()
 {
-self::check_crc_buffer($this->fspace->read_block());
+try
+	{
+	self::check_crc_buffer($this->fspace->read_block());
+	}
+catch(Exception $e)
+	{
+	throw new Exception($this->path.': file is corrupted - '.$e->getMessage());
+	}
 }
 
 //---------------------------------
@@ -249,7 +261,7 @@ return sprintf('%08x',crc32(self::insert_crc($buffer,'00000000')));
 public static function check_crc_buffer($buffer)
 {
 if (self::compute_crc($buffer) !== self::get_crc($buffer))
-	throw new Exception('Wrong CRC');
+	throw new Exception('CRC check failed');
 }
 
 //---------------------------------
