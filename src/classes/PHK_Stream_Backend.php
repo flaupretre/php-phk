@@ -42,6 +42,10 @@ class PHK_Stream_Backend
 
 private static $tmp_data=null;
 
+/** tmp pseudo-file URI */
+
+const TMP_URI='phk://?tmp';
+
 //---------------------------------
 // Returns pseudo-file data string.
 // If a command does not want to be cached, it sets $cache to false.
@@ -193,7 +197,7 @@ public static function _strip_string($str)
 if (getenv('PHK_NO_STRIP')!==false) return $str;
 
 $save=self::set_tmp_data($str);
-$res=php_strip_whitespace('phk://?tmp');
+$res=php_strip_whitespace(self::TMP_URI);
 self::set_tmp_data($save);
 return $res;
 }
@@ -205,7 +209,7 @@ return $res;
 public static function _include_string($str)
 {
 $save=self::set_tmp_data($str);
-$res=require('phk://?tmp');
+$res=require(self::TMP_URI);
 self::set_tmp_data($save);
 return $res;
 }

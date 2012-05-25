@@ -26,13 +26,13 @@
 
 if (!class_exists('PHK_Creator',false))
 {
-// <PLAIN_FILE> //---------------
+// <PHK:ignore>
 require(dirname(__FILE__).'/external/automap/Automap_Creator.php');
 require(dirname(__FILE__).'/PHK_Proxy.php');
 require(dirname(__FILE__).'/PHK_Base.php');
 require(dirname(__FILE__).'/PHK_Mgr.php');
 require(dirname(__FILE__).'/PHK_Tree.php');
-// </PLAIN_FILE> //---------------
+// <PHK:end>
 
 //============================================================================
 /*

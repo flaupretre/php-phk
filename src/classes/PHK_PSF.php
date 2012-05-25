@@ -26,13 +26,19 @@
 */
 //============================================================================
 
+// <PHK:ignore>
+require(dirname(__FILE__).'/external/YAML/lib/sfYaml.php');
+// <PHK:end>
+
+//============================================================================
+
 class PHK_PSF 
 {
 private $filename;
 private $line_nb;
 private $variables;
 
-const VERSION='0.1.3';
+const VERSION='0.2.0';
 
 //---------
 
@@ -269,10 +275,13 @@ while (!is_null($line=$this->get_line()))
 
 if (!is_null($line)) // If we met a '%'
 	{
-	$data='<?php ';
+	$data='';
 	while (($line=fgets($this->fp))!==false) $data .= $line;
 
-	$a=PHK_Stream_Backend::_include_string($data);
+	$save=PHK_Stream_Backend::set_tmp_data($data);
+	$a=sfYaml::load(PHK_Stream_Backend::TMP_URI);
+	PHK_Stream_Backend::set_tmp_data($save);
+
 	if (!(is_array($a)))
 		throw new Exception('Options block should return an array');
 	$phk->set_options($a);

@@ -3,21 +3,19 @@ merge / $(PSF_DIR)/src
 
 %options ---------------------------------------------------------------------
 
-return array(
-	'name' => 'PHK Creator',
-	'summary' => 'PHK Creator tool',
-	'version' => '2.0',
-	'release' => '0',
-	'icon' => '/etc/phk_logo.png',
-	'crc_check' => true,
-	'license' => 'Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>',
-	'copyright' => '(c) F. Laupretre',
-	'author' => 'F. Laupretre <mailto:phk@tekwire.net>',
-	'url' => 'http://phk.tekwire.net',
-	'packager' => 'F. Laupretre <mailto:phk@tekwire.net>',
-	'cli_run_script' => '/scripts/PHK_Builder.php',
-	'plain_prolog' => true,
-	'prolog_code_creator' => true,
-	'help_prefix' => '/etc/help',
-	'license_prefix' => '/etc/license'
-	);
+name                : PHK Creator
+summary             : PHK Creator tool
+version             : 2.0
+release             : 0
+icon                : /etc/phk_logo.png
+crc_check           : true
+license             : Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
+copyright           : (c) F. Laupretre
+author              : F. Laupretre <mailto:phk@tekwire.net>
+url                 : http://phk.tekwire.net
+packager            : F. Laupretre <mailto:phk@tekwire.net>
+cli_run_script      : /scripts/PHK_Builder.php
+plain_prolog        : true
+prolog_code_creator : true
+help_prefix         : /etc/help
+license_prefix      : /etc/license
