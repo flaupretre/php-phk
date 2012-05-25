@@ -718,6 +718,10 @@ switch($command)
 		break;
 
 	case 'license':
+	case 'licence':
+		echo $this->auto_option('license');
+		break;
+
 	case 'help':
 		echo $this->auto_option($command);
 		break;
