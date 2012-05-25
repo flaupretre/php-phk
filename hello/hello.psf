@@ -4,12 +4,10 @@ merge  -autoload=false -strip=true / $(SOURCE_DIR)
 
 %options
 
-return array(
-        'name' => 'My first package',
-        'version' => '1.0',
-        'author' => 'Bond... James Bond',
-        'license' => 'Top secret',
-//		'plain_prolog' => true,
-        'cli_run_script' => '/hello.php', // This is the entry point in CLI mode
-        'web_run_script' => '/hello.php' // This is the entry point in web mode
-        ); 
+name          : My first package
+version       : 1.0
+author        : Bond... James Bond
+license       : Top secret
+cli_run_script: /hello.php # This is the entry point in CLI mode
+web_run_script: /hello.php # This is the entry point in web mode
+

@@ -14,6 +14,7 @@ add -compress=gzip /license.txt $(SOURCE_DIR)/COPYING.lib
 #-- The options
 
 %options
+<?php
 
 return array(
 	'name' => 'Smarty Cross Reference',

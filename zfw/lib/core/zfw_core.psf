@@ -38,6 +38,7 @@ add /zfw.png $(PSF_DIR)/zfw_$(PACK).png
 #-- The options
 
 %options
+<?php
 
 return array(
 	'name' => 'Zend Framework (Core)',

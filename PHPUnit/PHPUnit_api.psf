@@ -14,6 +14,7 @@ add -compress=gzip /& $(PSF_DIR)/license.txt $(PSF_DIR)/license.htm \
 #-- The options
 
 %options
+<?php
 
 return array(
 	'name' => 'PHPUnit API Reference',

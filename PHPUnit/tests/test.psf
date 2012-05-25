@@ -9,6 +9,7 @@ merge $(FLAGS) / $(PSF_DIR)/tmp_source $(PSF_DIR)/tmp_modified
 #-- The options
 
 %options
+<?php
 
 return array(
 	'name' => 'PHPUnit tests',

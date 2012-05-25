@@ -22,6 +22,7 @@ add /& $(PSF_DIR)/zfw_doc.jpg
 #-- The options
 
 %options
+<?php
 
 return array(
 	'name' => 'Zend Framework Documentation ('.getenv('DOC_TYPE').' / '

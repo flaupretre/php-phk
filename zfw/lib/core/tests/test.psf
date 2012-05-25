@@ -17,6 +17,7 @@ add /& $(PSF_DIR)/../../../../PHPUnit/PHPUnit.phk
 #-- The options
 
 %options
+<?php
 
 return array(
 	'name' => 'Tests',

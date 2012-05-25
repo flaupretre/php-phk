@@ -14,6 +14,7 @@ add /& $(SOURCE_DIR)/license.txt \
 
 #--------------------------------------------------------------------------
 %options
+<?php
 
 return array(
 	'name' => 'getID3',
