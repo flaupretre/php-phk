@@ -3,7 +3,7 @@
 
 merge -strip=true -compress=gzip / $(TMP_DIR)
 
-#-- The icon
+#-- The icon and license files
 
 add /etc/& $(PSF_DIR)/src/etc/phk_logo.png
 add /etc/& $(PSF_DIR)/src/etc/license.htm
