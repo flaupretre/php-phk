@@ -25,5 +25,5 @@ packager            : F. Laupretre <mailto:phk@tekwire.net>
 web_run_script      : /index.html
 help_prefix         : /etc/help
 license_prefix      : /etc/license
-web_access          : /		#-- Open access
+web_access          : /  #-- Open access
 web_main_redirect   : true
