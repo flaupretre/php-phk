@@ -93,7 +93,7 @@ if (is_null(self::$cache))
 			}
 		unset($obj);
 		}
-	// echo "Cache system used : ".self::$cache_name."\n";//TRACE
+	PHK_Util::trace("Cache system used : ".self::$cache_name);//TRACE
 	}
 }
 

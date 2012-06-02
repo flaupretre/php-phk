@@ -66,7 +66,7 @@ if ($this->raise_errors) trigger_error("PHK: $msg",E_USER_WARNING);
 public static function get_file($dir,$uri,$mnt,$command,$params,$path,$cache=null)
 {
 $cache_id=PHK_Cache::cache_id('node',$uri);
-//PHK_Util::trace("Cache ID : <$cache_id>");//TRACE
+PHK_Util::trace("get_file: Cache ID=<$cache_id>");//TRACE
 
 if (is_null($data=PHK_Cache::get($cache_id)))	// Miss
 	{
@@ -101,7 +101,7 @@ return $data;
 
 public function stream_open($uri,$mode,$options,&$opened_path)
 {
-//PHK_Util::trace("Starting stream_open: uri=$uri");//TRACE
+PHK_Util::trace("Starting stream_open: uri=$uri");//TRACE
 
 try
 {
@@ -128,7 +128,7 @@ catch (Exception $e)
 	$this->raise_warning($msg);
 	return false;
 	}
-//PHK_Util::trace("Exiting stream_open: uri=$uri");//TRACE
+PHK_Util::trace("Exiting stream_open: uri=$uri");//TRACE
 return true;
 }
 
@@ -137,7 +137,7 @@ return true;
 
 public function stream_read($nb)
 {
-//PHK_Util::trace("Starting stream_read: uri=".$this->uri." - nb=$nb - position=".$this->position." size=".$this->size);//TRACE
+PHK_Util::trace("Starting stream_read: uri=".$this->uri." - nb=$nb - position=".$this->position." size=".$this->size);//TRACE
 
 if ($this->position==$this->size) return false;
 $max=$this->size-($pos=$this->position);
@@ -168,7 +168,7 @@ return $this->position;
 
 public function stream_seek($offset,$whence)
 {
-//PHK_Util::trace("Starting stream_seek: uri=".$this->uri." - offset=$nb - whence=$whence");//TRACE
+PHK_Util::trace("Starting stream_seek: uri=".$this->uri." - offset=$offset - whence=$whence");//TRACE
 
 switch($whence)
 	{
@@ -260,7 +260,7 @@ return array(
 
 public function stream_stat()
 {
-//PHK_Util::trace("Entering stream_stat");//TRACE
+PHK_Util::trace("Entering stream_stat");//TRACE
 
 return $this->url_stat($this->uri,0,true);
 }
@@ -281,7 +281,7 @@ return $this->url_stat($this->uri,0,true);
 
 public function url_stat($uri,$flags,$fstat=false)
 {
-//PHK_Util::trace("Entering url_stat($uri,$flags,$fstat)");//TRACE
+PHK_Util::trace("Entering url_stat($uri,$flags,$fstat)");//TRACE
 
 try
 {
@@ -300,7 +300,7 @@ if (!$fstat)
 $cache_id=PHK_Cache::cache_id('stat',$uri);
 if (is_null($data=PHK_Cache::get($cache_id)))	// Miss - Slow path
 	{
-	//PHK_Util::trace("url_stat($uri): not found in cache");//TRACE
+	PHK_Util::trace("url_stat($uri): not found in cache");//TRACE
 	try
 		{
 		$cache=true;
@@ -311,7 +311,7 @@ if (is_null($data=PHK_Cache::get($cache_id)))	// Miss - Slow path
 		}
 	catch (Exception $e) // Mark entry as non-existent
 		{
-		//PHK_Util::trace("url_stat($uri): lookup failed");//TRACE
+		PHK_Util::trace("url_stat($uri): lookup failed");//TRACE
 		$data='';
 		}
 
@@ -367,7 +367,7 @@ catch (Exception $e)
 
 public static function parse_uri($uri,&$command,&$params,&$mnt,&$path)
 {
-//PHK_Util::trace("Entering parse_uri($uri)");//TRACE
+PHK_Util::trace("Entering parse_uri($uri)");//TRACE
 
 if (! PHK_Mgr::is_a_phk_uri($uri=str_replace('\\','/',$orig_uri=$uri)))
 	throw new Exception('Not a PHK URI');
