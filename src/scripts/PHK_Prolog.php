@@ -46,7 +46,15 @@ if (!class_exists('PHK',0))
 $_phk_cmd=null;
 $_phk_ret=0;
 
-PHK::prolog(__FILE__,$_phk_cmd,$_phk_ret);
+try
+	{
+	PHK::prolog(__FILE__,$_phk_cmd,$_phk_ret);
+	}
+catch (Exception $e)
+	{
+	if (getenv('PHK_DEBUG')!==false) throw $e;
+	trigger_error($e->getMessage(),E_USER_ERROR);
+	}
 
 eval($_phk_cmd);
 

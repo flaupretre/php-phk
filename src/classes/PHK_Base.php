@@ -728,16 +728,9 @@ PHK_Mgr::php_version_check();	//-- Check PHP version - if unsupported, no return
 //-----
 // Mount the PHK file (or get the mount point if previously mounted)
 
-try {
-	$mnt=PHK_Mgr::mount($file);
-	$phk=PHK_Mgr::instance($mnt);
-	}
-catch (Exception $e)
-	{		
-	if (getenv('PHK_DEBUG')!==false) throw $e;
-	echo '** Fatal error: Cannot mount PHK file - '.$e->getMessage()."\n";
-	exit(1);
-	}
+$mnt=PHK_Mgr::mount($file);
+$phk=PHK_Mgr::instance($mnt);
+
 //PHK_Util::trace("Prolog mounted $file on $mnt");//TRACE
 
 //-----
