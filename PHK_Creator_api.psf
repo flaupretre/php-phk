@@ -13,7 +13,7 @@ add /etc/& $(PSF_DIR)/src/etc/license.txt
 %options
 
 name                : PHK API Reference
-version             : 2.0
+version             : '2.0'
 release             : 0
 icon                : /etc/phk_logo.png
 crc_check           : true
