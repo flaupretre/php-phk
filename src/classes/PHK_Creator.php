@@ -48,7 +48,7 @@ require(dirname(__FILE__).'/PHK_Tree.php');
 
 class PHK_Creator extends PHK_Base
 {
-const VERSION='2.0.0';	// Must be the same as in PHK_Creator.psf
+const VERSION='2.1.0';	// Must be the same as in PHK_Creator.psf
 const MIN_VERSION='2.0.0';
 
 //-----
