@@ -275,16 +275,34 @@ while (!is_null($line=$this->get_line()))
 
 if (!is_null($line)) // If we met a '%'
 	{
+	// Get package options (metainfo)
+	// Default syntax: YAML
+
+	$modifiers=$this->get_modifiers($line);
+	$syntax=(isset($modifiers['syntax']) ? $modifiers['syntax'] : 'yaml');
+
 	$data='';
 	while (($line=fgets($this->fp))!==false) $data .= $line;
 
-	$save=PHK_Stream_Backend::set_tmp_data($data);
-	$a=sfYaml::load(PHK_Stream_Backend::TMP_URI);
-	PHK_Stream_Backend::set_tmp_data($save);
+	switch($syntax)
+		{
+		case 'yaml':
+			$save=PHK_Stream_Backend::set_tmp_data($data);
+			$options=sfYaml::load(PHK_Stream_Backend::TMP_URI);
+			PHK_Stream_Backend::set_tmp_data($save);
+			break;
 
-	if (!(is_array($a)))
+		case 'php':
+			$options=PHK_Stream_Backend::_include_string("<?php\n".$data."\n?>");
+			break;
+
+		default:
+			throw new Exception("$syntax: Unknown options syntax");
+		}
+
+	if (!(is_array($options)))
 		throw new Exception('Options block should return an array');
-	$phk->set_options($a);
+	$phk->set_options($options);
 	}
 
 fclose($this->fp);
