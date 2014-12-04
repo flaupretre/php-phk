@@ -17,21 +17,19 @@
 //
 //=============================================================================
 
-// This is needed because the file must be able to run as plain file
-
-// <PLAIN_FILE> //---------------
+// <PHK:ignore>
+require(dirname(__FILE__).'/../classes/external/phool/PHO_Getopt.php');
 require(dirname(__FILE__).'/../classes/PHK.php');
 require(dirname(__FILE__).'/../classes/PHK_Proxy.php');
 require(dirname(__FILE__).'/../classes/PHK_Stream.php');
 require(dirname(__FILE__).'/../classes/PHK_Stream_Backend.php');
 require(dirname(__FILE__).'/../classes/PHK_Cache.php');
-// </PLAIN_FILE> //---------------
-
 require(dirname(__FILE__).'/../classes/PHK_PSF.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Creator.php');
 require(dirname(__FILE__).'/../classes/PHK_DataStacker.php');
 require(dirname(__FILE__).'/../classes/PHK_ItemLister.php');
 require(dirname(__FILE__).'/../classes/PHK_Creator.php');
+// <PHK:end>
 
 //============================================================================
 
@@ -69,7 +67,7 @@ exit(is_null($msg) ? 0 : 1);
 
 try {
 
-if (PHK_Util::is_web())
+if (PHK_Util::env_is_web())
 	throw new Exception('This package is supposed to be run in CLI mode only');
 
 array_shift($_SERVER['argv']);
