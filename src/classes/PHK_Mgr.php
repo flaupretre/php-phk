@@ -439,7 +439,7 @@ return ($u{0}=='p' && $u{1}=='h' && $u{2}=='k' && $u{3}==':'
 /**
 * Returns the base string used to build URIs for a given mount point.
 *
-* The base URI has the form : phk://<mount point>
+* The base URI has the form : phk://<mount point>/
 *
 * @param string $mnt A mount point
 * @return string
