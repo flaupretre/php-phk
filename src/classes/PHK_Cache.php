@@ -195,7 +195,7 @@ public function init()
 {
 // Valid only in a web environment or if CLI is explicitely enabled
 
-return PHK_Util::is_web() || ini_get('apc.enable_cli');
+return PHK_Util::env_is_web() || ini_get('apc.enable_cli');
 }
 
 //------
@@ -221,7 +221,7 @@ class PHK_Cache_xcache extends PHK_Cache_Base
 
 public function init()
 {
-return PHK_Util::is_web(); // Valid only in a web environment
+return PHK_Util::env_is_web(); // Valid only in a web environment
 }
 
 //------
@@ -252,7 +252,7 @@ public function init()
 
 if (!function_exists('eaccelerator_get')) return false;
 
-return PHK_Util::is_web(); // Valid only in a web environment
+return PHK_Util::env_is_web(); // Valid only in a web environment
 }
 
 //------

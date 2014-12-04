@@ -196,7 +196,7 @@ if ($html) echo '</table>';
 
 public function display($link)
 {
-$html=PHK_Util::is_web();
+$html=PHK_Util::env_is_web();
 
 $this->display_header($html);
 $this->walk('display',$html,$link);
@@ -207,7 +207,7 @@ $this->display_footer($html);
 
 public function display_packages()
 {
-$html=PHK_Util::is_web();
+$html=PHK_Util::env_is_web();
 
 ob_start();
 $this->walk('display_package',$html);

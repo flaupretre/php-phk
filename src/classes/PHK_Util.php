@@ -58,15 +58,17 @@ return is_object($var) ? 'object '.get_class($var) : gettype($var);
 }
 
 //-----
+// Keep in sync with PHO_Util
 
-public static function is_web()
+public static function env_is_web()
 {
 return (php_sapi_name()!='cli');
 }
 
 //----
+// Keep in sync with PHO_Util
 
-public static function is_windows()
+public static function env_is_windows()
 {
 return (substr(PHP_OS, 0, 3) == 'WIN');
 }
@@ -82,6 +84,10 @@ return strtolower(substr($filename,$dotpos+1));
 }
 
 //---------
+// Warning: This is not the same code as Automap::combine_path() and
+// PHO_File::combine_path(). Those were modified to support providing
+// an absolute $rpath. So, the behavior is different if $rpath starts with '/'.
+//
 // Combines a base directory and a relative path. If the base directory is
 // '.', returns the relative part without modification
 // Use '/' separator on stream-wrapper URIs
@@ -101,6 +107,56 @@ else
 	}
 
 return (($rpath==='.') ? $dir : $dir.$separ.$rpath);
+}
+
+//---------------------------------
+/**
+* Adds or removes a trailing separator in a path
+*
+* @param string $path Input
+* @param bool $flag true: add trailing sep, false: remove it
+* @return bool The result path
+*/
+
+public static function trailing_separ($path, $separ)
+{
+$path=rtrim($path,'/\\');
+if ($path=='') return '/';
+if ($separ) $path=$path.'/';
+return $path;
+}
+
+//---------------------------------
+/**
+* Determines if a given path is absolute or relative
+*
+* @param string $path The path to check
+* @return bool True if the path is absolute, false if relative
+*/
+
+public static function is_absolute_path($path)
+{
+return ((strpos($path,':')!==false)
+	||(strpos($path,'/')===0)
+	||(strpos($path,'\\')===0));
+}
+
+//---------------------------------
+/**
+* Build an absolute path from a given (absolute or relative) path
+*
+* If the input path is relative, it is combined with the current working
+* directory.
+*
+* @param string $path The path to make absolute
+* @param bool $separ True if the resulting path must contain a trailing separator
+* @return string The resulting absolute path
+*/
+
+public static function mk_absolute_path($path,$separ=false)
+{
+if (!self::is_absolute_path($path)) $path=self::combine_path(getcwd(),$path);
+return self::trailing_separ($path,$separ);
 }
 
 //---------
@@ -202,7 +258,7 @@ return @strftime('%d-%b-%Y %H:%M %z',$time);
 
 public static function http_base_url()
 {
-if (!self::is_web()) return '';
+if (!self::env_is_web()) return '';
 
 if (!isset($_SERVER['PATH_INFO'])) return $_SERVER['PHP_SELF'];
 
@@ -318,7 +374,7 @@ public static function display_slow_path()
 {
 if (getenv('PHK_DEBUG_SLOW_PATH')!==false)
 	{
-	$html=PHK_Util::is_web();
+	$html=PHK_Util::env_is_web();
 
 	if (isset($GLOBALS['__PHK_SLOW_PATH']))
 		$data="Slow path entered at:\n".$GLOBALS['__PHK_SLOW_PATH'];
@@ -409,7 +465,7 @@ if (file_put_contents($tmpf,$data)!=strlen($data))
 
 // Windows does not support renaming to an existing file (looses atomicity)
 
-if (PHK_Util::is_windows()) @unlink($path);
+if (PHK_Util::env_is_windows()) @unlink($path);
 
 if (!rename($tmpf,$path))
 	{

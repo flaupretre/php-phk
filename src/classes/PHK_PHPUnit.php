@@ -123,11 +123,11 @@ $runner= new PHPUnit_TextUI_TestRunner;
 $suite = $runner->getTest($arguments['test'],'',$arguments['syntaxCheck']);
 
 try	{
-	if (PHK_Util::is_web()) echo "<pre>\n";
+	if (PHK_Util::env_is_web()) echo "<pre>\n";
 
 	$result = $runner->doRun($suite,$arguments);
 
-	if (PHK_Util::is_web()) echo "</pre>\n";
+	if (PHK_Util::env_is_web()) echo "</pre>\n";
 	}
 catch (Exception $e)
 	{
@@ -135,7 +135,7 @@ catch (Exception $e)
 		. $e->getMessage());
 	}
 
-if (!PHK_Util::is_web())
+if (!PHK_Util::env_is_web())
 	{
 	if ($result->wasSuccessful()) exit(PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
 	else if($result->errorCount() > 0)
