@@ -99,6 +99,10 @@ protected $build_info=null;
 
 protected $flags;
 
+/** @var string|null	Map load ID (if a map is present) */
+
+protected $map_id;
+
 /** @var integer	Package path (URI when subpackage) */
 
 protected $path;
@@ -156,6 +160,17 @@ protected static $mime_table=array(
 
 //========== Class methods ===============
 
+// Methods to get read-only properties
+
+public function mnt() { return $this->mnt; }
+public function flags() { return $this->flags; }
+public function path() { return $this->path; }
+public function mtime() { return $this->mtime; }
+public function map_id() { return $this->map_id; }
+public function options() { return $this->options; }
+public function parent_mnt() { return $this->parent_mnt; }
+public function plugin() { return $this->plugin; }
+
 //-----
 
 public function __construct($parent_mnt,$mnt,$path,$flags,$mtime)
@@ -192,8 +207,10 @@ if (is_null($this->parent_mnt))
 
 if ($this->map_defined())
 	{
-	Automap::mount($this->automap_uri(),$this->base_uri(),$this->mnt);
+	$this->map_id=Automap::_load_internal($this->automap_uri(),$this->base_uri()
+		,$this->mnt,0);
 	}
+else $this->map_id=null;
 
 //-- Call the mount script - if the mount script wants to refuse the mount,
 //-- it throws an exception.
@@ -220,13 +237,6 @@ public function map_defined()
 if ($this->flags & PHK::F_CREATOR) return false;
 
 return $this->build_info('map_defined');
-}
-
-//---------
-
-public function mtime()
-{
-return $this->mtime;
 }
 
 //---------
@@ -299,28 +309,7 @@ if (!($this->flags & PHK::F_NO_MOUNT_SCRIPT))	// Call the umount script
 
 //-- Unload the automap
 
-if ($this->map_defined()) Automap::umount($this->mnt);
-}
-
-//-----
-
-public function mnt()
-{
-return $this->mnt;
-}
-
-//-----
-
-public function flags()
-{
-return $this->flags;
-}
-
-//-----
-
-public function path()
-{
-return $this->path;
+if (!is_null($this->map_id)) Automap::unload($this->map_id);
 }
 
 //-----
@@ -379,28 +368,6 @@ return PHK_Mgr::automap_uri($this->mnt);
 public function option($key)
 {
 return (isset($this->options[$key]) ? $this->options[$key] : null);
-}
-
-//-----
-/**
-* Returns the whole options array
-*
-* The 'OPTIONS' section is mandatory in a package.
-*
-* @return array
-*/
-
-
-public function options()
-{
-return $this->options;
-}
-
-//-----
-
-public function parent_mnt()
-{
-return $this->parent_mnt;
 }
 
 //---------------------------------
@@ -619,18 +586,6 @@ if ((!is_null($maxv=$this->option('max_php_version')))
 		throw new Exception("PHP maximum supported version: $maxv (current is ".PHP_VERSION.")");
 }
 
-//---------------------------------
-/**
-* Returns the associated plugin object if defined, or null if not
-*
-* @return plugin_object|null
-*/
-
-public function plugin()
-{
-return $this->plugin;
-}
-
 //-----
 /**
 * Is the PHK accelerator in use or not ?
@@ -717,7 +672,7 @@ public static function prolog($file,&$cmd,&$ret)
 {
 # Do we run in CLI mode ?
 
-if ($cli=(!PHK_Util::is_web()))
+if ($cli=(!PHK_Util::env_is_web()))
 	{
 	ini_set('display_errors',true);
 	ini_set('memory_limit','1024M'); // Only in CLI mode

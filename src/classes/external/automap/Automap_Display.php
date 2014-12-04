@@ -17,8 +17,10 @@
 //
 //=============================================================================
 /**
-* This class contains auxiliary runtime features, not included in the
-* PECL extension.
+* This class contains the methods we want to include in the PHK PHP runtime, but
+* not in the Automap PECL extension.
+*
+* It is included in the PHK PHP runtime. So, it may reference the PHK code
 *
 * @copyright Francois Laupretre <automap@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
@@ -27,93 +29,50 @@
 */
 //===========================================================================
 
-if (!class_exists('Automap_Tools',false)) 
+if (!class_exists('Automap_Display',false)) 
 {
 //------------------------------------------
 /**
-* This class is mainly used by Automap_Cmd for features not to be included
-* in the PECL extension. Some of these features usr the PHK code.
-*
 * @package Automap
 */
 
-class Automap_Tools // Static only
+class Automap_Display // Static only
 {
 
-//---
-// Returns the number of errors found
+//---------
+// Display the content of a map
 
-public static function check(Automap $map)
+public static function show($map,$format=null,$subfile_to_url_function=null)
 {
-$checked_packages=array();
+if (is_null($format)||($format='auto'))
+	$format=(PHK_Util::env_is_web() ? 'html' : 'text');
 
-$c=0;
-foreach($map->symbols() as $s)
+switch($format)
 	{
-	try
-		{
-		switch($s['ptype'])
-			{
-			case Automap::F_EXTENSION:
-				// Do nothing
-				break;
+	case 'text':
+		self::show_text($map,$subfile_to_url_function);
+		break;
 
-			case Automap::F_SCRIPT:
-				$path=$s['path'];
-				if (!is_file($path)) throw new Exception($path.': File not found');
-				break;
+	case 'html':
+		self::show_text($map,$subfile_to_url_function);
+		break;
 
-			case Automap::F_PACKAGE:
-				$path=$s['path'];
-				if (!is_file($path)) throw new Exception($path.': File not found');
-				if (!PHK::file_is_package($path))
-					throw new Exception($path.': File is not a PHK package');
-				if (!isset($checked_packages[$path]))
-					{
-					// Suppress notice msg on multiple HALT_COMPILER definitions
-					error_reporting(($errlevel=error_reporting()) & ~E_NOTICE);
-					$mnt=PHK_Mgr::mount($path,PHK::F_NO_MOUNT_SCRIPT);
-					error_reporting($errlevel);
-					self::check(Automap::instance($mnt));
-					$checked_packages[$path]=true;
-					}
-				break;
-
-			default:
-				throw new Exception('<'.$s['ptype'].'>: Unknown target type');
-			}
-		}
-	catch (Exception $e)
-		{
-		echo 'Error ('.Automap::type_to_string($s['stype']).' '.$s['symbol']
-			.'): '.$e->getMessage()."\n";
-		$c++;
-		}
+	default:
+		throw new Exception("Unknown display format ($format)");
 	}
-return $c;
-}
-
-//---------
-// Display the content of a map (text or HTML depending on the current context)
-
-public static function show($map,$subfile_to_url_function=null)
-{
-if ($html=PHK_Util::is_web()) self::show_html($map,$subfile_to_url_function);
-else self::show_text($map,$subfile_to_url_function);
 }
 
 //---------
 
-public static function show_text($map,$subfile_to_url_function=null)
+private static function show_text($map,$subfile_to_url_function=null)
 {
 echo "\n* Global information :\n\n";
 echo '	Map version : '.$map->version()."\n";
 echo '	Min reader version : '.$map->min_version()."\n";
 echo '	Symbol count : '.$map->symbol_count()."\n";
 
-//As long as options are not used, don't display an empty array
-//echo "\n* Options :\n\n";
-//print_r($map->options());
+echo "\n* Options :\n\n";
+print_r($map->options());
 
 echo "\n* Symbols :\n\n";
 
@@ -165,9 +124,8 @@ echo '<tr><td>Symbol count:&nbsp;</td><td>'
 	.$map->symbol_count().'</td></tr>';
 echo '</table>';
 
-//As long as options are not used, don't display an empty array
-//echo "<h2>Options</h2>";
-//echo '<pre>'.htmlspecialchars(print_r($map->options(),true)).'</pre>';
+echo "<h2>Options</h2>";
+echo '<pre>'.htmlspecialchars(print_r($map->options(),true)).'</pre>';
 
 echo "<h2>Symbols</h2>";
 
@@ -189,24 +147,8 @@ echo '</table>';
 }
 
 //---
-
-public static function export($map,$path=null)
-{
-$file=(is_null($path) ? "php://stdout" : $path);
-$fp=fopen($file,'w');
-if (!$fp) throw new Exception("$file: Cannot open for writing");
-
-foreach($map->symbols() as $s)
-	{
-	fwrite($fp,$s['stype'].'|'.$s['symbol'].'|'.$s['ptype'].'|'.$s['rpath']."\n");
-	}
-
-fclose($fp);
-}
-
-//---
-} // End of class Automap_Tools
+} // End of class Automap_Display
 //===========================================================================
-} // End of class_exists('Automap_Tools')
+} // End of class_exists('Automap_Display')
 //===========================================================================
 ?>

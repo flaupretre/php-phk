@@ -103,7 +103,7 @@ error_reporting($errlevel);
 
 public function envinfo()
 {
-$html=PHK_Util::is_web();
+$html=PHK_Util::env_is_web();
 
 //-- Accelerator
 
@@ -162,7 +162,7 @@ $this->proxy()->showfiles();
 public function showmap($subfile_to_url_function=null)
 {
 if ($this->map_defined())
-	Automap_Tools::show(Automap::instance($this->mnt),$subfile_to_url_function);
+	Automap_Display::show(Automap::instance($this->map_id),null,$subfile_to_url_function);
 else echo "Automap not defined\n";
 }
 
@@ -368,7 +368,7 @@ echo $html ? '</table>' : '';
 
 public function info()
 {
-$html=PHK_Util::is_web();
+$html=PHK_Util::env_is_web();
 
 if ($html && (!is_null($info_script=$this->option('info_script'))))
 	{ require($this->uri($info_script)); }
@@ -399,7 +399,7 @@ else
 
 public function techinfo()
 {
-$html=PHK_Util::is_web();
+$html=PHK_Util::env_is_web();
 
 self::info_section($html,'Package');
 
@@ -512,7 +512,7 @@ $this->proxy()->stree()->display(false);
 
 public function auto_file($prefix)
 {
-$html=PHK_Util::is_web();
+$html=PHK_Util::env_is_web();
 $txt_suffixes=array('.txt','');
 $suffixes=($html ? array('.htm','.html') : $txt_suffixes);
 
@@ -560,7 +560,7 @@ if (!is_null($prefix)) $data=$this->auto_file($prefix);
 if (is_null($data))
 	{
 	$data='<No '.$name.' file>'."\n";
-	if (PHK_Util::is_web()) $data=htmlspecialchars($data);
+	if (PHK_Util::env_is_web()) $data=htmlspecialchars($data);
 	}
 
 return $data;
@@ -647,7 +647,6 @@ echo "	- @help             Display package help\n";
 echo "	- @license          Display license\n";
 echo "	- @get <path>       Display a subfile content\n";
 echo "	- @showmap          Display automap, if present\n";
-echo "	- @automap          Run automap commands\n";
 echo "	- @showfiles        List subfiles\n";
 echo "	- @option <name>    Display a package option\n";
 echo "	- @set_interp <string>  Set the first line of the PHK to '#!<string>'\n";
@@ -686,10 +685,6 @@ switch($command)
 
 	case 'test':
 		$this->test();
-		break;
-
-	case 'automap':
-		Automap_Cmd::run($args);
 		break;
 
 	case 'showmap':

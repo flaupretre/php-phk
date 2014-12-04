@@ -27,6 +27,7 @@
 if (!class_exists('PHK_Creator',false))
 {
 // <PHK:ignore>
+require(dirname(__FILE__).'/external/phool/PHO_Display.php');
 require(dirname(__FILE__).'/external/automap/Automap_Creator.php');
 require(dirname(__FILE__).'/PHK_Proxy.php');
 require(dirname(__FILE__).'/PHK_Base.php');
@@ -66,25 +67,6 @@ parent::__construct(null,$mnt,$path,$flags,time());
 
 $this->options=array();
 $this->build_info=array('build_timestamp' => time());
-}
-
-//-----
-// Read a PHK file and import everything
-// We don't read the Automap map as it is rebuilt at finalize() time.
-
-public function import_phk($source_path,$flags=0)
-{
-$flags |= self::F_NO_MOUNT_SCRIPT | self::F_PRELOAD_CACHE;
-
-$source_phk=PHK_Mgr::instance($source_mnt=PHK_Mgr::mount($source_path,$flags));
-$source_phk->proxy()->cache_data();
-
-$this->proxy()->set_stree($source_phk->proxy()->stree);
-$this->proxy()->set_ftree($source_phk->proxy()->ftree);
-parent::set_options($source_phk->options,null);
-$this->interp=$source_phk->proxy()->interp();
-
-PHK_Mgr::umount($source_mnt);
 }
 
 //---------
@@ -161,8 +143,7 @@ public function build_php_code($dir)
 $this->code='';
 
 $this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Cmd.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Tools.php');
+$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Display.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_Util.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_File.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_Cache.php');
@@ -330,39 +311,6 @@ $buf=PHK_Proxy::fix_crc(PHK_Proxy::interp_block($this->interp)
 
 PHK_Util::trace('Writing PHK file to '.$path);
 PHK_Util::atomic_write($path,$buf);
-}
-
-//---------
-// Upgrade a PHK package to the current PHK format
-// Suppressed in v 1.3.0 - Undocumented - too dangerous
-
-public function upgrade($phk_file_in,$phk_file_out)
-{
-//-- First, refuse upgrade if input file is signed
-
-$phk=PHK_Mgr::instance
-	($mnt_in=PHK_Mgr::mount($phk_file_in,self::F_NO_MOUNT_SCRIPT));
-
-if ($phk->signed())
-	throw new Exception('Cannot upgrade a signed file. Please unsign first.');
-
-PHK_Mgr::umount($mnt_in);
-
-//-- Create empty output object
-
-$phk_out=PHK_Mgr::instance
-	($mnt_out=PHK_Mgr::mount($phk_file_out,PHK::F_CREATOR));
-
-//-- Get everything from the source
-
-echo 'INFO: Upgrading from V '.$phk->version()
-	.' to V '.PHK_Creator::VERSION."\n";
-
-$phk_out->get_phk($phk_file_in);
-
-//-- Dump to file
-
-$phk_out->dump();
 }
 
 //---------
