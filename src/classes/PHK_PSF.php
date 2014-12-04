@@ -237,7 +237,7 @@ while (!is_null($line=$this->get_line()))
 			$mnt_var=$this->get_word($line);
 			$file=$this->get_word($line);
 			$mnt=PHK_Mgr::mount($file,PHK::F_NO_MOUNT_SCRIPT | PHK::F_CHECK_CRC);
-			$this->set_variable($mnt_var,$mnt);
+			$this->set_variable($mnt_var,'phk://'.$mnt);
 			break;
 
 		case 'remove':	// remove <path> [<path>...]
@@ -245,10 +245,6 @@ while (!is_null($line=$this->get_line()))
 				{
 				$phk->ftree()->remove($path);
 				}
-			break;
-
-		case 'import':	// import <phk-path>
-			$phk->import_phk($this->get_word($line));
 			break;
 
 		case 'set':
