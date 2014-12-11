@@ -45,8 +45,8 @@ if (!class_exists('Automap_Creator',false))
 
 class Automap_Creator
 {
-const VERSION='2.2.0';		// Version set into the maps I produce
-const MIN_VERSION='2.2.0'; // Minimum version of runtime to understand the maps I produce
+const VERSION='3.0.0';		// Version set into the maps I produce
+const MIN_VERSION='3.0.0'; // Minimum version of runtime to understand the maps I produce
 
 //---------
 
@@ -78,6 +78,15 @@ public function set_option($option,$value)
 PHO_Display::trace("Setting option $option=$value");
 
 $this->options[$option]=$value;
+}
+
+//---------
+
+public function unset_option($option)
+{
+PHO_Display::trace("Unsetting option $option");
+
+if (isset($this->options[$option])) unset($this->options[$option]);
 }
 
 //---------
@@ -276,7 +285,7 @@ return $ns.(($ns==='') ? '' : '\\').$symbol;
 
 private static function normalize_rpath($rpath)
 {
-return trim(str_replace('\\','/',$rpath),'/\\');
+return rtrim(str_replace('\\','/',$rpath),'/\\');
 }
 
 //---------

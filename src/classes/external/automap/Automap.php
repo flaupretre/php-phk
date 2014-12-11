@@ -40,7 +40,7 @@ if (!class_exists('Automap',false))
 
 class Automap
 {
-const VERSION='2.2.0';
+const VERSION='3.0.0';
 const MIN_MAP_VERSION='2.0.0'; // Cannot load maps older than this version
 
 const MAGIC="AUTOMAP  M\024\x8\6\3";// Magic value for map files (offset 0)
@@ -204,6 +204,13 @@ self::$failure_handlers[]=$callable;
 
 //--------
 
+private static function call_failure_handlers($type,$symbol)
+{
+foreach (self::$failure_handlers as $callable) $callable($type,$symbol);
+}
+
+//--------
+
 public static function register_success_handler($callable)
 {
 self::$success_handlers[]=$callable;
@@ -213,7 +220,7 @@ self::$success_handlers[]=$callable;
 
 // Combines a type and a symbol in a 'key'.
 // Note: Extension names are case insensitive
-// Unpublished. External use limited to Automap_Creator
+// Undocumented. External use limited to Automap_Creator
 
 public static function key($type,$symbol)
 {
@@ -318,28 +325,20 @@ return array_keys(self::$maps);
 
 //---------
 /**
-* Low-level map load
-*
-* This function is reserved for internal operations and should never be called
-* from any user code.
-*
-* Loads a map file and returns its load ID, allowing to specify an UPID (Unique
-* Path IDentifier) and a base_path.
-* This information is only used by the PECL extension when loading packages.
+* Loads a map file and returns its ID.
 *
 * @param string $path The path of the map file to load
-* @param string|null $base_path Base path to use (absolute)
-* @param string|null $upid A unique identifier for the map file path (ignored)
 * @param integer $flags Load flags
-* @return string map ID
+* @param string $_bp Reserved for internal operations. Never set this param.
+* @return string the map ID
 */
 
-public static function _load_internal($path,$base_path,$upid,$flags)
+public static function load($path,$flags=0,$_bp=null)
 {
 $id=self::$load_index++;
 try
 {
-$map=new self($path,$id,$base_path,$flags);
+$map=new self($path,$id,$_bp,$flags);
 }
 catch (Exception $e)
 	{
@@ -348,23 +347,6 @@ catch (Exception $e)
 
 self::$maps[$id]=$map;
 return $id;
-}
-
-//---------
-/**
-* Loads a map file and returns its ID.
-*
-* A map can be loaded more than once, which will return each time the same ID.
-* A load/unload count is maintained.
-*
-* @param string $path The path of the map file to load
-* @param integer $flags Load flags
-* @return string the map ID
-*/
-
-public static function load($path,$flags=0)
-{
-return self::_load_internal($path,null,null,$flags);
 }
 
 //---------------------------------
@@ -445,11 +427,11 @@ foreach(array_reverse(self::$maps) as $map)
 		return true;
 	}
 
-foreach (self::$failure_handlers as $callable) $callable($type,$symbol);
+// Failure
 
+self::call_failure_handlers($type,$symbol);
 if ($exception) throw new Exception('Automap: Unknown '
 	.self::type_to_string($type).': '.$symbol);
-
 return false;
 }
 
@@ -540,7 +522,7 @@ if (strlen($this->version)==0)
 	throw new Exception('Invalid empty map version');
 if (version_compare($this->version,self::MIN_MAP_VERSION) < 0)
 	throw new Exception('Cannot understand this map. Format too old.');
-$map_major_version=(int)($this->version{0});
+$map_major_version=$this->version{0};
 
 //-- Check file size
 
@@ -561,7 +543,7 @@ if (!is_array($bsymbols=$buf['map']))
 	throw new Exception('Symbol table should contain an array');
 
 //-- Compute base path
-// When set, the base_path arg is an absolute path.
+// When set, the base_path arg is an absolute path (with trailing separ)
 
 if (!is_null($base_path)) $this->base_path=$base_path;
 else $this->base_path=self::combine_path(dirname($this->path)
@@ -575,7 +557,8 @@ foreach($bsymbols as $bval)
 	$a=array();
 	switch($map_major_version)
 		{
-		case 2:
+		case '2':
+		case '3':
 			if (strlen($bval)<5) throw new Exception("Invalid value string: <$bval>");
 			$a['T']=$bval{0};
 			$a['t']=$bval{1};
@@ -584,6 +567,9 @@ foreach($bsymbols as $bval)
 			$a['n']=$ta[0];
 			$a['p']=$ta[1];
 			break;
+
+		default:
+			throw new Exception("Cannot understand this map version ($map_major_version)");
 		}
 	$key=self::key($a['T'],$a['n']);
 	$this->symbols[$key]=$a;
@@ -597,10 +583,11 @@ catch (Exception $e)
 }
 
 //-----
+// We need to use combine_path() because the registered path can be absolute
 
 private function abs_path($entry)
 {
-return $this->base_path.$entry['p'];
+return self::combine_path($this->base_path,$entry['p']);
 }
 
 //-----
@@ -629,7 +616,6 @@ $this->valid=false;
 // These utility functions return 'read-only' properties
 
 public function path() { $this->check_valid(); return $this->path; }
-public function base_path() { $this->check_valid(); return $this->base_path; }
 public function id() { $this->check_valid(); return $this->id; }
 public function flags() { $this->check_valid(); return $this->flags; }
 public function options() { $this->check_valid(); return $this->options; }
@@ -738,10 +724,13 @@ switch($ftype)
 		// to PHP bug #39903 ('__COMPILER_HALT_OFFSET__ already defined')
 
 		error_reporting(($errlevel=error_reporting()) & ~E_NOTICE);
-		$id=require($path);
+		$mnt=require($path);
 		error_reporting($errlevel);
 		// Don't call success handlers for a package (recursion)
+		$pkg=PHK_Mgr::instance($mnt);
+		$id=$pkg->automap_id();
 		self::instance($id)->resolve_key($key);
+		// Don't umount the package
 		break;
 
 	default:
