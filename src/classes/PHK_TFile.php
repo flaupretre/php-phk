@@ -164,6 +164,7 @@ return $this->dc->get_needed_extensions($phk,$item_lister);	// Now, ask DC
 public function export(PHK_Creator $phk,PHK_DataStacker $stacker,$map)
 {
 $path=$this->path;
+$rpath=substr($path,1); // Remove leading '/';
 
 PHK_Util::trace('Processing '.$path);
 
@@ -186,7 +187,7 @@ if (!is_null($map)) // This is a real file
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
 			PHK_Util::trace("Registering Automap symbols from PHK package");
-			$map->register_phk($phk->uri($path),$path);
+			$map->register_phk($phk->uri($path),$rpath);
 			}
 		}
 	elseif ($phk->is_php_source_path($path))
@@ -195,7 +196,7 @@ if (!is_null($map)) // This is a real file
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
 			PHK_Util::trace("	Registering Automap symbols");
-			$map->register_script($phk->uri($path),$path);
+			$map->register_script($phk->uri($path),$rpath);
 			}
 
 		$this->process_php_script();	//--- Script pre-processor
