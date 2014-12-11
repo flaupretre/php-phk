@@ -99,9 +99,9 @@ protected $build_info=null;
 
 protected $flags;
 
-/** @var string|null	Map load ID (if a map is present) */
+/** @var string|null	Automap load ID (if a map is present) */
 
-protected $map_id;
+protected $automap_id;
 
 /** @var integer	Package path (URI when subpackage) */
 
@@ -166,7 +166,7 @@ public function mnt() { return $this->mnt; }
 public function flags() { return $this->flags; }
 public function path() { return $this->path; }
 public function mtime() { return $this->mtime; }
-public function map_id() { return $this->map_id; }
+public function automap_id() { return $this->automap_id; }
 public function options() { return $this->options; }
 public function parent_mnt() { return $this->parent_mnt; }
 public function plugin() { return $this->plugin; }
@@ -207,10 +207,9 @@ if (is_null($this->parent_mnt))
 
 if ($this->map_defined())
 	{
-	$this->map_id=Automap::_load_internal($this->automap_uri(),$this->base_uri()
-		,$this->mnt,0);
+	$this->automap_id=Automap::load($this->automap_uri(),0,$this->base_uri());
 	}
-else $this->map_id=null;
+else $this->automap_id=0;
 
 //-- Call the mount script - if the mount script wants to refuse the mount,
 //-- it throws an exception.
@@ -309,7 +308,7 @@ if (!($this->flags & PHK::F_NO_MOUNT_SCRIPT))	// Call the umount script
 
 //-- Unload the automap
 
-if (!is_null($this->map_id)) Automap::unload($this->map_id);
+if ($this->automap_id) Automap::unload($this->automap_id);
 }
 
 //-----
