@@ -207,7 +207,7 @@ if (is_null($this->parent_mnt))
 
 if ($this->map_defined())
 	{
-	$this->automap_id=Automap::load($this->automap_uri(),0,$this->base_uri());
+	$this->automap_id=Automap::load($this->automap_uri(),Automap::NO_CRC_CHECK,$this->base_uri());
 	}
 else $this->automap_id=0;
 
