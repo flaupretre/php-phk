@@ -242,7 +242,7 @@ return substr($buffer,self::CRC_OFFSET,8);
 
 private static function compute_crc($buffer)
 {
-return sprintf('%08x',crc32(self::insert_crc($buffer,'00000000')));
+return hash('crc32',self::insert_crc($buffer,'00000000'));
 }
 
 //---------------------------------
