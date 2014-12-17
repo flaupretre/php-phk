@@ -1,0 +1,9 @@
+
+merge / $(SOURCE_DIR)
+
+%options
+
+cli_run_script: /mini_cli.php # This is the entry point in CLI mode
+web_run_script: /mini_web.php # This is the entry point in web mode
+include_script: /mini_inc.php
+

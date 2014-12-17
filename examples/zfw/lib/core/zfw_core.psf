@@ -1,0 +1,61 @@
+# Package Specification file for the Zend Framwork (library)
+#
+# Before building a package from this file, the SOURCE_DIR environment variable
+# must be set to the directory where the Zend Framework has been installed.
+# Alternate way: uncomment the 'set SOURCE_DIR ...' line below.
+#
+#==============================================================================
+
+set PACK core
+
+set FLAGS -strip=true
+#set FLAGS   # No strip when debugging
+
+#-- Files from the filtered tree (shrinked)
+
+merge $(FLAGS) / $(PSF_DIR)/tmp_source $(PSF_DIR)/tmp_modified
+
+#-- The tests (faster and smaller if we compress only once here)
+
+add -autoload=false -compress=gzip /tests/& $(PSF_DIR)/tests/test.phk
+
+#-- The license
+
+add -compress=gzip /doc/& $(SOURCE_DIR)/LICENSE.txt
+
+#-- A dummy help file - temporary
+
+add -compress=gzip /doc/& $(SOURCE_DIR)/README.txt
+
+#-- The 'info' page
+
+add -compress=gzip /doc/info.php $(PSF_DIR)/info_$(PACK).htm
+
+#-- The package's icon
+
+add /zfw.png $(PSF_DIR)/zfw_$(PACK).png
+
+#-- The options
+
+%options
+<?php
+
+return array(
+	'name' => 'Zend Framework (Core)',
+	'version' => '1.0.1',
+	'release' => '1',
+	'license' => 'New BSD License <http://framework.zend.com/license>',
+	'copyright' => 'Copyright (c) 2007, Zend Technologies USA, Inc.',
+	'url' => 'http://framework.zend.com',
+	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+	'icon' => '/zfw.png',
+	'license_prefix' => '/doc/LICENSE',
+	'help_prefix' => '/doc/README',
+	'info_script' => '/doc/info.php',
+//	'test_script' => '/tests/test.phk',
+	'phpunit_test_package' => '/tests/test.phk',
+	'required_extensions' => 'iconv',
+//	'plain_prolog' => true
+	);
+
+#----------------

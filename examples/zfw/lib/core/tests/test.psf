@@ -1,0 +1,34 @@
+
+set FLAGS -strip=true
+#set FLAGS # Debug
+
+#-- Files from the filtered tree
+
+merge $(FLAGS) / $(PSF_DIR)/tmp_source $(PSF_DIR)/tmp_modified
+
+# If we strip this file, the test fails
+
+modify -strip=false /Zend/XmlRpc/ServerTest.php
+
+# Include the PHPUnit package as a level 2 subpackage
+
+add /& $(PSF_DIR)/../../../../PHPUnit/PHPUnit.phk
+
+#-- The options
+
+%options
+<?php
+
+return array(
+	'name' => 'Tests',
+	'license' => 'New BSD License <http://framework.zend.com/license>',
+	'copyright' => 'Copyright (c) 2007, Zend Technologies USA, Inc.',
+	'url' => 'http://framework.zend.com',
+	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+//	'lib_run_script' => '/AllTests.php',
+//	'auto_umount' => true, // Free mem when tests have run
+//	'no_cache' => true,
+	'required_extensions' => array('dom','bcmath')
+	);
+
+#----------------

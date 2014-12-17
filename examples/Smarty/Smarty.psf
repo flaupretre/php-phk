@@ -1,0 +1,60 @@
+# Package Specification file for Smarty
+#
+#==============================================================================
+
+set FLAGS -strip=true
+#set FLAGS 
+
+#-- Files from the filtered tree
+
+merge $(FLAGS) /libs $(PSF_DIR)/tmp_source
+merge $(FLAGS) / $(PSF_DIR)/tmp_modified
+
+#-- The tests (faster and smaller if we compress only once here)
+
+#add -autoload=false -compress=gzip /tests/& $(PSF_DIR)/tests/test.phk
+
+#-- The license
+#-- The package's icon
+
+add -compress=gzip /& $(PSF_DIR)/smarty-logo-orange.gif
+add -compress=gzip /license.txt $(SOURCE_DIR)/COPYING.lib
+
+#-- The additional tabs
+
+add -compress=gzip /tabs/& \
+	$(SOURCE_DIR)/ChangeLog \
+	$(SOURCE_DIR)/FAQ \
+	$(SOURCE_DIR)/README \
+	$(SOURCE_DIR)/RELEASE_NOTES \
+	$(SOURCE_DIR)/TODO
+
+#-- The options
+
+%options
+<?php
+
+return array(
+	'name' => 'Smarty',
+	'version' => '2.6.16',
+	'release' => '3',
+	'license' => 'LGPL <http://www.gnu.org/copyleft/lesser.html#SEC1>',
+	'copyright' => 'New Digital Group, Inc. <http://smarty.php.net/misc/SmartyTrademark.pdf>',
+	'url' => 'http://smarty.php.net',
+	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+	'icon' => '/smarty-logo-orange.gif',
+	'icon_bgcolor' => '#F0C040',
+	'icon_width' => 250,
+	'web_run_script' => '/libs/Smarty.class.php',
+	'cli_run_script' => '/libs/Smarty.class.php',
+	'license_prefix' => '/license',
+	'help_prefix' => '/tabs/README',
+	'tabs' => array(
+		'ChangeLog' => '/auto_file/tabs/ChangeLog',
+		'FAQ' => '/auto_file/tabs/FAQ',
+		'Release notes' => '/auto_file/tabs/RELEASE_NOTES',
+		'Todo' => '/auto_file/tabs/TODO'),
+//	'test_script' => '/tests/test.phk'
+	);
+
+#----------------
