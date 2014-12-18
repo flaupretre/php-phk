@@ -147,6 +147,8 @@ protected static $mime_table=array(
 	'css'  => 'text/css',
 	'php'  => 'application/x-httpd-php',
 	'phk'  => 'application/x-httpd-php',
+	'inc'  => 'application/x-httpd-php',
+	'hh'   => 'application/x-httpd-php',
 	'pdf'  => 'application/pdf',
 	'js'   => 'application/x-javascript',
 	'swf'  => 'application/x-shockwave-flash',
@@ -725,7 +727,7 @@ if ($cli)
 
 	if (!is_null($run_path=$phk->option('cli_run_script')))
 		{
-		$cmd="require('".$phk->uri($run_path)."');";
+		$cmd="\$_phk_ret=require('".$phk->uri($run_path)."');";
 		}
 	return;
 	}
