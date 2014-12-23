@@ -1,20 +1,20 @@
 
 #-- Documentation files
 
-merge -strip=true -compress=gzip / $(TMP_DIR)
+merge -strip=true -compress=gzip / $(1)
 
-#-- The icon
+#-- The icon and license files
 
-add /etc/& $(PSF_DIR)/src/etc/phk_logo.png
-add /etc/& $(PSF_DIR)/src/etc/license.htm
-add /etc/& $(PSF_DIR)/src/etc/license.txt
+add /etc/& $(PSF_DIR)/../src/etc/phk_logo.png
+add /etc/& $(PSF_DIR)/../src/etc/license.htm
+add /etc/& $(PSF_DIR)/../src/etc/license.txt
 
 #-- The options
 %options
 
 name                : PHK API Cross Reference
-version             : '2.1'
-release             : 0
+version             : '@SOFTWARE_VERSION@'
+release             : '@SOFTWARE_RELEASE@'
 icon                : /etc/phk_logo.png
 crc_check           : true
 license             : Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
@@ -23,7 +23,6 @@ author              : F. Laupretre <mailto:phk@tekwire.net>
 url                 : http://phk.tekwire.net
 packager            : F. Laupretre <mailto:phk@tekwire.net>
 web_run_script      : /index.html
-help_prefix         : /etc/help
 license_prefix      : /etc/license
 web_access          : /  #-- Open access
 web_main_redirect   : true
