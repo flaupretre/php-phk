@@ -17,10 +17,23 @@
 //
 //=============================================================================
 
+/**
+* This is the package prolog, inserted in every package. It is the first code
+* to run when a package file is executed or included.
+*
+* This script is as short and fast as possible. It must be kept to the bare
+* minimum and transfer control as soon as possible.
+*
+* Global variables used here must be prefixed with an underscore, to
+* minimize the risk of conflicts.
+*/
+
 if (!class_exists('PHK',0))
 	{
-	//-- When extension is not present, the first package loads the PHP
+	//-- When the PECL extension is not active, the first package loads the PHP
 	//-- ('slow') runtime code.
+	//-- If the PHK class exists, it can have been defined by the PECL extension
+	//-- or by a previously-loaded package.
 
 	$_phk_fp=fopen(__FILE__,'rb');
 	$_phk_buf=fread($_phk_fp,241);
@@ -56,7 +69,7 @@ catch (Exception $e)
 	trigger_error($e->getMessage(),E_USER_ERROR);
 	}
 
-eval($_phk_cmd);
+if (!is_null($_phk_cmd)) eval($_phk_cmd);
 
 //var_dump($_phk_cmd);
 //var_dump($_phk_ret);

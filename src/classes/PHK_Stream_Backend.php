@@ -118,7 +118,7 @@ catch (Exception $e)
 
 //---------------------------------
 // Segfault in extension if this function throws an exception. As long as
-// this bug is not corrected, trap the exception before returning to PHK_Stream
+// this bug is not fixed, trap the exception before returning to PHK_Stream
 
 public static function get_file_data($mnt,$command,$params,$path,&$cache)
 {
