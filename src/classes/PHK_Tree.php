@@ -28,15 +28,6 @@
 
 if (!class_exists('PHK_Tree',false))
 {
-// <PLAIN_FILE> //---------------
-require(dirname(__FILE__).'/PHK.php');
-require(dirname(__FILE__).'/PHK_DC.php');
-require(dirname(__FILE__).'/PHK_DataStacker.php');
-require(dirname(__FILE__).'/PHK_TNode.php');
-require(dirname(__FILE__).'/PHK_TDir.php');
-require(dirname(__FILE__).'/PHK_TFile.php');
-// </PLAIN_FILE> //---------------
-
 //============================================================================
 
 class PHK_Tree
@@ -310,57 +301,35 @@ return array(serialize($edata),$stacker->data);
 }
 
 //---
+// target: absolute target path. '&' is replaced by source basename
+// sapath: Absolute source path
+// modifiers: array received from PHK_PSF_Cmd_Options
 
-public function add_file_tree($target_path,$source,$modifiers)
+public function merge_into_file_tree($target,$sapath,$modifiers)
 {
-$target_path=self::realpath($target_path);
-$this->remove($target_path);
+if (!file_exists($sapath))
+	throw new Exception($sapath.': Path not found');
 
-// Don't use filetype() here because we want to follow symbolic links
+$target=self::realpath(str_replace('&',basename($sapath),$target));
 
-if (!file_exists($source))
+switch($type=filetype($sapath))
 	{
-	echo "$source : File does not exist - Ignored";
-	}
-elseif (is_file($source))
-	{
-	$this->mkfile($target_path,PHK_Util::readfile($source),$modifiers);
-	}
-elseif (is_dir($source))
-	{
-	$node=$this->mkdir($target_path,$modifiers);
+	case 'file':
+		if ($target=='') throw new Exception('Cannot replace root dir with a file');
+		$this->remove($target);
+		$this->mkfile($target,PHK_Util::readfile($sapath),$modifiers);
+		break;
 
-	foreach(PHK_Util::scandir($source) as $subname)
-		$this->add_file_tree($node->subpath($subname)
-			,$source.DIRECTORY_SEPARATOR.$subname,$modifiers);
-	return;
-	}
-else echo "$source : Unsupported file type (".filetype($source).") - Ignored\n";
-}
+	case 'dir':
+		foreach(PHK_Util::scandir($sapath) as $subname)
+			{
+			$this->merge_into_file_tree($target.'/'.$subname,$sapath.'/'.$subname
+				,$modifiers);
+			}
+		break;
 
-//---
-
-public function merge_file_tree($target_dir,$source_dir,$modifiers)
-{
-if (!is_dir($source_dir))
-	throw new Exception($source_dir.': Should be an existing directory');
-
-$target_dir=self::realpath($target_dir);
-$tnode=$this->mkdir($target_dir,$modifiers);
-
-foreach(PHK_Util::scandir($source_dir) as $subname)
-	{
-	$source=$source_dir.DIRECTORY_SEPARATOR.$subname;
-	$target=$tnode->subpath($subname);
-	if (is_file($source))
-		{
-		$this->mkfile($target,PHK_Util::readfile($source),$modifiers);
-		}
-	elseif (is_dir($source))
-		{
-		$this->merge_file_tree($target,$source,$modifiers);
-		}
-	else echo "$source : Unsupported file type (".filetype($source).") - Ignored\n";
+	default:
+		PHO_Display::info("$sapath : Unsupported file type ($type) - Ignored");
 	}
 }
 

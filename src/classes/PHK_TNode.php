@@ -137,26 +137,42 @@ private static function compute_flags(array $modifiers,$flags=0)
 {
 foreach($modifiers as $name => $value)
 	{
-	$name=strtolower($name);
-	if ($name==='autoload')
+	if (is_null($value)) continue;
+	switch ($name)
 		{
-		if ($value==='true') $flags &= ~self::TN_NO_AUTOLOAD;
-		else $flags |= self::TN_NO_AUTOLOAD;
+			case 'autoload':
+				if ($value) $flags &= ~self::TN_NO_AUTOLOAD;
+				else $flags |= self::TN_NO_AUTOLOAD;
+				break;
+
+			case 'strip':
+				if ($value) $flags |= self::TN_STRIP_SOURCE;
+				else $flags &= ~self::TN_STRIP_SOURCE;
+				break;
+
+			case 'compression':
+				switch($value)
+					{
+					case 'no':
+					case 'none':
+						$c=PHK_DC::COMPRESS_NONE;
+						break;
+					case 'gz':
+					case 'gzip':
+						$c=PHK_DC::COMPRESS_GZIP;
+						break;
+					case 'bz':
+					case 'bz2':
+					case 'bzip2':
+						$c=PHK_DC::COMPRESS_BZIP2;
+						break;
+					default:
+						throw new Exception($value.': Unknown compression method');
+					}
+				$flags = ($flags & ~PHK_DC::COMPRESS_TYPE) | $c;
+				break;
+		// Ignore other modifiers
 		}
-	elseif ($name==='strip')
-		{
-		if ($value==='true') $flags |= self::TN_STRIP_SOURCE;
-		else $flags &= ~self::TN_STRIP_SOURCE;
-		}
-	elseif ($name==='compress')
-		{
-		if ($value=='none') $c=PHK_DC::COMPRESS_NONE;
-		elseif ($value=='gzip') $c=PHK_DC::COMPRESS_GZIP;
-		elseif ($value=='bzip2') $c=PHK_DC::COMPRESS_BZIP2;
-		else throw new Exception($value.': Unknown compression method');
-		$flags = ($flags & ~PHK_DC::COMPRESS_TYPE) | $c;
-		}
-	else throw new Exception($name.': Unknown modifier');
 	}
 return $flags;
 }
