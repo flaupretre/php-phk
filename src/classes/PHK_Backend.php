@@ -458,11 +458,9 @@ self::end_info_table($html);
 self::info_section($html,'Module versions');
 
 self::start_info_table($html);
-self::show_info_line($html,'PHK_Creator',$this->build_info('PHK_Creator_version'));
-self::show_info_line($html,'PHK min version',$this->build_info('PHK_min_version'));
-self::show_info_line($html,'Automap_Creator class',$this->build_info('Automap_creator_version'));
-self::show_info_line($html,'Automap min version',$this->build_info('Automap_min_version'));
-self::show_info_line($html,'PHK_PSF class',$this->build_info('PHK_PSF_version'));
+self::show_info_line($html,'PHK Manager',$this->build_info('phkmgr_version'));
+self::show_info_line($html,'Automap Creator',$this->build_info('automap_creator_version'));
+self::show_info_line($html,'Automap min version',$this->build_info('automap_min_version'));
 self::end_info_table($html);
 
 self::info_section($html,'Sub-packages');
