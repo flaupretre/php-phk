@@ -26,15 +26,6 @@
 
 if (!class_exists('PHK_Creator',false))
 {
-// <PHK:ignore>
-require(dirname(__FILE__).'/external/phool/PHO_Display.php');
-require(dirname(__FILE__).'/external/automap/Automap_Creator.php');
-require(dirname(__FILE__).'/PHK_Proxy.php');
-require(dirname(__FILE__).'/PHK_Base.php');
-require(dirname(__FILE__).'/PHK_Mgr.php');
-require(dirname(__FILE__).'/PHK_Tree.php');
-// <PHK:end>
-
 //============================================================================
 /*
 * The package creator class
@@ -49,8 +40,11 @@ require(dirname(__FILE__).'/PHK_Tree.php');
 
 class PHK_Creator extends PHK_Base
 {
-const VERSION='2.1.0';	// Must be the same as in PHK_Creator.psf
-const MIN_VERSION='2.0.0';
+const PHKMGR_VERSION='3.0.0'; // Must be the same as SOFTWARE_VERSION in make.common
+
+const RUNTIME_MIN_VERSION='2.0.0'; // The minimum version of PHK runtime able to
+	// understand the packages I produce. When the package is loaded, this is
+	// checked against PHK_BASE::VERSION.
 
 //-----
 
@@ -140,6 +134,8 @@ if (!$this->option('plain_prolog'))
 
 public function build_php_code($dir)
 {
+PHO_Display::trace('Building PHP runtime');
+
 $this->code='';
 
 $this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap.php');
@@ -174,6 +170,8 @@ $this->code=str_replace('?>','',$this->code);
 
 public function build_prolog($dir)
 {
+PHO_Display::trace('Building prolog');
+
 $this->prolog = PHK_Util::readfile($dir.'/scripts/PHK_Prolog.php');
 
 //-- The four FF chars turn unicode detection off (see PHP bug #42396)
@@ -188,6 +186,8 @@ $this->process_php_code($this->prolog);
 
 public function add_section($name,$data,$modifiers=array())
 {
+PHO_Display::trace("Adding section <$name>");
+
 $this->proxy()->stree()->mkfile($name,$data,$modifiers);
 }
 
@@ -196,6 +196,7 @@ $this->proxy()->stree()->mkfile($name,$data,$modifiers);
 public function dump($path=null)
 {
 if (is_null($path)) $path=$this->path();
+PHO_Display::trace("Writing package to disk ($path)");
 
 if (! PHK::file_is_package(__FILE__)) // If building PHK_Creator package
 	{
@@ -244,11 +245,9 @@ foreach(array('tabs/left.gif','tabs/right.gif','tabs/bottom.gif'
 
 //-- Build info
 
-$this->update_build_info('PHK_Creator_version',self::VERSION);
-$this->update_build_info('PHK_min_version',self::MIN_VERSION);
-$this->update_build_info('Automap_creator_version',Automap_Creator::VERSION);
-$this->update_build_info('Automap_min_version',Automap_Creator::MIN_VERSION);
-$this->update_build_info('PHK_PSF_version',PHK_PSF::VERSION);
+$this->update_build_info('phkmgr_version',self::PHKMGR_VERSION);
+$this->update_build_info('automap_creator_version',Automap_Creator::VERSION);
+$this->update_build_info('automap_min_version',Automap_Creator::MIN_VERSION);
 
 //-- Record the user-specified needed extensions
 
@@ -295,8 +294,8 @@ $file_size=$sig_offset;
 
 $buf=PHK_Proxy::fix_crc(PHK_Proxy::interp_block($this->interp)
 	.'<?php '.PHK_Proxy::MAGIC_STRING
-	.' M'  .str_pad(self::MIN_VERSION,PHK_Proxy::VERSION_SIZE)
-	.' V'  .str_pad(self::VERSION,PHK_Proxy::VERSION_SIZE)
+	.' M'  .str_pad(self::RUNTIME_MIN_VERSION,PHK_Proxy::VERSION_SIZE)
+	.' V'  .str_pad(self::PHKMGR_VERSION,PHK_Proxy::VERSION_SIZE)
 	.' FS' .str_pad($file_size,PHK_Proxy::OFFSET_SIZE)
 	.' PO' .str_pad($prolog_offset,PHK_Proxy::OFFSET_SIZE)
 	.' SSO'.str_pad($sections_structure_offset,PHK_Proxy::OFFSET_SIZE)
