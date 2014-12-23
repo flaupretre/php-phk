@@ -24,15 +24,11 @@
 
 if (!class_exists('PHK_Stream',false))
 {
-// <PLAIN_FILE> //---------------
-/** Load the 'slow' backend */
-require(dirname(__FILE__).'/PHK_Stream_Backend.php');
-// </PLAIN_FILE> //---------------
-
+//=============================================================================
 /**
 * The PHK stream wrapper
 *
-* Handles every file access to an 'phk://...' URI
+* Handles every file access to a 'phk://...' URI
 *
 * Note: Always catch exceptions before returning to PHP.
 */

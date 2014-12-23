@@ -31,10 +31,6 @@
 
 if (!class_exists('PHK_Cache',false))
 {
-// <PLAIN_FILE> //---------------
-require(dirname(__FILE__).'/PHK.php');
-// </PLAIN_FILE> //---------------
-
 //=============================================================================
 
 class PHK_Cache	// Static only

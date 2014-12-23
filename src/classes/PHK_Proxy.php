@@ -26,13 +26,6 @@
 
 if (!class_exists('PHK_Proxy',false))
 {
-// <PLAIN_FILE> //---------------
-/** PHK Utilities (Non PHK mode only) */
-require(dirname(__FILE__).'/PHK_Util.php');
-/** File handling classes (Non PHK mode only) */
-require(dirname(__FILE__).'/PHK_File.php');
-// </PLAIN_FILE> //---------------
-
 //=============================================================================
 /**
 * The 'back-end' object providing physical access to the package file. This

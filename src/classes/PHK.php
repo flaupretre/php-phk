@@ -26,11 +26,6 @@
 
 if (!class_exists('PHK',false))
 {
-// <PLAIN_FILE> //---------------
-/** Get base class */
-require(dirname(__FILE__).'/PHK_Base.php');
-// </PLAIN_FILE> //---------------
-
 //=============================================================================
 /**
 * This class is just an empty extension of the PHK_Base class. This is done
