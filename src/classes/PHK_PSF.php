@@ -139,7 +139,7 @@ while (!is_null($line=$this->get_line($fp)))
 	$words=explode(' ',$line);
 	if (!count($words)) throw new Exception('No command');
 	$command=strtolower(array_shift($words));
-	$op->parse($words);
+	$op->parse_all($words);
 	switch($command)
 		{
 		case 'add':	// add [-t <target-path>] [-d <target-base>] [-C <dir>]
@@ -210,7 +210,9 @@ if (!is_null($line)) // If we met a '%'
 	// Default syntax: YAML
 
 	$op=new PHK_PSF_Options_Options;
-	$op->parse_all(explode(' ',$line));
+
+	$args=explode(' ',$line);
+	$op->parse_all($args);
 
 	$data='';
 	while (($line=fgets($fp))!==false) $data .= $line;
