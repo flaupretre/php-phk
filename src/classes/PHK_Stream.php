@@ -33,7 +33,7 @@ if (!class_exists('PHK_Stream',false))
 * Note: Always catch exceptions before returning to PHP.
 */
 
-class PHK_Stream extends PHK_Util
+class PHK_Stream
 {
 
 private $uri;
