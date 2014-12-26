@@ -74,7 +74,7 @@ if (is_null($data=PHK_Cache::get($cache_id)))	// Miss
 			,$can_cache)))) throw new Exception("$uri: File not found");
 
 	if ($can_cache && (($cache===true) || (is_null($cache)
-		&& PHK_MGR::cache_enabled($mnt,$command,$params,$path))))
+		&& PHK_Mgr::cache_enabled($mnt,$command,$params,$path))))
 			PHK_Cache::set($cache_id,$data);
 	}
 
@@ -311,7 +311,7 @@ if (is_null($data=PHK_Cache::get($cache_id)))	// Miss - Slow path
 		$data='';
 		}
 
-	if ($cache && (!is_null($this->mnt)) && PHK_MGR::cache_enabled($this->mnt
+	if ($cache && (!is_null($this->mnt)) && PHK_Mgr::cache_enabled($this->mnt
 		,$this->command,$this->params,$this->path))
 		{
 		PHK_Cache::set($cache_id,$data);
