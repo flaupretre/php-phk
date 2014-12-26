@@ -131,7 +131,7 @@ PHK_Util::slow_path();
 $this->path=$path;
 $this->flags=$flags;
 
-if (!($this->flags & PHK::F_CREATOR))
+if (!($this->flags & PHK::IS_CREATOR))
 	{
 	// file_is_package() moved here from PHK_Mgr::compute_mnt() because we don't
 	// need to check this if data is already in cache.

@@ -257,7 +257,7 @@ return $path;
 * Can also create empty PHK_Creator instances (when the 'CREATOR' flag is set).
 *
 * @param string $path The path of an existing PHK archive, or the path of the
-*                     archive to create if ($flags & PHK::F_CREATOR)
+*                     archive to create if ($flags & PHK::IS_CREATOR)
 * @param int $flags Or-ed combination of PHK mount flags.
 * @return string the mount point
 */
@@ -266,7 +266,7 @@ public static function mount($path,$flags=0)
 {
 try
 {
-if ($flags & PHK::F_CREATOR)
+if ($flags & PHK::IS_CREATOR)
 	{
 	$mnt='_tmp_mnt_'.(self::$tmp_mnt_num++);
 	self::$proxy_tab[$mnt]=null;

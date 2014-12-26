@@ -64,18 +64,20 @@ const VERSION='3.0.0';
 //-----
 // Mount flags
 /* The values defined here must be the same as in the accelerator extension */
+/* PHK mount flags must not conflict with Automap load flags as they can be */
+/* combined. */
 
 /** Mount flag - If set, force a CRC check when creating the PHK instance */
 
-const F_CRC_CHECK=4;
+const CRC_CHECK=16;
 
 /** Mount flag - If set, don't call mount/umount scripts */
 
-const F_NO_MOUNT_SCRIPT=8;
+const NO_MOUNT_SCRIPT=32;
 
 /** Mount flag - If set, create a PHK_Creator object, instead of a PHK object */
 
-const F_CREATOR=16;
+const IS_CREATOR=64;
 
 //========== Class properties ===============
 
@@ -195,7 +197,7 @@ $this->build_info=$build_info;
 
 $this->supports_php_version();
 
-if ($this->option('crc_check') || ($this->flags & self::F_CRC_CHECK))
+if ($this->option('crc_check') || ($this->flags & self::CRC_CHECK))
 	$this->crc_check();
 
 // As required extensions are added to the enclosing package when a subpackage
@@ -209,14 +211,16 @@ if (is_null($this->parent_mnt))
 
 if ($this->map_defined())
 	{
-	$this->automap_id=Automap::load($this->automap_uri(),Automap::NO_CRC_CHECK,$this->base_uri());
+	// Transmit PHK mount flags to Automap
+	$this->automap_id=Automap::load($this->automap_uri()
+		,($this->flags | Automap::NO_CRC_CHECK),$this->base_uri());
 	}
 else $this->automap_id=0;
 
 //-- Call the mount script - if the mount script wants to refuse the mount,
 //-- it throws an exception.
 
-if (!($this->flags & PHK::F_NO_MOUNT_SCRIPT)
+if (!($this->flags & PHK::NO_MOUNT_SCRIPT)
 	&& (!is_null($mpath=$this->option('mount_script'))))
 		{ require $this->uri($mpath); }
 
@@ -235,7 +239,7 @@ catch (Exception $e)
 
 public function map_defined()
 {
-if ($this->flags & PHK::F_CREATOR) return false;
+if ($this->flags & PHK::IS_CREATOR) return false;
 
 return $this->build_info('map_defined');
 }
@@ -277,7 +281,7 @@ return PHK_Proxy::data_is_package($data);
 
 public function cache_enabled($command,$params,$path)
 {
-if ($this->flags & PHK::F_CREATOR) return false;
+if ($this->flags & PHK::IS_CREATOR) return false;
 
 if ($this->option('no_cache')===true) return false;
 
@@ -302,7 +306,7 @@ if (!is_null($this->plugin)) unset($this->plugin);
 
 //-- Call the umount script
 
-if (!($this->flags & PHK::F_NO_MOUNT_SCRIPT))	// Call the umount script
+if (!($this->flags & PHK::NO_MOUNT_SCRIPT))	// Call the umount script
 	{
 	if (!is_null($upath=$this->option('umount_script')))
 		{ require($this->uri($upath)); }

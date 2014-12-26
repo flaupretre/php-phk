@@ -174,7 +174,7 @@ while (!is_null($line=$this->get_line($fp)))
 			if (count($words)!=2)
 				throw new Exception('Usage: mount <phk-path> <var-name>');
 			list($path,$mnt_var)=$words;
-			$mnt=PHK_Mgr::mount($path,PHK::F_NO_MOUNT_SCRIPT);
+			$mnt=PHK_Mgr::mount($path,PHK::NO_MOUNT_SCRIPT);
 			$this->set_var($mnt_var,'phk://'.$mnt);
 			break;
 
@@ -249,7 +249,7 @@ public static function build($phk_path,$psf_path,$vars)
 //-- Create empty output object
 
 $phk_path=PHO_File::mk_absolute_path($phk_path);
-$mnt=PHK_Mgr::mount($phk_path,PHK::F_CREATOR);
+$mnt=PHK_Mgr::mount($phk_path,PHK::IS_CREATOR);
 $phk=PHK_Mgr::instance($mnt);
 
 if (is_null($psf_path)) // Compute PSF path from PHK path
