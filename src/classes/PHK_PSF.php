@@ -139,12 +139,12 @@ while (!is_null($line=$this->get_line($fp)))
 	$words=explode(' ',$line);
 	if (!count($words)) throw new Exception('No command');
 	$command=strtolower(array_shift($words));
-	$op->parse_all($words);
 	switch($command)
 		{
 		case 'add':	// add [-t <target-path>] [-d <target-base>] [-C <dir>]
 					//   [-c <compression-scheme>] <source1> [<source2>...]
 			
+			$op->parse_all($words);
 			if (count($words)==0)
 				throw new Exception('Usage: add [options] <path1> [<path2> ...]');
 			$base_dir=PHO_File::combine_path(dirname($this->path)
@@ -152,20 +152,23 @@ while (!is_null($line=$this->get_line($fp)))
 			foreach($words as $spath)
 				{
 				$spath=rtrim($spath,'/');	// Beware of trailing '/'
-				if (PHO_File::is_absolute_path($spath))
-					throw new Exception("$spath: Arg must be a relative path");
-				$sapath=PHO_File::combine_path($base_dir,$spath);
 				if (is_null($target=$op->option('target-path')))
 					{
+					if (PHO_File::is_absolute_path($spath))
+						throw new Exception("$spath: Arg must be a relative path");
 					$tbase=$op->option('target-base');
 					if (is_null($tbase)) $tbase='';
 					$target=$tbase.'/'.$spath;
 					}
+				$sapath=PHO_File::combine_path($base_dir,$spath);
 				$phk->ftree()->merge_into_file_tree($target,$sapath,$op->options());
 				}
 			break;
 
 		case 'modify':
+			$op->parse_all($words);
+			if (count($words)==0)
+				throw new Exception('Usage: modify [options] <path1> [<path2> ...]');
 			foreach($words as $tpath)
 				$phk->ftree()->modify($tpath,$op->options());
 			break;
@@ -185,13 +188,14 @@ while (!is_null($line=$this->get_line($fp)))
 			break;
 
 		case 'set':
-			if (count($words)!=2)
-				throw new Exception('Usage: set <var-name> <value>');
+			if (count($words) < 1)
+				throw new Exception('Usage: set <var-name> [value]');
 			$var=array_shift($words);
 			$this->set_var($var,implode(' ',$words));
 			break;
 
 		case 'section':		//-- Undocumented
+			$op->parse_all($words);
 			if (count($words)!=2)
 				throw new Exception('Usage: section [-C <dir>] <name> <path>');
 			list($name,$path)=$words;
