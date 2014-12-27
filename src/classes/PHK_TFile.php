@@ -224,7 +224,7 @@ $buf=$this->read();
 
 //--- Normalize line breaks (Unix-style)
 
-$buf=preg_replace('/\r+\n/','\n',$buf);
+$buf=preg_replace("/\r+\n/","\n",$buf);
 $buf=str_replace("\r","\n",$buf);
 
 //--- Process '// <PHK:' directives
