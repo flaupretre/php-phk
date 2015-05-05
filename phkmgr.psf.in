@@ -1,6 +1,12 @@
 
 add -C src .
 
+# Submodules
+
+# Phool
+
+add -t submodules/phool -C submodules/phool/src/classes .
+
 #---------------------------------------------------------------------
 %options
 
