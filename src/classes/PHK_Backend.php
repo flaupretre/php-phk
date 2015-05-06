@@ -162,8 +162,8 @@ $this->proxy()->showfiles();
 public function showmap($subfile_to_url_function=null)
 {
 if ($this->map_defined())
-	Automap_Display::show(Automap::instance($this->automap_id),null,$subfile_to_url_function);
-else echo "Automap not defined\n";
+	Automap::map($this->automap_id)->show(null,$subfile_to_url_function);
+else echo "This package does not contain a map\n";
 }
 
 //-----
