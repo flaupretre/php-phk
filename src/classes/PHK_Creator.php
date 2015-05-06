@@ -140,6 +140,7 @@ $this->code='';
 
 $this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Display.php');
+$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Map.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_Util.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_File.php');
 $this->code .= PHK_Util::readfile($dir.'/classes/PHK_Cache.php');
