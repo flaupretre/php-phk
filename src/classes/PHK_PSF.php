@@ -224,9 +224,7 @@ if (!is_null($line)) // If we met a '%'
 	switch($op->option('syntax'))
 		{
 		case 'yaml':
-			$save=PHK_Stream_Backend::set_tmp_data($data);
-			$options=sfYaml::load(PHK_Stream_Backend::TMP_URI);
-			PHK_Stream_Backend::set_tmp_data($save);
+			$options=\Symfony\Component\Yaml\Yaml::parse($data);
 			break;
 
 		case 'php':

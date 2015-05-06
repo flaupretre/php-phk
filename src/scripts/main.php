@@ -21,18 +21,29 @@
 // scripts. When used in a PHK package, we use the autoloader.
 
 // <PHK:ignore>
-require(dirname(__FILE__).'/../classes/external/automap/Automap_Creator.php');
-require(dirname(__FILE__).'/../classes/external/automap/Automap_Display.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap.php');
-require(dirname(__FILE__).'/../classes/external/phool/PHO_Display.php');
-require(dirname(__FILE__).'/../classes/external/phool/PHO_File.php');
-require(dirname(__FILE__).'/../classes/external/phool/PHO_Getopt.php');
-require(dirname(__FILE__).'/../classes/external/phool/PHO_Options.php');
-require(dirname(__FILE__).'/../classes/external/phool/PHO_Util.php');
-require(dirname(__FILE__).'/../classes/external/YAML/lib/sfYamlDumper.php');
-require(dirname(__FILE__).'/../classes/external/YAML/lib/sfYamlInline.php');
-require(dirname(__FILE__).'/../classes/external/YAML/lib/sfYamlParser.php');
-require(dirname(__FILE__).'/../classes/external/YAML/lib/sfYaml.php');
+require(dirname(__FILE__).'/../classes/external/automap/Automap_Creator.php');
+require(dirname(__FILE__).'/../classes/external/automap/Automap_Parser.php');
+require(dirname(__FILE__).'/../classes/external/automap/Automap_Display.php');
+require(dirname(__FILE__).'/../classes/external/automap/Automap_Map.php');
+
+require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Display.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_File.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Getopt.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Options.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Util.php');
+
+require(dirname(__FILE__).'/../../submodules/Yaml/Dumper.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Escaper.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Exception/ExceptionInterface.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Exception/RuntimeException.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Exception/DumpException.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Exception/ParseException.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Inline.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Parser.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Unescaper.php');
+require(dirname(__FILE__).'/../../submodules/Yaml/Yaml.php');
+
 require(dirname(__FILE__).'/../classes/PHK_Base.php');
 require(dirname(__FILE__).'/../classes/PHK_Backend.php');
 require(dirname(__FILE__).'/../classes/PHK_Cache.php');
