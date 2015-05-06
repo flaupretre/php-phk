@@ -14,7 +14,7 @@ include ./make.common
 #-----------------------------
 
 .PHONY: all clean_doc clean_distrib clean doc distrib test mem_test clean_test \
-	examples clean_examples
+	examples clean_examples install
 
 # Don't build examples from all because each of them must be built separately
 
@@ -26,6 +26,9 @@ clean: clean_base clean_doc clean_distrib clean_test clean_examples
 
 $(PRODUCT).phk: $(PRODUCT).psf
 	 $(PHPCMD) src/scripts/main.php build $@
+
+install: $(TARGETS)
+	cp $< $(INSTALL_DIR)
 
 #--- Tests
 
@@ -66,11 +69,8 @@ clean_distrib:
 #--- Sync external code - Dev private
 
 sync_external:
-	for i in Automap Automap_Creator Automap_Display ; do \
+	for i in Automap Automap_Map Automap_Creator Automap_Display Automap_Parser; do \
 		cp -p ../../../automap/php/public/src/classes/$$i.php src/classes/external/automap ;\
-	done
-	for i in PHO_Display PHO_File PHO_Getopt PHO_Util PHO_Options ; do \
-		cp -p ../../../phool/public/src/$$i.php src/classes/external/phool ;\
 	done
 
 #-----------------------------------------------------------------------------
