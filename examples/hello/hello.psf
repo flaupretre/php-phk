@@ -1,6 +1,6 @@
 # Add the source files under the root virtual dir
 
-merge  -autoload=false -strip=true / $(SOURCE_DIR)
+add . --no-autoload --strip --directory src
 
 %options
 

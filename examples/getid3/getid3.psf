@@ -2,15 +2,12 @@
 # Note: we take the library only (contained in the getid3 subdir), excluding
 # the demos.
 
-merge -strip=true /lib $(SOURCE_DIR)/getid3
+add -s --target-base /lib -C $(GETID3_DIR)/getid3 .
 
 #-- Administrative & info files
 
-add /& $(SOURCE_DIR)/license.txt \
-	$(SOURCE_DIR)/readme.txt \
-	$(SOURCE_DIR)/structure.txt \
-	$(SOURCE_DIR)/changelog.txt \
-	$(SOURCE_DIR)/dependencies.txt
+add --target-base /auto_file -C $(GETID3_DIR) license.txt readme.txt \
+	structure.txt changelog.txt dependencies.txt
 
 #--------------------------------------------------------------------------
 %options
@@ -19,15 +16,16 @@ add /& $(SOURCE_DIR)/license.txt \
 return array(
 	'name' => 'getID3',
 	'summary' => 'A library that extracts useful information from MP3 & other multimedia files',
-	'version' => '1.9.1',
-	'release' => '20110810',
-	'min_php_version' => '5.0.5',
+	'version' => '1.9.9',
+	'release' => '20141218',
+	'min_php_version' => '5.3.0',
 	'author' => 'James Heinrich <info@getid3.org>',
 	'license' => 'GNU General Public License, version 2 <http://www.gnu.org/licenses/gpl-2.0.html>',
 	'url' => 'http://www.getid3.org',
 	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
-	'license_prefix' => '/license',
-	'lib_run_script' => 'lib/getid3.php',
+	'license_prefix' => '/auto_file/license',
+	'lib_run_script' => '/lib/getid3.php',
+	# Additional webinfo tabs
 	'tabs' => array(
 		'ChangeLog' => '/auto_file/changelog.txt',
 		'Readme' => '/auto_file/readme.txt',

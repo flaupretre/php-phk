@@ -1,6 +1,6 @@
 # Add the source files under the root virtual dir
 
-merge / $(SOURCE_DIR)
+add -C src .
 
 %options
 

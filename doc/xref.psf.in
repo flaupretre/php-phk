@@ -1,13 +1,11 @@
 
 #-- Documentation files
 
-merge -strip=true -compress=gzip / $(1)
+add --compress gzip --directory $(SOURCE) .
 
-#-- The icon and license files
+#-- The license files
 
-add /etc/& $(PSF_DIR)/../src/etc/phk_logo.png
-add /etc/& $(PSF_DIR)/../src/etc/license.htm
-add /etc/& $(PSF_DIR)/../src/etc/license.txt
+add -C ../src etc/license.htm etc/license.txt etc/phk_logo.png
 
 #-- The options
 %options
