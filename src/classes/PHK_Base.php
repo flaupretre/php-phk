@@ -213,7 +213,7 @@ if ($this->map_defined())
 	{
 	// Transmit PHK mount flags to Automap
 	$this->automap_id=Automap::load($this->automap_uri()
-		,($this->flags | Automap::NO_CRC_CHECK),$this->base_uri());
+		,$this->flags,$this->base_uri());
 	}
 else $this->automap_id=0;
 
