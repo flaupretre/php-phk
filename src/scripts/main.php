@@ -23,6 +23,7 @@
 // <PHK:ignore>
 require(dirname(__FILE__).'/../classes/external/automap/Automap.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Creator.php');
+require(dirname(__FILE__).'/../classes/external/automap/Automap_Parser_Interface.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Parser.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Display.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Map.php');
