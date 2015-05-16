@@ -196,7 +196,7 @@ if (!is_null($map)) // This is a real file
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
 			PHK_Util::trace("	Registering Automap symbols");
-			$map->register_script($phk->uri($path),$rpath);
+			$map->register_script_file($phk->uri($path),$rpath);
 			}
 
 		$this->process_php_script();	//--- Script pre-processor
