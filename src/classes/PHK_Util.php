@@ -58,7 +58,7 @@ return is_object($var) ? 'object '.get_class($var) : gettype($var);
 }
 
 //-----
-// Keep in sync with PHO_Util
+// Keep in sync with \Phool\Util
 
 public static function env_is_web()
 {
@@ -66,7 +66,7 @@ return (php_sapi_name()!='cli');
 }
 
 //----
-// Keep in sync with PHO_Util
+// Keep in sync with \Phool\Util
 
 public static function env_is_windows()
 {
@@ -85,7 +85,7 @@ return strtolower(substr($filename,$dotpos+1));
 
 //---------
 // Warning: This is not the same code as Automap::combine_path() and
-// PHO_File::combine_path(). Those were modified to support providing
+// \Phool\File::combine_path(). Those were modified to support providing
 // an absolute $rpath. So, the behavior is different if $rpath starts with '/'.
 //
 // Combines a base directory and a relative path. If the base directory is

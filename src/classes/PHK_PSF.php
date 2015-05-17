@@ -147,20 +147,20 @@ while (!is_null($line=$this->get_line($fp)))
 			$op->parse_all($words);
 			if (count($words)==0)
 				throw new Exception('Usage: add [options] <path1> [<path2> ...]');
-			$base_dir=PHO_File::combine_path(dirname($this->path)
+			$base_dir=\Phool\File::combine_path(dirname($this->path)
 				,$op->option('directory'));
 			foreach($words as $spath)
 				{
 				$spath=rtrim($spath,'/');	// Beware of trailing '/'
 				if (is_null($target=$op->option('target-path')))
 					{
-					if (PHO_File::is_absolute_path($spath))
+					if (\Phool\File::is_absolute_path($spath))
 						throw new Exception("$spath: Arg must be a relative path");
 					$tbase=$op->option('target-base');
 					if (is_null($tbase)) $tbase='';
 					$target=$tbase.'/'.$spath;
 					}
-				$sapath=PHO_File::combine_path($base_dir,$spath);
+				$sapath=\Phool\File::combine_path($base_dir,$spath);
 				$phk->ftree()->merge_into_file_tree($target,$sapath,$op->options());
 				}
 			break;
@@ -199,7 +199,7 @@ while (!is_null($line=$this->get_line($fp)))
 			if (count($words)!=2)
 				throw new Exception('Usage: section [-C <dir>] <name> <path>');
 			list($name,$path)=$words;
-			$phk->add_section($name,PHO_File::readfile($path));
+			$phk->add_section($name,\Phool\File::readfile($path));
 			break;
 			
 		default:
@@ -250,7 +250,7 @@ public static function build($phk_path,$psf_path,$vars)
 {
 //-- Create empty output object
 
-$phk_path=PHO_File::mk_absolute_path($phk_path);
+$phk_path=\Phool\File::mk_absolute_path($phk_path);
 $mnt=PHK_Mgr::mount($phk_path,PHK::IS_CREATOR);
 $phk=PHK_Mgr::instance($mnt);
 
@@ -264,7 +264,7 @@ if (is_null($psf_path)) // Compute PSF path from PHK path
 	}
 else	// Make PSF path absolute
 	{
-	$psf_path=PHO_File::mk_absolute_path($psf_path);
+	$psf_path=\Phool\File::mk_absolute_path($psf_path);
 	}
 
 //-- Interpret PSF

@@ -26,7 +26,7 @@
 */
 //============================================================================
 
-class PHK_Cmd_Options extends PHO_Options
+class PHK_Cmd_Options extends \Phool\Options\Base
 {
 
 // Short/long modifier args
@@ -53,11 +53,11 @@ protected function process_option($opt,$arg)
 switch($opt)
 	{
 	case 'v':
-		PHO_Display::inc_verbose();
+		\Phool\Display::inc_verbose();
 		break;
 
 	case 'q':
-		PHO_Display::dec_verbose();
+		\Phool\Display::dec_verbose();
 		break;
 
 	case 's':

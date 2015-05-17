@@ -26,7 +26,7 @@
 */
 //============================================================================
 
-class PHK_PSF_Options_Options extends PHO_Options
+class PHK_PSF_Options_Options extends \Phool\Options\Base
 {
 
 // Short/long modifier args

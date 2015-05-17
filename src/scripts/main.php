@@ -28,11 +28,11 @@ require(dirname(__FILE__).'/../classes/external/automap/Automap_Parser.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Display.php');
 require(dirname(__FILE__).'/../classes/external/automap/Automap_Map.php');
 
-require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Display.php');
-require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_File.php');
-require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Getopt.php');
-require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Options.php');
-require(dirname(__FILE__).'/../../submodules/phool/src/classes/PHO_Util.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/Phool/Display.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/Phool/File.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/Phool/Options/Getopt.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/Phool/Options/Base.php');
+require(dirname(__FILE__).'/../../submodules/phool/src/Phool/Util.php');
 
 require(dirname(__FILE__).'/../../submodules/Yaml/Dumper.php');
 require(dirname(__FILE__).'/../../submodules/Yaml/Escaper.php');

@@ -329,7 +329,7 @@ switch($type=filetype($sapath))
 		break;
 
 	default:
-		PHO_Display::info("$sapath : Unsupported file type ($type) - Ignored");
+		\Phool\Display::info("$sapath : Unsupported file type ($type) - Ignored");
 	}
 }
 

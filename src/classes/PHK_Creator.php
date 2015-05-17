@@ -134,7 +134,7 @@ if (!$this->option('plain_prolog'))
 
 public function build_php_code($dir)
 {
-PHO_Display::trace('Building PHP runtime');
+\Phool\Display::trace('Building PHP runtime');
 
 $this->code='';
 
@@ -171,7 +171,7 @@ $this->code=str_replace('?>','',$this->code);
 
 public function build_prolog($dir)
 {
-PHO_Display::trace('Building prolog');
+\Phool\Display::trace('Building prolog');
 
 $this->prolog = PHK_Util::readfile($dir.'/scripts/PHK_Prolog.php');
 
@@ -187,7 +187,7 @@ $this->process_php_code($this->prolog);
 
 public function add_section($name,$data,$modifiers=array())
 {
-PHO_Display::trace("Adding section <$name>");
+\Phool\Display::trace("Adding section <$name>");
 
 $this->proxy()->stree()->mkfile($name,$data,$modifiers);
 }
@@ -197,7 +197,7 @@ $this->proxy()->stree()->mkfile($name,$data,$modifiers);
 public function dump($path=null)
 {
 if (is_null($path)) $path=$this->path();
-PHO_Display::trace("Writing package to disk ($path)");
+\Phool\Display::trace("Writing package to disk ($path)");
 
 if (! PHK::file_is_package(__FILE__)) // If building PHK_Creator package
 	{
