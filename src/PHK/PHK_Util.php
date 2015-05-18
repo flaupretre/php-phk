@@ -25,6 +25,9 @@
 * @package PHK
 */
 //=============================================================================
+
+namespace {
+
 // Ensures PHP_VERSION_ID is set. If version < 5.2.7, emulate.
 
 if (!defined('PHP_VERSION_ID'))
@@ -84,7 +87,7 @@ return strtolower(substr($filename,$dotpos+1));
 }
 
 //---------
-// Warning: This is not the same code as Automap::combine_path() and
+// Warning: This is not the same code as \Automap\Map::combine_path() and
 // \Phool\File::combine_path(). Those were modified to support providing
 // an absolute $rpath. So, the behavior is different if $rpath starts with '/'.
 //
@@ -519,9 +522,11 @@ if ($inode==0) // This system does not support inodes
 return sprintf('%s_%X_%X_%X',$prefix,$dev,$inode,$mtime);
 }
 
-//---------
-} // End of class PHK_Util
-//=============================================================================
-} // End of class_exists('PHK_Util')
-//=============================================================================
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

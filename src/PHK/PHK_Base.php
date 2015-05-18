@@ -24,6 +24,8 @@
 */
 //============================================================================
 
+namespace {
+
 if (!class_exists('PHK_Base',false))
 {
 //=============================================================================
@@ -64,7 +66,7 @@ const VERSION='3.0.0';
 //-----
 // Mount flags
 /* The values defined here must be the same as in the accelerator extension */
-/* PHK mount flags must not conflict with Automap load flags as they can be */
+/* PHK mount flags must not conflict with \Automap\Mgr::T_xx load flags as they can be */
 /* combined. */
 
 /** Mount flag - If set, force a CRC check when creating the PHK instance */
@@ -212,7 +214,7 @@ if (is_null($this->parent_mnt))
 if ($this->map_defined())
 	{
 	// Transmit PHK mount flags to Automap
-	$this->automap_id=Automap::load($this->automap_uri()
+	$this->automap_id=\Automap\Mgr::load($this->automap_uri()
 		,$this->flags,$this->base_uri());
 	}
 else $this->automap_id=0;
@@ -314,7 +316,7 @@ if (!($this->flags & PHK::NO_MOUNT_SCRIPT))	// Call the umount script
 
 //-- Unload the automap
 
-if ($this->automap_id) Automap::unload($this->automap_id);
+if ($this->automap_id) \Automap\Mgr::unload($this->automap_id);
 }
 
 //-----
@@ -347,7 +349,7 @@ return PHK_Mgr::base_uri($this->mnt);
 
 //-----
 /**
-* Returns the URI of the Automap
+* Returns the URI of the map
 *
 * @return string
 */
@@ -748,9 +750,11 @@ else	// HTTP mode
 	}
 }
 
-//---------------------------------
-} // End of class PHK_Base
-//-------------------------
-} // End of class_exists('PHK_Base')
-//=============================================================================
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

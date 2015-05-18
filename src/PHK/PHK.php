@@ -17,51 +17,42 @@
 //
 //=============================================================================
 /**
-* A utility class used only at package creation time.
-*
-* This class maintains an array and appends elements to it, eliminating
-* duplicate keys. When every elements have been appended, returns the resulting
-* array.
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
 */
+//============================================================================
+
+namespace {
+
+if (!class_exists('PHK',false))
+{
 //=============================================================================
+/**
+* This class is just an empty extension of the PHK_Base class. This is done
+* this way so that PHK_Creator uses the PHP code even if the extension
+* is present.
+*
+* @see PHK_Base
+*/
 
-if (!class_exists('PHK_ItemLister',false))
+class PHK extends PHK_Base
 {
-//============================================================================
 
-class PHK_ItemLister
+//---------------
+// If we get here, the PHP runtime is already loaded.
+// But the method has to exist.
+
+public static function need_php_runtime()
 {
-private $a;
-
-//---------
-
-public function __construct()
-{
-$this->a=array();
 }
 
-//---------
-
-public function add($item,$value)
-{
-$this->a[$item]=$value;
-}
-
-//---------
-
-public function get()
-{
-return $this->a;
-}
-
-//---------
-} //-- End of class PHK_ItemLister
-//-------------------------
-} // End of class_exists('PHK_ItemLister')
-//============================================================================
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

@@ -25,7 +25,7 @@ clean: clean_base clean_doc clean_distrib clean_test clean_examples
 #--- How to build the package
 
 $(PRODUCT).phk: $(PRODUCT).psf
-	 $(PHPCMD) src/scripts/main.php build $@
+	 $(PHPCMD) scripts/main.php build $@
 
 install: $(TARGETS)
 	cp $< $(INSTALL_DIR)
@@ -68,9 +68,8 @@ clean_distrib:
 
 #--- Sync external code - Dev private
 
-sync_external:
-	for i in Automap Automap_Map Automap_Creator Automap_Display Automap_Parser; do \
-		cp -p ../../../automap/php/public/src/classes/$$i.php src/classes/external/automap ;\
-	done
+sync_automap:
+	rm -rf submodules/automap/src
+	cp -rp ../../../automap/php/public/src submodules/automap
 
 #-----------------------------------------------------------------------------

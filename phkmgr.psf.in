@@ -1,15 +1,19 @@
 
-add -C src .
+add src/PHK etc scripts
 
 # Submodules
 
+# Automap
+
+add -C submodules/automap src/Automap
+
 # Phool
 
-add -b submodules/phool -C submodules/phool/src Phool
+add -C submodules/phool src/Phool
 
 # Yaml
 
-add -b submodules/Yaml -C submodules/Yaml Exception Dumper.php Escaper.php \
+add -b src/Yaml -C submodules/Yaml Exception Dumper.php Escaper.php \
 	Inline.php Parser.php Unescaper.php Yaml.php
 
 #---------------------------------------------------------------------

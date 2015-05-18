@@ -4,3 +4,6 @@
 [submodule "submodules/Yaml"]
 	path = submodules/Yaml
 	url = git@github.com:symfony/Yaml.git
+[submodule "submodules/automap"]
+	path = submodules/automap
+	url = git@github.com:flaupretre/automap.git

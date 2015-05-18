@@ -24,6 +24,8 @@
 */
 //=============================================================================
 
+namespace {
+
 if (!class_exists('PHK_Backend',false))
 {
 //=============================================================================
@@ -113,12 +115,6 @@ self::start_info_table($html);
 if (PHK::accelerator_is_present()) PHK::accel_techinfo();
 else self::show_info_line($html,'PHK Accelerator','No');
 
-self::info_section($html,'Automap Accelerator');
-
-self::start_info_table($html);
-if (Automap::accelerator_is_present()) Automap::accel_techinfo();
-else self::show_info_line($html,'Automap Accelerator','No');
-
 self::info_section($html,'Cache');
 
 self::show_info_line($html,'Cache system used',PHK_Cache::cache_name());
@@ -157,12 +153,12 @@ $this->proxy()->showfiles();
 }
 
 //---------------------------------
-// Display Automap map content or <empty> message
+// Display map content or <empty> message
 
 public function showmap($subfile_to_url_function=null)
 {
 if ($this->map_defined())
-	Automap::map($this->automap_id)->show(null,$subfile_to_url_function);
+	\Automap\Mgr::map($this->automap_id)->show(null,$subfile_to_url_function);
 else echo "This package does not contain a map\n";
 }
 
@@ -644,7 +640,7 @@ echo "\nAvailable commands:\n\n";
 echo "	- @help             Display package help\n";
 echo "	- @license          Display license\n";
 echo "	- @get <path>       Display a subfile content\n";
-echo "	- @showmap          Display automap, if present\n";
+echo "	- @showmap          Display symbol map, if present\n";
 echo "	- @showfiles        List subfiles\n";
 echo "	- @option <name>    Display a package option\n";
 echo "	- @set_interp <string>  Set the first line of the PHK to '#!<string>'\n";
@@ -745,9 +741,11 @@ catch (Exception $e)
 return $retcode;
 }
 
-//---------------------------------
-} // End of class PHK_Backend
-//-------------------------
-} // End of class_exists('PHK_Backend')
-//=============================================================================
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

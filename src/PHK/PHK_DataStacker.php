@@ -17,38 +17,53 @@
 //
 //=============================================================================
 /**
+* A utility class used only at package creation time.
+*
+* This class maintains a string buffer and appends strings to it, returning
+* the current offset. When every strings have been appended, returns the
+* resulting buffer.
+*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
 */
+//=============================================================================
+
+namespace {
+
+if (!class_exists('PHK_DataStacker',false))
+{
 //============================================================================
 
-if (!class_exists('PHK',false))
+class PHK_DataStacker
 {
-//=============================================================================
-/**
-* This class is just an empty extension of the PHK_Base class. This is done
-* this way so that PHK_Creator uses the PHP code even if the extension
-* is present.
-*
-* @see PHK_Base
-*/
+public $offset;
+public $data;
 
-class PHK extends PHK_Base
+//---------
+
+public function __construct()
 {
-
-//---------------
-// If we get here, the PHP runtime is already loaded.
-// But the method has to exist.
-
-public static function need_php_runtime()
-{
+$this->offset=0;
+$this->data='';
 }
 
-//---------------------------------
-} // End of class PHK
-//-------------------------
-} // End of class_exists('PHK')
-//=============================================================================
+//---------
+
+public function push($data)
+{
+$this->data .= $data;
+$ret_offset=$this->offset;
+$this->offset += strlen($data);
+return $ret_offset;
+}
+
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

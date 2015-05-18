@@ -26,6 +26,8 @@
 */
 //=============================================================================
 
+namespace {
+
 if (!class_exists('PHK_Webinfo',false))
 {
 //============================================================================
@@ -39,7 +41,7 @@ private $PHK;	// Associated PHK instance
 private $cmd_titles=array(
 	'info' => 'Home',
 	'techinfo' => 'Technical information',
-	'showmap' => 'Automap',
+	'showmap' => 'Symbol map',
 	'showfiles' => 'Files',
 	'test' => 'Unit tests');
 
@@ -96,7 +98,7 @@ self::display_tab('/techinfo','Info');
 self::display_tab('/showfiles','Files');
 
 if ($this->PHK->map_defined())
-	self::display_tab('/showmap','Automap');
+	self::display_tab('/showmap','Symbol map');
 
 if ((!is_null($this->PHK->option('test_script')))
 	||(!is_null($this->PHK->option('phpunit_test_package'))))
@@ -300,8 +302,11 @@ echo '<font size="-1"><i>For more information about the PHK package format:'
 		.'http://phk.tekwire.net</i></font>';
 }
 
-}	// End of class PHK_Webinfo
-//-------------------------------------------------------------------
-} // End of class_exists('PHK_Webinfo')
-//-------------------------------------------------------------------
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

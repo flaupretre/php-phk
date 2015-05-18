@@ -24,6 +24,8 @@
 */
 //============================================================================
 
+namespace {
+
 if (!class_exists('PHK_Creator',false))
 {
 //============================================================================
@@ -42,7 +44,7 @@ class PHK_Creator extends PHK_Base
 {
 const PHKMGR_VERSION='3.0.0'; // Must be the same as SOFTWARE_VERSION in make.common
 
-const RUNTIME_MIN_VERSION='2.0.0'; // The minimum version of PHK runtime able to
+const MIN_RUNTIME_VERSION='2.0.0'; // The minimum version of PHK runtime able to
 	// understand the packages I produce. When the package is loaded, this is
 	// checked against PHK_BASE::VERSION.
 
@@ -130,7 +132,8 @@ if (!$this->option('plain_prolog'))
 
 //---------
 // Build runtime PHP code
-//-- $dir= base dir where files are stored
+//-- $dir= base dir where files are stored. In a package, it is the package's
+//-- base URI, otherwise, it is the base of the source tree.
 
 public function build_php_code($dir)
 {
@@ -138,26 +141,29 @@ public function build_php_code($dir)
 
 $this->code='';
 
-$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Display.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/external/automap/Automap_Map.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Util.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_File.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Cache.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Proxy.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Mgr.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Base.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Backend.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Stream.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Stream_Backend.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_DC.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Tree.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_TNode.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_TDir.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_TFile.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_Webinfo.php');
-$this->code .= PHK_Util::readfile($dir.'/classes/PHK_PHPUnit.php');
+$automap_base=$dir;
+if (! PHK_Mgr::is_a_phk_uri(__FILE__)) $automap_base .= '/submodules/automap';
+$this->code .= PHK_Util::readfile($automap_base.'/src/Automap/Mgr.php');
+$this->code .= PHK_Util::readfile($automap_base.'/src/Automap/Tools/Display.php');
+$this->code .= PHK_Util::readfile($automap_base.'/src/Automap/Map.php');
+
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Util.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_File.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Cache.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Proxy.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Mgr.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Base.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Backend.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Stream.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Stream_Backend.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_DC.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Tree.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_TNode.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_TDir.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_TFile.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Webinfo.php');
+$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_PHPUnit.php');
 
 $this->process_php_code($this->code);
 
@@ -201,10 +207,11 @@ if (is_null($path)) $path=$this->path();
 
 if (! PHK::file_is_package(__FILE__)) // If building PHK_Creator package
 	{
-	$base_dir=dirname(__FILE__).'/..';
+	$base_dir=dirname(__FILE__).'/../..';
 	}
 else
 	{
+var_dump(__FILE__);
 	$mnt=PHK_Mgr::path_to_mnt(__FILE__);
 	$base_dir=PHK_Mgr::base_uri($mnt);
 	}
@@ -216,13 +223,13 @@ $this->build_php_code($base_dir);
 if (is_null($this->prolog)) $this->build_prolog($base_dir);
 
 //-- Build FILES part and FTREE section
-// Build Automap, strip sources, etc...
+// Build map, strip sources, etc...
 
 $needed_extensions=new PHK_ItemLister;
 
 $this->proxy()->ftree()->walk('get_needed_extensions',$this,$needed_extensions);
 
-$map=new Automap_Creator();
+$map=new \Automap\Build\Creator();
 list($files_structure,$files_data)=$this->proxy()->ftree()->export($this,$map);
 
 $this->add_section('FTREE',$files_structure);
@@ -247,8 +254,8 @@ foreach(array('tabs/left.gif','tabs/right.gif','tabs/bottom.gif'
 //-- Build info
 
 $this->update_build_info('phkmgr_version',self::PHKMGR_VERSION);
-$this->update_build_info('automap_creator_version',Automap_Creator::VERSION);
-$this->update_build_info('automap_min_version',Automap_Creator::MIN_VERSION);
+$this->update_build_info('automap_creator_version',\Automap\Build\Creator::VERSION);
+$this->update_build_info('automap_min_version',\Automap\Build\Creator::MIN_RUNTIME_VERSION);
 
 //-- Record the user-specified needed extensions
 
@@ -295,7 +302,7 @@ $file_size=$sig_offset;
 
 $buf=PHK_Proxy::fix_crc(PHK_Proxy::interp_block($this->interp)
 	.'<?php '.PHK_Proxy::MAGIC_STRING
-	.' M'  .str_pad(self::RUNTIME_MIN_VERSION,PHK_Proxy::VERSION_SIZE)
+	.' M'  .str_pad(self::MIN_RUNTIME_VERSION,PHK_Proxy::VERSION_SIZE)
 	.' V'  .str_pad(self::PHKMGR_VERSION,PHK_Proxy::VERSION_SIZE)
 	.' FS' .str_pad($file_size,PHK_Proxy::OFFSET_SIZE)
 	.' PO' .str_pad($prolog_offset,PHK_Proxy::OFFSET_SIZE)
@@ -313,9 +320,11 @@ PHK_Util::trace('Writing PHK file to '.$path);
 PHK_Util::atomic_write($path,$buf);
 }
 
-//---------
-} //-- End of class PHK_Creator
-//-------------------------
-} // End of class_exists('PHK_Creator')
-//============================================================================
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

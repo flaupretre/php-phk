@@ -19,9 +19,9 @@
 /**
 * A utility class used only at package creation time.
 *
-* This class maintains a string buffer and appends strings to it, returning
-* the current offset. When every strings have been appended, returns the
-* resulting buffer.
+* This class maintains an array and appends elements to it, eliminating
+* duplicate keys. When every elements have been appended, returns the resulting
+* array.
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
@@ -30,36 +30,42 @@
 */
 //=============================================================================
 
-if (!class_exists('PHK_DataStacker',false))
+namespace {
+
+if (!class_exists('PHK_ItemLister',false))
 {
 //============================================================================
 
-class PHK_DataStacker
+class PHK_ItemLister
 {
-public $offset;
-public $data;
+private $a;
 
 //---------
 
 public function __construct()
 {
-$this->offset=0;
-$this->data='';
+$this->a=array();
 }
 
 //---------
 
-public function push($data)
+public function add($item,$value)
 {
-$this->data .= $data;
-$ret_offset=$this->offset;
-$this->offset += strlen($data);
-return $ret_offset;
+$this->a[$item]=$value;
 }
 
 //---------
-} // End of class PHK_DataStacker
-//-------------------------
-} // End of class_exists('PHK_DataStacker')
-//=============================================================================
+
+public function get()
+{
+return $this->a;
+}
+
+//---
+} // End of class
+//===========================================================================
+} // End of class_exists
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>

@@ -63,6 +63,8 @@
 */
 //============================================================================
 
+namespace {
+
 if (!function_exists('_phk_load_phpunit_interface'))
 {
 function _phk_load_phpunit_interface()
@@ -503,4 +505,7 @@ print "  --testdox-html <file>  Write agile documentation in HTML format to file
 } // End of function _phk_load_phpunit_interface
 //=============================================================================
 } // End of function_exists(_phk_load_phpunit_interface)
+//===========================================================================
+} // End of namespace
+//===========================================================================
 ?>
