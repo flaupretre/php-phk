@@ -28,13 +28,13 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Virtual {
 
-if (!class_exists('PHK_DC',false))
+if (!class_exists('PHK\Virtual\DC',false))
 {
 //============================================================================
 
-class PHK_DC	// Data Container
+class DC	// Data Container
 {
 
 private $csz;	// Compressed size
@@ -91,16 +91,16 @@ switch($ctype)
 	{
 	case self::COMPRESS_BZIP2:
 		if(is_int($rbuf=bzdecompress($buf)))
-			throw new Exception("Cannot bzdecompress data - Error code $buf");
+			throw new \Exception("Cannot bzdecompress data - Error code $buf");
 		break;
 
 	case self::COMPRESS_GZIP:
 		if(($rbuf=gzuncompress($buf))===false)
-			throw new Exception("Cannot gzuncompress data");
+			throw new \Exception("Cannot gzuncompress data");
 		break;
 
 	default:
-		throw new Exception("Unknown compression method : $ctype");
+		throw new \Exception("Unknown compression method : $ctype");
 	}
 return $rbuf;
 }
@@ -116,7 +116,7 @@ if (is_null($this->data))
 	else
 		{
 		$rbuf=$this->expand($this->fspace->read_block($this->off,$this->csz));
-		if (strlen($rbuf)!=$this->rsz) throw new Exception('Wrong expanded size');
+		if (strlen($rbuf)!=$this->rsz) throw new \Exception('Wrong expanded size');
 		$this->data=$rbuf;
 		}
 	}
@@ -169,7 +169,7 @@ $this->csz=$this->off=null;
 
 public function set_flags($flags)
 {
-$this->flags=($flags & PHK_TNode::TN_DC_FLAG_MASK);
+$this->flags=($flags & \PHK\Virtual\Node::TN_DC_FLAG_MASK);
 }
 
 //---
@@ -181,8 +181,8 @@ $this->rsz=strlen($this->data=$data);
 
 // <CREATOR> //---------------
 
-public function get_needed_extensions(PHK_Creator $phk
-	,PHK_ItemLister $item_lister)
+public function get_needed_extensions(\PHK\Build\Creator $phk
+	,\PHK\Tools\ItemLister $item_lister)
 {
 if (!is_null($ext=self::$compression_needed_extensions
 	[$this->flags & self::COMPRESS_TYPE]))
@@ -199,13 +199,12 @@ $this->rsz+=strlen($data);
 
 //---
 
-public function export(PHK_Creator $phk,PHK_DataStacker $stacker)
+public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker)
 {
 $cbuf=$this->compress($this->data,$phk);
 $this->csz=strlen($cbuf);
 $this->off=$stacker->offset;
 $stacker->push($cbuf);
-
 return pack('vV3',$this->flags,$this->csz,$this->rsz,$this->off);
 }
 
@@ -213,14 +212,14 @@ return pack('vV3',$this->flags,$this->csz,$this->rsz,$this->off);
 
 private function deny_compress($msg,$buf)
 {
-PHK_Util::trace("	No compression: $msg");
+\PHK\Tools\Util::trace("	No compression: $msg");
 $this->flags &= ~self::COMPRESS_TYPE; // Set to COMPRESS_NONE
 return $buf;
 }
 
 //------
 
-private function compress($buf,PHK_Creator $phk)
+private function compress($buf,\PHK\Build\Creator $phk)
 {
 if (!($ctype=$this->compression_type())) return $buf;
 
@@ -237,21 +236,21 @@ if ((!is_null($comp_max_size)) && (strlen($buf) > $comp_max_size))
 switch($ctype)
 	{
 	case self::COMPRESS_BZIP2:
-		PHK_Util::load_extension('bz2');
-		PHK_Util::trace("	Compressing (bzip2)");
+		\PHK\Tools\Util::load_extension('bz2');
+		\PHK\Tools\Util::trace("	Compressing (bzip2)");
 		if(is_int($cbuf=bzcompress($buf,9)))
-			throw new Exception("Cannot bzcompress data - Error code $buf");
+			throw new \Exception("Cannot bzcompress data - Error code $buf");
 		break;
 
 	case self::COMPRESS_GZIP:
-		PHK_Util::load_extension('zlib');
-		PHK_Util::trace("	Compressing (gzip)");
+		\PHK\Tools\Util::load_extension('zlib');
+		\PHK\Tools\Util::trace("	Compressing (gzip)");
 		if(($cbuf=gzcompress($buf))===false) 
-			throw new Exception("Cannot gzcompress data");
+			throw new \Exception("Cannot gzcompress data");
 		break;
 
 	default:
-		throw new Exception("Unknown compression method : $ctype");
+		throw new \Exception("Unknown compression method : $ctype");
 	}
 
 // Default: Deny if compressed buffer is larger than 90% of original

@@ -29,13 +29,13 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK {
 
-if (!class_exists('PHK_Cache',false))
+if (!class_exists('PHK\Cache',false))
 {
 //=============================================================================
 
-class PHK_Cache	// Static only
+class Cache	// Static only
 {
 /** Class version */
 
@@ -79,10 +79,10 @@ if (is_null(self::$cache))
 		{
 		if (!extension_loaded($c)) continue;
 		
-		$class='PHK_Cache_'.$c;
+		$class='Cache_'.$c;
 		$obj=new $class;
 		try { $status=$obj->init(); }
-		catch (Exception $e) { $status=false; }
+		catch (\Exception $e) { $status=false; }
 		if ($status)
 			{
 			self::$cache=$obj;
@@ -91,7 +91,7 @@ if (is_null(self::$cache))
 			}
 		unset($obj);
 		}
-	PHK_Util::trace("Cache system used : ".self::$cache_name);//TRACE
+	\PHK\Tools\Util::trace("Cache system used : ".self::$cache_name);//TRACE
 	}
 }
 
@@ -160,18 +160,18 @@ if (is_object(self::$cache))
 	{
 	if (is_string($data) && (strlen($data) > self::$cache_maxsize)) return;
 
-	PHK_Util::trace("Writing cache: id=$id");//TRACE
+	\PHK\Tools\Util::trace("Writing cache: id=$id");//TRACE
 	self::$cache->set($id,$data);
 	}
 }
 
 //---------------------------------
-} // End of class PHK_Cache
+} // End of class \PHK\Cache
 //=============================================================================
 
-abstract class PHK_Cache_Base
+abstract class Cache_Base
 {
-// Returns true if this system can be used. Exception if unavailable
+// Returns true if this system can be used. \Exception if unavailable
 
 abstract public function init();
 
@@ -186,14 +186,14 @@ abstract public function set($id,$data);
 
 //=============================================================================
 
-class PHK_Cache_apc extends PHK_Cache_Base
+class Cache_apc extends Cache_Base
 {
 
 public function init()
 {
 // Valid only in a web environment or if CLI is explicitely enabled
 
-return PHK_Util::env_is_web() || ini_get('apc.enable_cli');
+return \PHK\Tools\Util::env_is_web() || ini_get('apc.enable_cli');
 }
 
 //------
@@ -207,19 +207,19 @@ return apc_fetch($id);
 
 public function set($id,$data)
 {
-apc_store($id,$data,PHK_Cache::TTL);
+apc_store($id,$data,\PHK\Cache::TTL);
 }
 
 //---------------------------------
-} // End of class PHK_Cache_apc
+} // End of class \PHK\Cache_apc
 //=============================================================================
 
-class PHK_Cache_xcache extends PHK_Cache_Base
+class Cache_xcache extends Cache_Base
 {
 
 public function init()
 {
-return PHK_Util::env_is_web(); // Valid only in a web environment
+return \PHK\Tools\Util::env_is_web(); // Valid only in a web environment
 }
 
 //------
@@ -233,14 +233,14 @@ return xcache_get($id);
 
 public function set($id,$data)
 {
-xcache_set($id,$data,PHK_Cache::TTL);
+xcache_set($id,$data,\PHK\Cache::TTL);
 }
 
 //---------------------------------
-} // End of class PHK_Cache_xcache
+} // End of class \PHK\Cache_xcache
 //=============================================================================
 
-class PHK_Cache_eaccelerator extends PHK_Cache_Base
+class Cache_eaccelerator extends Cache_Base
 {
 
 public function init()
@@ -250,7 +250,7 @@ public function init()
 
 if (!function_exists('eaccelerator_get')) return false;
 
-return PHK_Util::env_is_web(); // Valid only in a web environment
+return \PHK\Tools\Util::env_is_web(); // Valid only in a web environment
 }
 
 //------
@@ -264,7 +264,7 @@ return eaccelerator_get($id);
 
 public function set($id,$data)
 {
-eaccelerator_put($id,$data,PHK_Cache::TTL);
+eaccelerator_put($id,$data,\PHK\Cache::TTL);
 }
 
 //---

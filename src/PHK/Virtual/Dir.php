@@ -17,8 +17,6 @@
 //
 //=============================================================================
 /**
-* The PHK_TDir class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -26,13 +24,13 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Virtual {
 
-if (!class_exists('PHK_TDir',false))
+if (!class_exists('PHK\Virtual\Dir',false))
 {
 //============================================================================
 
-class PHK_TDir extends PHK_TNode
+class Dir extends Node
 {
 
 private $children; // array of basenames
@@ -53,7 +51,7 @@ if ($path=='') $path='/';
 
 if ($html) echo '<tr><td nowrap colspan=4>&nbsp;<b><i>'.$path
 		.'</i></b></td></tr>';
-else echo "D $path\n";
+else echo "D      $path\n";
 }
 
 //---
@@ -68,7 +66,7 @@ return $this->children;
 public function dump($base)
 {
 $path=$base.$this->path;
-if (mkdir($path)===false) throw new Exception($path.': cannot create directory');
+if (mkdir($path)===false) throw new \Exception($path.': cannot create directory');
 }
 
 //---
@@ -111,7 +109,7 @@ if (($key=array_search($name,$this->children))===false)
 
 //---
 
-public function export(PHK_Creator $phk,PHK_DataStacker $stacker,$map)
+public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker,$map)
 {
 return $this->tnode_export(implode(';',$this->children));
 }

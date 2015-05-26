@@ -17,74 +17,48 @@
 //
 //=============================================================================
 /**
-* This class manages options for lines in the first block of a PSF
+* A utility class used only at package creation time.
+*
+* This class maintains an array and appends elements to it, eliminating
+* duplicate keys. When every elements have been appended, returns the resulting
+* array.
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
 */
+//=============================================================================
+
+namespace PHK\Tools {
+
+if (!class_exists('PHK\Tools\ItemLister',false))
+{
 //============================================================================
 
-namespace {
-
-if (!class_exists('PHK_PSF_Cmd_Options',false))
+class ItemLister
 {
-class PHK_PSF_Cmd_Options extends \Phool\Options\Base
+private $a;
+
+//---------
+
+public function __construct()
 {
+$this->a=array();
+}
 
-// Short/long modifier args
+//---------
 
-protected $opt_modifiers=array(
-	array('short' => 'n', 'long' => 'no-autoload'  , 'value' => false),
-	array('short' => 's', 'long' => 'strip'  , 'value' => false),
-	array('short' => 'c', 'long' => 'compression'  , 'value' => true),
-	array('short' => 't', 'long' => 'target-path'  , 'value' => true),
-	array('short' => 'b', 'long' => 'target-base'  , 'value' => true),
-	array('short' => 'C', 'long' => 'directory'  , 'value' => true)
-	);
-
-// Option values
-
-protected $options=array(
-	'autoload' => null,
-	'strip' => null,
-	'compression' => null,
-	'target-path' => null,
-	'target-base' => null,
-	'directory' => null
-	);
-
-//-----------------------
-
-protected function process_option($opt,$arg)
+public function add($item,$value)
 {
-switch($opt)
-	{
-	case 'n':
-		$this->options['autoload']=false;
-		break;
+$this->a[$item]=$value;
+}
 
-	case 's':
-		$this->options['strip']=true;
-		break;
+//---------
 
-	case 'c':
-		$this->options['compression']=strtolower($arg);
-		break;
-
-	case 't':
-		$this->options['target-path']=$arg;
-		break;
-
-	case 'b':
-		$this->options['target-base']=$arg;
-		break;
-
-	case 'C':
-		$this->options['directory']=$arg;
-		break;
-	}
+public function get()
+{
+return $this->a;
 }
 
 //---

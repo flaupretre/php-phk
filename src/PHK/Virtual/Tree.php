@@ -17,8 +17,6 @@
 //
 //=============================================================================
 /**
-* The PHK_Tree class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -26,13 +24,13 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\Virtual {
 
-if (!class_exists('PHK_Tree',false))
+if (!class_exists('PHK\Virtual\Tree',false))
 {
 //============================================================================
 
-class PHK_Tree
+class Tree
 {
 
 public $fspace;		// Associated filespace
@@ -40,17 +38,16 @@ public $fspace;		// Associated filespace
 private $edata; // Exported data. Always contains a key for every node, even
 				// in creator mode.
 
-private $nodes;	// Tree nodes (key=path, value=PHK_TNode object). Contains
+private $nodes;	// Tree nodes (key=path, value=Node object). Contains
 				// only the unserialized nodes. In creator mode, contains
 				// every node.
 
-private static $eclasses=array( 'D' => 'PHK_TDir', 'F' => 'PHK_TFile');
+private static $char_to_class=array( 'D' => 'Dir', 'F' => 'File');
 
 //---
 // Create a tree from the edata stored in the PHK archive
 
-public static function create_from_edata($serial_edata
-	,PHK_FileSpace $fspace)
+public static function create_from_edata($serial_edata,\PHK\PkgFileSpace $fspace)
 {
 $tree=new self($fspace);
 
@@ -139,7 +136,7 @@ if (array_key_exists($path,$this->edata))
 	if (!array_key_exists($path,$this->nodes))
 		{
 		$edata=$this->edata[$path];
-		$class=self::$eclasses[$edata{0}];
+		$class=__NAMESPACE__.'\\'.self::$char_to_class[$edata{0}];
 		$node=$this->nodes[$path]=new $class($path,$this);
 		$node->import(substr($edata,1));
 		}
@@ -149,7 +146,7 @@ if (array_key_exists($path,$this->edata))
 //echo "Lookup failed : <$path> <$rpath>\n";//TRACE
 //print_r(array_keys($this->nodes));//TRACE
 	
-if ($exception_flag) throw new Exception($path.': path not found');
+if ($exception_flag) throw new \Exception($path.': path not found');
 else return null;
 }
 
@@ -159,9 +156,9 @@ public function lookup_file($path,$exception_flag=true)
 {
 $f=$this->lookup($path,$exception_flag);
 
-if ((!is_null($f)) && (!($f instanceof PHK_TFile)))
+if ((!is_null($f)) && (!($f instanceof File)))
 	{
-	if ($exception_flag) throw new Exception($path.': No such file');
+	if ($exception_flag) throw new \Exception($path.': No such file');
 	else return null;
 	}
 
@@ -189,7 +186,7 @@ if ($html) echo '</table>';
 
 public function display($link)
 {
-$html=PHK_Util::env_is_web();
+$html=\PHK\Tools\Util::env_is_web();
 
 $this->display_header($html);
 $this->walk('display',$html,$link);
@@ -200,7 +197,7 @@ $this->display_footer($html);
 
 public function display_packages()
 {
-$html=PHK_Util::env_is_web();
+$html=\PHK\Tools\Util::env_is_web();
 
 ob_start();
 $this->walk('display_package',$html);
@@ -253,7 +250,7 @@ public function add_node($path,$node)
 $path=self::realpath($path);
 
 if (strpbrk($path,'#*?!&~"|`\^@[]={}$;,<>')!==false)
-	throw new Exception("$path: Invalid characters in path");
+	throw new \Exception("$path: Invalid characters in path");
 
 if ($path != '')
 	{
@@ -262,8 +259,8 @@ if ($path != '')
 	$dirnode=$this->rlookup($dir,false);
 	if (is_null($dirnode)) $dirnode=$this->mkdir($dir);
 
-	if (!($dirnode instanceof PHK_TDir))
-		throw new Exception("Cannot add node over a non-directory node ($dir)");
+	if (!($dirnode instanceof Dir))
+		throw new \Exception("Cannot add node over a non-directory node ($dir)");
 
 	$dirnode->add_child($basename);
 	}
@@ -280,21 +277,21 @@ $this->nodes[$path]=$node;
 public static function create_empty()
 {
 $tree=new self(null);
-$tree->add_node('',new PHK_TDir('',$tree));
+$tree->add_node('',new Dir('',$tree));
 
 return $tree;
 }
 
 //---
 
-public function export(PHK_Creator $phk,$map=null)
+public function export(\PHK\Build\Creator $phk,$map=null)
 {
 $edata=array();
-$stacker=new PHK_DataStacker();
+$stacker=new \PHK\Build\DataStacker();
 
 foreach($this->nodes as $path => $node)
 	{
-	$edata[$path]=array_search(get_class($node),self::$eclasses)
+	$edata[$path]=array_search(substr(get_class($node),strlen(__NAMESPACE__)+1),self::$char_to_class)
 		.$node->export($phk,$stacker,$map);
 	}
 ksort($edata); // To display files in the right order
@@ -305,25 +302,25 @@ return array(serialize($edata),$stacker->data);
 //---
 // target: absolute target path. '&' is replaced by source basename
 // sapath: Absolute source path
-// modifiers: array received from PHK_PSF_Cmd_Options
+// modifiers: array received from \PHK\Build\PSF\CmdOptions
 
 public function merge_into_file_tree($target,$sapath,$modifiers)
 {
 if (!file_exists($sapath))
-	throw new Exception($sapath.': Path not found');
+	throw new \Exception($sapath.': Path not found');
 
 $target=self::realpath(str_replace('&',basename($sapath),$target));
 
 switch($type=filetype($sapath))
 	{
 	case 'file':
-		if ($target=='') throw new Exception('Cannot replace root dir with a file');
+		if ($target=='') throw new \Exception('Cannot replace root dir with a file');
 		$this->remove($target);
-		$this->mkfile($target,PHK_Util::readfile($sapath),$modifiers);
+		$this->mkfile($target,\PHK\Tools\Util::readfile($sapath),$modifiers);
 		break;
 
 	case 'dir':
-		foreach(PHK_Util::scandir($sapath) as $subname)
+		foreach(\PHK\Tools\Util::scandir($sapath) as $subname)
 			{
 			$this->merge_into_file_tree($target.'/'.$subname,$sapath.'/'.$subname
 				,$modifiers);
@@ -376,14 +373,14 @@ $rpath=self::realpath($path);
 
 if (is_null($node=$this->rlookup($rpath,false))) // If node does not exist
 	{
-	$node=new PHK_TDir($path,$this);
+	$node=new Dir($path,$this);
 	$node->modify($modifiers);
 	$this->add_node($path,$node);
 	}
 else // If node already exists, check that it is a directory
 	{
 	if (($type=$node->type())!='dir')
-		throw new Exception("mkdir: $path is already a $type");
+		throw new \Exception("mkdir: $path is already a $type");
 	}
 return $node;
 }
@@ -394,7 +391,7 @@ public function mkfile($path,$data,$modifiers=array())
 {
 $rpath=self::realpath($path);
 
-$node=new PHK_TFile($rpath,$this);
+$node=new File($rpath,$this);
 $node->set_data($data);
 $node->modify($modifiers);
 
@@ -408,7 +405,7 @@ return $node;
 public function remove($path)
 {
 $rpath=self::realpath($path);
-if ($rpath=='') throw new Exception('Cannot remove root directory');
+if ($rpath=='') throw new \Exception('Cannot remove root directory');
 
 if (is_null($this->rlookup($rpath,false))) return; // Path does not exist
 

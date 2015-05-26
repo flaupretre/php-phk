@@ -63,18 +63,18 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\UnitTest {
 
-if (!function_exists('_phk_load_phpunit_interface'))
+if (!function_exists('PHK\UnitTest\_phk_load_phpunit_interface'))
 {
 function _phk_load_phpunit_interface()
 {
-if (!class_exists('PHPUnit_Runner_PHKTestSuiteLoader',false))
+if (!class_exists('PHK\UnitTest\PHPUnit_Runner_PHKTestSuiteLoader',false))
 {
 //=============================================================================
 /**
 */
-class PHPUnit_Runner_PHKTestSuiteLoader implements PHPUnit_Runner_TestSuiteLoader
+class PHPUnit_Runner_PHKTestSuiteLoader implements \PHPUnit_Runner_TestSuiteLoader
 {
 
 //-------------------
@@ -83,25 +83,25 @@ public function load($suiteClassName, $suiteClassFile = '')
 {
 if (class_exists($suiteClassName, true))
 	{
-	return new ReflectionClass($suiteClassName);
+	return new \ReflectionClass($suiteClassName);
 	}
-else throw new RuntimeException("Class $suiteClassName could not be found");
+else throw new \RuntimeException("Class $suiteClassName could not be found");
 }
 
 //-------------------
 
-public function reload(ReflectionClass $aClass)
+public function reload(\ReflectionClass $aClass)
 {
 return $aClass;
 }
 
 //---------------------------------
-} // End of class PHPUnit_Runner_PHKTestSuiteLoader
+} // End of class
 //-------------------------
-} // End of class_exists('PHPUnit_Runner_PHKTestSuiteLoader')
+} // End of class_exists
 //=============================================================================
 
-if (!class_exists('PHPUnit_TextUI_PHK',false))
+if (!class_exists('PHK\UnitTest\PHPUnit_TextUI_PHK',false))
 {
 //=============================================================================
 /**
@@ -114,35 +114,35 @@ public static function main()
 {
 PHPUnit_Util_Filter::addFileToFilter(__FILE__, 'PHPUNIT');
 
-self::handleLoader('PHPUnit_Runner_PHKTestSuiteLoader');
+self::handleLoader('PHK\UnitTest\PHPUnit_Runner_PHKTestSuiteLoader');
 
 //----
 
 $arguments=self::handleArguments();
 
-$runner= new PHPUnit_TextUI_TestRunner;
+$runner= new \PHPUnit_TextUI_TestRunner;
 
 $suite = $runner->getTest($arguments['test'],'',$arguments['syntaxCheck']);
 
 try	{
-	if (PHK_Util::env_is_web()) echo "<pre>\n";
+	if (\PHK\Tools\Util::env_is_web()) echo "<pre>\n";
 
 	$result = $runner->doRun($suite,$arguments);
 
-	if (PHK_Util::env_is_web()) echo "</pre>\n";
+	if (\PHK\Tools\Util::env_is_web()) echo "</pre>\n";
 	}
-catch (Exception $e)
+catch (\Exception $e)
 	{
-    throw new RuntimeException('Could not create and run test suite: '
+    throw new \RuntimeException('Could not create and run test suite: '
 		. $e->getMessage());
 	}
 
-if (!PHK_Util::env_is_web())
+if (!\PHK\Tools\Util::env_is_web())
 	{
-	if ($result->wasSuccessful()) exit(PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
+	if ($result->wasSuccessful()) exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
 	else if($result->errorCount() > 0)
-		exit(PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
-	else exit(PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
+		exit(\PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
+	else exit(\PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
 	}
 }
 
@@ -201,12 +201,12 @@ try
 	{
 	//-- Tests if argv exists - allows to run in web mode
 
-	$options = PHPUnit_Util_Getopt::getopt(
+	$options = \PHPUnit_Util_Getopt::getopt(
 		isset($_SERVER['argv']) ? $_SERVER['argv'] : array(),'d:',$longOptions);
 	}
-catch (RuntimeException $e)
+catch (\RuntimeException $e)
 	{
-	PHPUnit_TextUI_TestRunner::showError($e->getMessage());
+	\PHPUnit_TextUI_TestRunner::showError($e->getMessage());
 	}
 
 $arguments['test']=(isset($options[1][0]) ? $options[1][0] : 'AllTests');
@@ -239,7 +239,7 @@ foreach ($options[0] as $option)
 
 		case '--help':
 			self::showHelp();
-			exit(PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
+			exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
 			break;
 
 		case '--filter':
@@ -320,16 +320,16 @@ foreach ($options[0] as $option)
 			else
 				{
 				self::showHelp();
-				exit(PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
+				exit(\PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
 				}
 			break;
 
 		case '--tap':
-			$arguments['printer'] = new PHPUnit_Util_Log_TAP;
+			$arguments['printer'] = new \PHPUnit_Util_Log_TAP;
 			break;
 
 		case '--testdox':
-			$arguments['printer'] = new PHPUnit_Util_TestDox_ResultPrinter_Text;
+			$arguments['printer'] = new \PHPUnit_Util_TestDox_ResultPrinter_Text;
 			break;
 
 		case '--testdox-html':
@@ -349,8 +349,8 @@ foreach ($options[0] as $option)
 			break;
 
 		case '--version':
-			PHPUnit_TextUI_TestRunner::printVersionString();
-			exit(PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
+			\PHPUnit_TextUI_TestRunner::printVersionString();
+			exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
 			break;
 
 		case '--wait':
@@ -361,7 +361,7 @@ foreach ($options[0] as $option)
 
 if (!isset($arguments['test']) && isset($arguments['configuration']))
 	{
-	$configuration= new PHPUnit_Util_Configuration($arguments['configuration']);
+	$configuration= new \PHPUnit_Util_Configuration($arguments['configuration']);
 
 	$testSuite = $configuration->getTestSuiteConfiguration();
 
@@ -372,7 +372,7 @@ if ((isset($arguments['testDatabaseLogRevision'])
 	&& !isset($arguments['testDatabaseDSN'])))
 	{
 	self::showHelp();
-	exit(PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
+	exit(\PHPUnit_TextUI_TestRunner::EXCEPTION_EXIT);
 	}
 
 return $arguments;
@@ -388,27 +388,27 @@ protected static function doSkeleton($test, $testFile)
 {
 if ($test !== FALSE)
 	{
-	PHPUnit_TextUI_TestRunner::printVersionString();
+	\PHPUnit_TextUI_TestRunner::printVersionString();
 
 	try
 		{
-		$skeleton = new PHPUnit_Util_Skeleton($test, $testFile);
+		$skeleton = new \PHPUnit_Util_Skeleton($test, $testFile);
 		$skeleton->write();
 		}
-	catch (Exception $e)
+	catch (\Exception $e)
 		{
 		print $e->getMessage() . "\n";
 
 		printf('Could not write test class skeleton for "%s" to "%s".' . "\n",
 			$test,$testFile);
 
-		exit(PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
+		exit(\PHPUnit_TextUI_TestRunner::FAILURE_EXIT);
 		}
 
 	printf('Wrote test class skeleton for "%s" to "%s".' . "\n",
 		$test,$skeleton->getTestSourceFile());
 
-	exit(PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
+	exit(\PHPUnit_TextUI_TestRunner::SUCCESS_EXIT);
 	}
 }
 
@@ -421,13 +421,13 @@ protected static function handleLoader($loaderName)
 {
 if (!class_exists($loaderName, FALSE))
 	{
-	PHPUnit_Util_Fileloader::checkAndLoad(str_replace('_', '/', $loaderName)
+	\PHPUnit_Util_Fileloader::checkAndLoad(str_replace('_', '/', $loaderName)
 		. '.php');
 	}
 
 if (class_exists($loaderName, FALSE))
 	{
-	$class = new ReflectionClass($loaderName);
+	$class = new \ReflectionClass($loaderName);
 
 	if ($class->implementsInterface('PHPUnit_Runner_TestSuiteLoader') &&
 		$class->isInstantiable())
@@ -438,11 +438,11 @@ if (class_exists($loaderName, FALSE))
 
 if (!isset($loader))
 	{
-	PHPUnit_TextUI_TestRunner::showError(
+	\PHPUnit_TextUI_TestRunner::showError(
 		sprintf('Could not use "%s" as loader.',$loaderName));
 	}
 
-PHPUnit_TextUI_TestRunner::setLoader($loader);
+\PHPUnit_TextUI_TestRunner::setLoader($loader);
 }
 
 /**
@@ -451,7 +451,7 @@ PHPUnit_TextUI_TestRunner::setLoader($loader);
 */
 public static function showHelp()
 {
-PHPUnit_TextUI_TestRunner::printVersionString();
+\PHPUnit_TextUI_TestRunner::printVersionString();
 
 print "Usage: php <package> [switches] [UnitTest]\n\n";
 
@@ -502,9 +502,9 @@ print "  --testdox-html <file>  Write agile documentation in HTML format to file
 //-------------------------
 } // End of class_exists('PHPUnit_TextUI_PHK')
 //=============================================================================
-} // End of function _phk_load_phpunit_interface
+} // End of function \PHK\UnitTest\_phk_load_phpunit_interface
 //=============================================================================
-} // End of function_exists(_phk_load_phpunit_interface)
+} // End of function_exists(\PHK\UnitTest\_phk_load_phpunit_interface)
 //===========================================================================
 } // End of namespace
 //===========================================================================

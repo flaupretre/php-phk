@@ -17,6 +17,8 @@
 //
 //=============================================================================
 /**
+* This class manages options for lines on the %options line of a PSF
+*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -24,28 +26,35 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\Build\PSF {
 
-if (!class_exists('PHK',false))
+if (!class_exists('PHK\Build\PSF\MetaOptions',false))
 {
-//=============================================================================
-/**
-* This class is just an empty extension of the PHK_Base class. This is done
-* this way so that PHK_Creator uses the PHP code even if the extension
-* is present.
-*
-* @see PHK_Base
-*/
-
-class PHK extends PHK_Base
+class MetaOptions extends \Phool\Options\Base
 {
 
-//---------------
-// If we get here, the PHP runtime is already loaded.
-// But the method has to exist.
+// Short/long modifier args
 
-public static function need_php_runtime()
+protected $opt_modifiers=array(
+	array('short' => 's', 'long' => 'syntax', 'value' => true)
+	);
+
+// Option values
+
+protected $options=array(
+	'syntax' => 'yaml'
+	);
+
+//-----------------------
+
+protected function process_option($opt,$arg)
 {
+switch($opt)
+	{
+	case 's':
+		$this->options['syntax']=strtolower($arg);
+		break;
+	}
 }
 
 //---

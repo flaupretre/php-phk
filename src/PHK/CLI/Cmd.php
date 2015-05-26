@@ -26,18 +26,18 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\CLI {
 
-if (!class_exists('PHK_Cmd',false))
+if (!class_exists('PHK\CLI\Cmd',false))
 {
-class PHK_Cmd
+class Cmd
 {
 //---------
 
 private static function error_abort($msg,$usage=true)
 {
 if ($usage) $msg .= " - Use 'help' command for syntax";
-throw new Exception($msg);
+throw new \Exception($msg);
 }
 
 //---------
@@ -78,7 +78,7 @@ More information at http://phk.tekwire.net\n\n";
 
 public static function run($args)
 {
-$op=new PHK_Cmd_Options;
+$op=new Options;
 $op->parse_all($args);
 $action=(count($args)) ? array_shift($args) : 'help';
 
@@ -87,14 +87,14 @@ switch($action)
 	case 'build':
 		if (count($args)!=1) self::error_abort("$action requires 1 argument");
 		$phk_path=array_shift($args);
-		PHK_PSF::build($phk_path,$op->option('psf_path'),$op->option('vars'));
+		\PHK\Build\PSF\Parser::build($phk_path,$op->option('psf_path'),$op->option('vars'));
 		break;
 
 	case 'check':
 		if (count($args)!=1) self::error_abort("$action requires 1 argument");
 		$phk_path=array_shift($args);
-		$mnt=PHK_Mgr::mount($phk_path);
-		$obj=PHK_Mgr::instance($mnt);
+		$mnt=\PHK\Mgr::mount($phk_path);
+		$obj=\PHK\Mgr::instance($mnt);
 		$obj->check();
 		break;
 

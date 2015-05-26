@@ -19,9 +19,9 @@
 /**
 * A utility class used only at package creation time.
 *
-* This class maintains an array and appends elements to it, eliminating
-* duplicate keys. When every elements have been appended, returns the resulting
-* array.
+* This class maintains a string buffer and appends strings to it, returning
+* the current offset. When every strings have been appended, returns the
+* resulting buffer.
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
@@ -30,35 +30,33 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Build {
 
-if (!class_exists('PHK_ItemLister',false))
+if (!class_exists('PHK\Build\DataStacker',false))
 {
 //============================================================================
 
-class PHK_ItemLister
+class DataStacker
 {
-private $a;
+public $offset;
+public $data;
 
 //---------
 
 public function __construct()
 {
-$this->a=array();
+$this->offset=0;
+$this->data='';
 }
 
 //---------
 
-public function add($item,$value)
+public function push($data)
 {
-$this->a[$item]=$value;
-}
-
-//---------
-
-public function get()
-{
-return $this->a;
+$this->data .= $data;
+$ret_offset=$this->offset;
+$this->offset += strlen($data);
+return $ret_offset;
 }
 
 //---

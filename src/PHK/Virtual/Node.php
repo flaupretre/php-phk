@@ -17,8 +17,6 @@
 //
 //=============================================================================
 /**
-* The PHK_TNode_Backend class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -26,13 +24,13 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Virtual {
 
-if (!class_exists('PHK_TNode',false))
+if (!class_exists('PHK\Virtual\Node',false))
 {
 //============================================================================
 
-abstract class PHK_TNode		// Base class - never instantiated
+abstract class Node		// Base class - never instantiated
 {
 protected $flags;
 
@@ -42,7 +40,7 @@ protected $tree=null;	// Back pointer to the tree
 
 //---- Flags
 
-const TN_DC_FLAG_MASK=PHK_DC::COMPRESS_TYPE; // Low bits reserved for compr type
+const TN_DC_FLAG_MASK=DC::COMPRESS_TYPE; // Low bits reserved for compr type
 
 const TN_STRIP_SOURCE=8;	// Strip source files
 const TN_NO_AUTOLOAD=16;	// Don't register symbols in Automap
@@ -69,7 +67,7 @@ return ($this->flags & self::TN_PKG);
 
 public function getdir()
 {
-throw new Exception($this->path.': Cannot getdir() on a '.$this->type());
+throw new \Exception($this->path.': Cannot getdir() on a '.$this->type());
 }
 
 //---
@@ -77,7 +75,7 @@ throw new Exception($this->path.': Cannot getdir() on a '.$this->type());
 
 public function read()
 {
-throw new Exception($this->path.': Cannot read() a '.$this->type());
+throw new \Exception($this->path.': Cannot read() a '.$this->type());
 }
 
 //---
@@ -98,7 +96,7 @@ return $flag_string;
 //---
 
 // Cannot call set_flags() here, as it will call the derived
-// method when it is defined (as in PHK_TFile)
+// method when it is defined (as in \PHK\Virtual\File)
 
 protected function __construct($path,$tree)
 {
@@ -117,7 +115,7 @@ return substr($edata,2);
 
 // <CREATOR> //---------------
 
-abstract public function export(PHK_Creator $phk,PHK_DataStacker $stacker,$map);
+abstract public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker,$map);
 
 //---
 
@@ -157,21 +155,21 @@ foreach($modifiers as $name => $value)
 					{
 					case 'no':
 					case 'none':
-						$c=PHK_DC::COMPRESS_NONE;
+						$c=DC::COMPRESS_NONE;
 						break;
 					case 'gz':
 					case 'gzip':
-						$c=PHK_DC::COMPRESS_GZIP;
+						$c=DC::COMPRESS_GZIP;
 						break;
 					case 'bz':
 					case 'bz2':
 					case 'bzip2':
-						$c=PHK_DC::COMPRESS_BZIP2;
+						$c=DC::COMPRESS_BZIP2;
 						break;
 					default:
-						throw new Exception($value.': Unknown compression method');
+						throw new \Exception($value.': Unknown compression method');
 					}
-				$flags = ($flags & ~PHK_DC::COMPRESS_TYPE) | $c;
+				$flags = ($flags & ~DC::COMPRESS_TYPE) | $c;
 				break;
 		// Ignore other modifiers
 		}

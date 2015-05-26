@@ -24,9 +24,9 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK {
 
-if (!class_exists('PHK_Base',false))
+if (!class_exists('PHK\Base',false))
 {
 //=============================================================================
 /**
@@ -34,7 +34,7 @@ if (!class_exists('PHK_Base',false))
 *
 * This file contains the front-end class for PHK object. This class gets its
 * data from the stream wrapper, which retrieves them from the cache or from
-* PHK_Proxy. This class is also used as base class for PHK_Creator instances.
+* \PHK\Proxy. This class is also used as base class for \PHK\Build\Creator instances.
 *
 * This class does never access the package file directly.
 *
@@ -44,18 +44,18 @@ if (!class_exists('PHK_Base',false))
 *
 * Runtime code -> 100% read-only
 *
-* PHK objects are created and destructed from the PHK manager (PHK_Mgr class).
+* PHK objects are created and destructed from the PHK manager (\PHK\Mgr class).
 *
-* You get the PHK object instance by calling PHK_Mgr::instance with a mount
+* You get the PHK object instance by calling \PHK\Mgr::instance with a mount
 * point. This mount point is generally returned either by an include,
-* when including a package, or by PHK_Mgr::uri_to_mnt().
+* when including a package, or by \PHK\Mgr::uri_to_mnt().
 *
-* @see PHK_Mgr
-* @see PHK_Proxy
+* @see \PHK\Mgr
+* @see \PHK\Proxy
 * @package PHK
 */
 
-abstract class PHK_Base
+abstract class Base
 {
 //========== Class constants ===============
 
@@ -77,7 +77,7 @@ const CRC_CHECK=16;
 
 const NO_MOUNT_SCRIPT=32;
 
-/** Mount flag - If set, create a PHK_Creator object, instead of a PHK object */
+/** Mount flag - If set, create a \PHK\Build\Creator object, instead of a PHK object */
 
 const IS_CREATOR=64;
 
@@ -123,7 +123,7 @@ protected $caching=null;
 
 protected $mtime;
 
-/** @var PHK_Backend The slow backend object (created only when needed) */
+/** @var \PHK\Backend The slow backend object (created only when needed) */
 
 protected $backend=null;
 
@@ -208,7 +208,7 @@ if ($this->option('crc_check') || ($this->flags & self::CRC_CHECK))
 if (is_null($this->parent_mnt))
 	{
 	if (!is_null($extensions=$this->option('required_extensions')))
-		PHK_Util::load_extensions($extensions);
+		\PHK\Tools\Util::load_extensions($extensions);
 	}
 
 if ($this->map_defined())
@@ -222,7 +222,7 @@ else $this->automap_id=0;
 //-- Call the mount script - if the mount script wants to refuse the mount,
 //-- it throws an exception.
 
-if (!($this->flags & PHK::NO_MOUNT_SCRIPT)
+if (!($this->flags & \PHK::NO_MOUNT_SCRIPT)
 	&& (!is_null($mpath=$this->option('mount_script'))))
 		{ require $this->uri($mpath); }
 
@@ -231,9 +231,9 @@ if (!($this->flags & PHK::NO_MOUNT_SCRIPT)
 if (!is_null($c=$this->option('plugin_class')))
 	$this->plugin=new $c($this->mnt);
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
-	throw new Exception('While initializing PHK instance - '.$e->getMessage());
+	throw new \Exception('While initializing PHK instance - '.$e->getMessage());
 	}
 }
 
@@ -241,7 +241,7 @@ catch (Exception $e)
 
 public function map_defined()
 {
-if ($this->flags & PHK::IS_CREATOR) return false;
+if ($this->flags & \PHK::IS_CREATOR) return false;
 
 return $this->build_info('map_defined');
 }
@@ -263,7 +263,7 @@ $this->caching=$toggle;
 
 public static function file_is_package($path)
 {
-return PHK_Proxy::file_is_package($path);
+return \PHK\Proxy::file_is_package($path);
 }
 
 //---------
@@ -276,18 +276,18 @@ return PHK_Proxy::file_is_package($path);
 
 public static function data_is_package($data)
 {
-return PHK_Proxy::data_is_package($data);
+return \PHK\Proxy::data_is_package($data);
 }
 
 //-----
 
 public function cache_enabled($command,$params,$path)
 {
-if ($this->flags & PHK::IS_CREATOR) return false;
+if ($this->flags & \PHK::IS_CREATOR) return false;
 
 if ($this->option('no_cache')===true) return false;
 
-if (!PHK_Cache::cache_present()) return false;
+if (!\PHK\Cache::cache_present()) return false;
 
 if (!is_null($this->caching)) return $this->caching;
 
@@ -298,7 +298,7 @@ return true;
 // Umount this entry.
 // We dont use __destruct because :
 //	1. We don't want this to be called on script shutdown
-//	2. Exceptions cannot be caught when sent from a destructor.
+//	2. \Exceptions cannot be caught when sent from a destructor.
 
 public function umount()
 {
@@ -308,7 +308,7 @@ if (!is_null($this->plugin)) unset($this->plugin);
 
 //-- Call the umount script
 
-if (!($this->flags & PHK::NO_MOUNT_SCRIPT))	// Call the umount script
+if (!($this->flags & \PHK::NO_MOUNT_SCRIPT))	// Call the umount script
 	{
 	if (!is_null($upath=$this->option('umount_script')))
 		{ require($this->uri($upath)); }
@@ -323,28 +323,28 @@ if ($this->automap_id) \Automap\Mgr::unload($this->automap_id);
 
 public function uri($path)
 {
-return PHK_Mgr::uri($this->mnt,$path);
+return \PHK\Mgr::uri($this->mnt,$path);
 }
 
 //-----
 
 public function section_uri($section)
 {
-return PHK_Mgr::section_uri($this->mnt,$section);
+return \PHK\Mgr::section_uri($this->mnt,$section);
 }
 
 //-----
 
 public function command_uri($command)
 {
-return PHK_Mgr::command_uri($this->mnt,$command);
+return \PHK\Mgr::command_uri($this->mnt,$command);
 }
 
 //-----
 
 public function base_uri()
 {
-return PHK_Mgr::base_uri($this->mnt);
+return \PHK\Mgr::base_uri($this->mnt);
 }
 
 //-----
@@ -356,7 +356,7 @@ return PHK_Mgr::base_uri($this->mnt);
 
 public function automap_uri()
 {
-return PHK_Mgr::automap_uri($this->mnt);
+return \PHK\Mgr::automap_uri($this->mnt);
 }
 
 //-----
@@ -383,7 +383,7 @@ public function web_access_allowed($path)
 {
 $plen=strlen($path);
 
-foreach(PHK_Util::mk_array($this->option('web_access')) as $apath)
+foreach(\PHK\Tools\Util::mk_array($this->option('web_access')) as $apath)
 	{
 	if ($apath=='/') return true;
 	$alen=strlen($apath);
@@ -403,7 +403,7 @@ private function goto_main($web_run_script)
 {
 if ($this->option('web_main_redirect'))
 	{
-	PHK_Util::http_301_redirect($web_run_script);
+	\PHK\Tools\Util::http_301_redirect($web_run_script);
 	}
 else return 'require(\''.$this->uri($web_run_script).'\');';
 }
@@ -420,7 +420,7 @@ else return 'require(\''.$this->uri($web_run_script).'\');';
 
 public function web_tunnel($path=null,$webinfo=false)
 {
-if (is_null($path)) $path=PHK::get_subpath();
+if (is_null($path)) $path=\PHK::get_subpath();
 $last_slash=(substr($path,-1)=='/');
 if ($path!='/') $path=rtrim($path,'/');
 $web_run_script=$this->option('web_run_script');
@@ -429,7 +429,7 @@ $mnt=$this->mnt();
 if ($path=='')
 	{
 	if (!is_null($web_run_script)) return $this->goto_main($web_run_script); 
-	else PHK_Util::http_301_redirect('/'); // Redirect to the virtual root dir
+	else \PHK\Tools\Util::http_301_redirect('/'); // Redirect to the virtual root dir
 	}
 
 // If a package use a path as both file and http paths, we can receive
@@ -450,14 +450,14 @@ if ((!$webinfo) && (!$this->web_access_allowed($path))
 	&& ($path!==$web_run_script))
 	{
 	if (!is_null($web_run_script)) return $this->goto_main($web_run_script); 
-	else PHK_Util::http_403_fail();	// Returns 'Forbidden'
+	else \PHK\Tools\Util::http_403_fail();	// Returns 'Forbidden'
 	}
 
 // File exists ?
 
 $uri=$this->uri($path);
 
-if (($a=@stat($uri))===false) PHK_Util::http_404_fail();
+if (($a=@stat($uri))===false) \PHK\Tools\Util::http_404_fail();
 
 if (($a['mode'] & 0170000) == 040000)	// Special case for directory
 	{
@@ -472,9 +472,9 @@ if (($a['mode'] & 0170000) == 040000)	// Special case for directory
 				break;
 				}
 			}
-		if (is_null($file_path)) PHK_Util::http_404_fail(); // No Directory Index
+		if (is_null($file_path)) \PHK\Tools\Util::http_404_fail(); // No Directory Index
 		}
-	else PHK_Util::http_301_redirect($path.'/');
+	else \PHK\Tools\Util::http_301_redirect($path.'/');
 	}
 else $file_path=$path;
 
@@ -488,7 +488,7 @@ if ((!$webinfo) && ($this->is_php_source_path($file_path)))
 	}
 else
 	{
-	return "PHK_Mgr::instance('".$this->mnt."')->mime_header('$file_path');\n"
+	return "\PHK\Mgr::instance('".$this->mnt."')->mime_header('$file_path');\n"
 		."readfile('".$this->uri($file_path)."');";
 	}
 }
@@ -530,7 +530,7 @@ if (!is_null($type=$this->mime_type($path))) header('Content-type: '.$type);
 
 public function mime_type($path)
 {
-$ext=PHK_Util::file_suffix($path);
+$ext=\PHK\Tools\Util::file_suffix($path);
 
 if ((!is_null($mtab=$this->option('mime_types'))) && isset($mtab[$ext]))
 	return $mtab[$ext];
@@ -562,7 +562,7 @@ return ($this->mime_type($path)==='application/x-httpd-php');
 
 public function proxy()
 {
-return PHK_Mgr::proxy($this->mnt);
+return \PHK\Mgr::proxy($this->mnt);
 }
 
 //---------
@@ -572,7 +572,7 @@ return PHK_Mgr::proxy($this->mnt);
 * Generates an exception if the check fails
 *
 * @return void
-* @throws Exception
+* @throws \Exception
 */
 
 public function crc_check()
@@ -586,11 +586,11 @@ public function supports_php_version()
 {
 if ((!is_null($minv=$this->option('min_php_version')))
 	&& (version_compare(PHP_VERSION,$minv) < 0))
-		throw new Exception("PHP minimum supported version: $minv (current is ".PHP_VERSION.")");
+		throw new \Exception("PHP minimum supported version: $minv (current is ".PHP_VERSION.")");
 
 if ((!is_null($maxv=$this->option('max_php_version')))
 	&& (version_compare(PHP_VERSION,$maxv) > 0))
-		throw new Exception("PHP maximum supported version: $maxv (current is ".PHP_VERSION.")");
+		throw new \Exception("PHP maximum supported version: $maxv (current is ".PHP_VERSION.")");
 }
 
 //-----
@@ -620,7 +620,7 @@ public function build_info($name=null)
 if (is_null($name)) return $this->build_info;
 
 if (!isset($this->build_info[$name]))
-	throw new Exception($name.': unknown build info');
+	throw new \Exception($name.': unknown build info');
 
 return $this->build_info[$name];
 }
@@ -629,20 +629,20 @@ return $this->build_info[$name];
 
 public static function subpath_url($path)
 {
-return PHK_Backend::subpath_url($path);
+return \PHK\Backend::subpath_url($path);
 }
 
 //---------------------------------
 // Get the sub-path from an URL. Because of the problems with CGI mode, we
 // have to support 2 syntaxes :
 // http://<site>/.../<phk_file><path>
-// http://<site>/.../<phk_file>?_PHK_path=<path>
+// http://<site>/.../<phk_file>?_phk_path=<path>
 
 public static function get_subpath()
 {
 $path='';
 
-if (isset($_REQUEST['_PHK_path'])) $path=urldecode($_REQUEST['_PHK_path']);
+if (isset($_REQUEST['_phk_path'])) $path=urldecode($_REQUEST['_phk_path']);
 else
 	{
 	$path=isset($_SERVER['PATH_INFO']) ? $_SERVER['PATH_INFO'] : '';
@@ -660,7 +660,7 @@ return $path;
 
 private function backend()
 {
-if (is_null($this->backend)) $this->backend=new PHK_Backend($this);
+if (is_null($this->backend)) $this->backend=new \PHK\Backend($this);
 
 return $this->backend;
 }
@@ -670,7 +670,7 @@ return $this->backend;
 
 public function __call($method,$args)
 {
-return PHK_Util::call_method($this->backend($this),$method,$args);
+return \PHK\Tools\Util::call_method($this->backend($this),$method,$args);
 }
 
 //---------
@@ -679,21 +679,21 @@ public static function prolog($file,&$cmd,&$ret)
 {
 # Do we run in CLI mode ?
 
-if ($cli=(!PHK_Util::env_is_web()))
+if ($cli=(!\PHK\Tools\Util::env_is_web()))
 	{
 	ini_set('display_errors',true);
 	ini_set('memory_limit','1024M'); // Only in CLI mode
 	}
 
-PHK_Mgr::php_version_check();	//-- Check PHP version - if unsupported, no return
+\PHK\Mgr::php_version_check();	//-- Check PHP version - if unsupported, no return
 
 //-----
 // Mount the PHK file (or get the mount point if previously mounted)
 
-$mnt=PHK_Mgr::mount($file);
-$phk=PHK_Mgr::instance($mnt);
+$mnt=\PHK\Mgr::mount($file);
+$phk=\PHK\Mgr::instance($mnt);
 
-//PHK_Util::trace("Prolog mounted $file on $mnt");//TRACE
+//\PHK\Tools\Util::trace("Prolog mounted $file on $mnt");//TRACE
 
 //-----
 // Am I a main script ?
@@ -710,7 +710,7 @@ if (!$main)	// Not main script
 
 	if ($phk->option('auto_umount'))
 		{
-		PHK_Mgr::umount($mnt);
+		\PHK\Mgr::umount($mnt);
 		$ret='';
 		}
 	else $ret=$mnt;
@@ -741,7 +741,7 @@ else	// HTTP mode
 	{
 	if (file_exists($file.'.webinfo'))	// Slow path
 		{
-		PHK_Util::run_webinfo($phk);
+		\PHK\Tools\Util::run_webinfo($phk);
 		}
 	else
 		{

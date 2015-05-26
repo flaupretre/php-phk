@@ -17,7 +17,7 @@
 //
 //=============================================================================
 /**
-* This class manages options for PHK_Cmd
+* This class manages options for lines in the first block of a PSF
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
@@ -26,29 +26,34 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\Build\PSF {
 
-if (!class_exists('PHK_Cmd_Options',false))
+if (!class_exists('PHK\Build\PSF\CmdOptions',false))
 {
-class PHK_Cmd_Options extends \Phool\Options\Base
+class CmdOptions extends \Phool\Options\Base
 {
 
 // Short/long modifier args
 
 protected $opt_modifiers=array(
-	array('short' => 'v', 'long' => 'verbose', 'value' => false),
-	array('short' => 'q', 'long' => 'quiet'  , 'value' => false),
-	array('short' => 's', 'long' => 'source'  , 'value' => true),
-	array('short' => 'd', 'long' => 'define'  , 'value' => true)
+	array('short' => 'n', 'long' => 'no-autoload'  , 'value' => false),
+	array('short' => 's', 'long' => 'strip'  , 'value' => false),
+	array('short' => 'c', 'long' => 'compression'  , 'value' => true),
+	array('short' => 't', 'long' => 'target-path'  , 'value' => true),
+	array('short' => 'b', 'long' => 'target-base'  , 'value' => true),
+	array('short' => 'C', 'long' => 'directory'  , 'value' => true)
 	);
 
 // Option values
 
 protected $options=array(
-	'psf_path' => null,
-	'vars' => array()
+	'autoload' => null,
+	'strip' => null,
+	'compression' => null,
+	'target-path' => null,
+	'target-base' => null,
+	'directory' => null
 	);
-
 
 //-----------------------
 
@@ -56,23 +61,28 @@ protected function process_option($opt,$arg)
 {
 switch($opt)
 	{
-	case 'v':
-		\Phool\Display::inc_verbose();
-		break;
-
-	case 'q':
-		\Phool\Display::dec_verbose();
+	case 'n':
+		$this->options['autoload']=false;
 		break;
 
 	case 's':
-		$this->options['psf_path']=$arg;
+		$this->options['strip']=true;
 		break;
 
-	case 'd':
-		$a=explode('=',$arg,2);
-		if ((count($a)!=2)||($a[0]===''))
-			throw new Exception("Invalid variable definition ($arg)");
-		$this->options['vars'][$a[0]]=$a[1];
+	case 'c':
+		$this->options['compression']=strtolower($arg);
+		break;
+
+	case 't':
+		$this->options['target-path']=$arg;
+		break;
+
+	case 'b':
+		$this->options['target-base']=$arg;
+		break;
+
+	case 'C':
+		$this->options['directory']=$arg;
 		break;
 	}
 }

@@ -15,8 +15,6 @@
 //
 //=============================================================================
 /**
-* The PHK_Proxy class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -24,9 +22,9 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK {
 
-if (!class_exists('PHK_Proxy',false))
+if (!class_exists('PHK\Proxy',false))
 {
 //=============================================================================
 /**
@@ -35,13 +33,13 @@ if (!class_exists('PHK_Proxy',false))
 *
 * Runtime code -> 100% read-only except set_buffer_interp().
 *
-* @see PHK_Stream
+* @see \PHK\Stream\Wrapper
 * @see PHK
-* @see PHK_Mgr
+* @see \PHK\Mgr
 * @package PHK
 */
 
-class PHK_Proxy
+class Proxy
 {
 //========== Class constants ===============
 
@@ -90,11 +88,11 @@ const CRC_OFFSET=200;
 
 private	$path;
 
-/** @var PHK_Tree	Section tree */
+/** @var \PHK\Virtual\Tree	Section tree */
 
 protected	$stree=null;
 
-/** @var PHK_Tree	File tree */
+/** @var \PHK\Virtual\Tree	File tree */
 
 public		$ftree=null;
 
@@ -102,7 +100,7 @@ public		$ftree=null;
 
 protected	$flags;
 
-/** @var PHK_FileSpace	File Handler */
+/** @var \PHK\PkgFileSpace	File Handler */
 
 protected	$fspace;
 
@@ -115,33 +113,33 @@ private		$magic=null;
 /**
 * Constructor
 *
-* This method must be called only from PHK_Mgr::proxy() only
+* This method must be called only from \PHK\Mgr::proxy()
 *
 * @param string mount point
 *
-* @throws Exception
+* @throws \Exception
 */
 
 public function __construct($path,$flags)
 {
 try
 {
-PHK_Util::slow_path();
+Tools\Util::slow_path();
 
-//PHK_Util::trace("Starting proxy init");//TRACE
+//Tools\Util::trace("Starting proxy init");//TRACE
 
 $this->path=$path;
 $this->flags=$flags;
 
-if (!($this->flags & PHK::IS_CREATOR))
+if (!($this->flags & \PHK::IS_CREATOR))
 	{
-	// file_is_package() moved here from PHK_Mgr::compute_mnt() because we don't
+	// file_is_package() moved here from \PHK\Mgr::compute_mnt() because we don't
 	// need to check this if data is already in cache.
 
 	if (! self::file_is_package($path))
-		throw new Exception($path.'is not a PHK package');
+		throw new \Exception($path.'is not a PHK package');
 
-	$this->fspace= new PHK_FileSpace($path,$flags);
+	$this->fspace= new PkgFileSpace($path,$flags);
 	$this->fspace->open();
 
 	// Get magic block
@@ -153,33 +151,33 @@ if (!($this->flags & PHK::IS_CREATOR))
 	// modification date will change too, and thus the mount point.
 
 	if ($this->fspace->size()!=$this->magic['fs']) // Check file size
-		PHK_Util::format_error('Invalid file size. Should be '.$this->magic['fs']);
+		Tools\Util::format_error('Invalid file size. Should be '.$this->magic['fs']);
 
 	// Import section tree
 
-	$this->stree=PHK_Tree::create_from_edata(
+	$this->stree=Virtual\Tree::create_from_edata(
 		$this->fspace->read_block($this->magic['sso']
 			,$this->magic['sto']-$this->magic['sso'])
-		,new PHK_FileSpace($this->fspace,$this->magic['sto']
+		,new PkgFileSpace($this->fspace,$this->magic['sto']
 			,$this->magic['fto']-$this->magic['sto']));
 
-	$this->ftree=PHK_Tree::create_from_edata($this->section('FTREE')
-		,new PHK_FileSpace($this->fspace,$this->magic['fto']
+	$this->ftree=Virtual\Tree::create_from_edata($this->section('FTREE')
+		,new PkgFileSpace($this->fspace,$this->magic['fto']
 			,$this->magic['sio']-$this->magic['fto']));
 
 	$this->fspace->close(); // We keep the file open during init phase
 	}
 else
 	{
-	$this->ftree=PHK_Tree::create_empty();
-	$this->stree=PHK_Tree::create_empty();
+	$this->ftree=Virtual\Tree::create_empty();
+	$this->stree=Virtual\Tree::create_empty();
 	}
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
-	throw new Exception('While initializing PHK proxy - '.$e->getMessage());
+	throw new \Exception('While initializing PHK proxy - '.$e->getMessage());
 	}
-//PHK_Util::trace("Ending init - path=$path");//TRACE
+//Tools\Util::trace("Ending init - path=$path");//TRACE
 }
 
 //---------
@@ -190,9 +188,9 @@ try
 	{
 	self::check_crc_buffer($this->fspace->read_block());
 	}
-catch(Exception $e)
+catch(\Exception $e)
 	{
-	throw new Exception($this->path.': file is corrupted - '.$e->getMessage());
+	throw new \Exception($this->path.': file is corrupted - '.$e->getMessage());
 	}
 }
 
@@ -250,13 +248,13 @@ return hash('crc32',self::insert_crc($buffer,'00000000'));
 *
 * @param string $buffer
 * @return void
-* @throws Exception
+* @throws \Exception
 */
 
 public static function check_crc_buffer($buffer)
 {
 if (self::compute_crc($buffer) !== self::get_crc($buffer))
-	throw new Exception('CRC check failed');
+	throw new \Exception('CRC check failed');
 }
 
 //---------------------------------
@@ -352,7 +350,7 @@ return $this->magic[$name];
 *
 * After this function has run, we never access the package file any more.
 *
-* @see PHK_DC implements the data cache
+* @see \PHK\Virtual\DC implements the data cache
 *
 * @return void
 */
@@ -367,7 +365,7 @@ $this->ftree->walk('read');
 /**
 * Clears the data cache
 *
-* @see PHK_DC implements the data cache
+* @see \PHK\Virtual\DC implements the data cache
 *
 * @return void
 */
@@ -412,7 +410,7 @@ return $this->magic['signed'];
 * If the interpreter is defined, returns it. Else, returns an empty string
 *
 * @return string
-* @throws Exception if the interpreter string is invalid
+* @throws \Exception if the interpreter string is invalid
 */
 
 public function interp()
@@ -420,7 +418,7 @@ public function interp()
 $block=$this->fspace->read_block(0,self::INTERP_LEN);
 
 if ((($block{0}!='#')||($block{1}!='!')) && (($block{0}!='<')||($block{1}!='?')))
-	throw new Exception('Invalid interpreter block');
+	throw new \Exception('Invalid interpreter block');
 return ($block{0}=='#') ? trim(substr($block,2)) : '';
 }
 
@@ -437,14 +435,14 @@ return ($block{0}=='#') ? trim(substr($block,2)) : '';
 
 public static function interp_block($interp)
 {
-if (($interp!=='') && (strlen($interp) > (PHK_Proxy::INTERP_LEN-3)))
-	throw new Exception('Length of interpreter string is limited to '
-		.(PHK_Proxy::INTERP_LEN-3).' bytes');
+if (($interp!=='') && (strlen($interp) > (\PHK\Proxy::INTERP_LEN-3)))
+	throw new \Exception('Length of interpreter string is limited to '
+		.(\PHK\Proxy::INTERP_LEN-3).' bytes');
 
 // Keep '<?'.'php' or it will be translated when building the runtime code
 
-if ($interp==='') return str_pad('<?'.'php',PHK_Proxy::INTERP_LEN-2).'?'.'>';
-else return '#!'.str_pad($interp,PHK_Proxy::INTERP_LEN-3)."\n";
+if ($interp==='') return str_pad('<?'.'php',\PHK\Proxy::INTERP_LEN-2).'?'.'>';
+else return '#!'.str_pad($interp,\PHK\Proxy::INTERP_LEN-3)."\n";
 }
 
 //-----
@@ -452,7 +450,7 @@ else return '#!'.str_pad($interp,PHK_Proxy::INTERP_LEN-3)."\n";
 * Inserts a new interpreter block in a file's content
 *
 * Allows a PHK user to change its interpreter string without
-* having to use the PHK_Creator kit.
+* having to use the \PHK\Build\Creator kit.
 *
 * Note: can be applied to a signed package as the signature ignores the
 * interpreter block and the CRC.
@@ -464,13 +462,13 @@ else return '#!'.str_pad($interp,PHK_Proxy::INTERP_LEN-3)."\n";
 
 public static function set_buffer_interp($path,$interp='')
 {
-return self::fix_crc(substr_replace(PHK_Util::readfile($path)
-	,self::interp_block($interp),0,PHK_Proxy::INTERP_LEN));
+return self::fix_crc(substr_replace(Tools\Util::readfile($path)
+	,self::interp_block($interp),0,\PHK\Proxy::INTERP_LEN));
 }
 
 //-----
 /**
-* The version of the PHK_Creator tool this package was created from
+* The version of the \PHK\Build\Creator tool this package was created from
 *
 * @return string Version
 */
@@ -498,17 +496,17 @@ return $this->fspace->path();
 *
 * @param string $name The section name
 * @return string The section's content
-* @throws Exception if section does not exist or cannot be read
+* @throws \Exception if section does not exist or cannot be read
 */
 
 public function section($name)
 {
 try { $node=$this->stree->lookup_file($name); }
-catch (Exception $e) { throw new Exception($name.': Unknown section'); }
+catch (\Exception $e) { throw new \Exception($name.': Unknown section'); }
 
 try { return $node->read(); }
-catch (Exception $e)
-	{ throw new Exception($name.': Cannot read section - '.$e->getMessage()); }
+catch (\Exception $e)
+	{ throw new \Exception($name.': Cannot read section - '.$e->getMessage()); }
 }
 
 //-----

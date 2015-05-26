@@ -24,15 +24,15 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK {
 
-if (!class_exists('PHK_Mgr',false))
+if (!class_exists('PHK\Mgr',false))
 {
 //=============================================================================
 /**
 * This is a static-only class. It has the responsability to manage the table
 * of currently mounted packages. Each package is uniquely identified by a
-* 'mount point', which is a string computed at mount time. The PHK_Mgr class
+* 'mount point', which is a string computed at mount time. The \PHK\Mgr class
 * contains the methods allowing to get information from its table, as well
 * as methods to mount and umount a package.
 *
@@ -43,7 +43,7 @@ if (!class_exists('PHK_Mgr',false))
 
 //=============================================================================
 
-class PHK_Mgr	// Static only
+class Mgr	// Static only
 {
 /** Class version */
 
@@ -62,9 +62,9 @@ private static $phk_tab=array(); // Key=mount directory, value=PHK instance
 * keys as $phk_tab.
 */
 
-private static $proxy_tab=array(); // Key=mount directory, value=PHK_Proxy|null
+private static $proxy_tab=array(); // Key=mount directory, value=\PHK\Proxy|null
 
-/* @var int Running value for PHK_Creator mount points */
+/* @var int Running value for \PHK\Build\Creator mount points */
 
 private static $tmp_mnt_num=0;
 
@@ -94,12 +94,12 @@ return isset(self::$phk_tab[$mnt]);
 *
 * @param string $mnt Mount point to check
 * @return string mount point (not modified)
-* @throws Exception if mount point is invalid
+* @throws \Exception if mount point is invalid
 */
 
 public static function validate($mnt)
 {
-if (!self::is_mounted($mnt)) throw new Exception($mnt.': Invalid mount point');
+if (!self::is_mounted($mnt)) throw new \Exception($mnt.': Invalid mount point');
 
 return $mnt;
 }
@@ -110,7 +110,7 @@ return $mnt;
 *
 * @param string $mnt Mount point
 * @return PHK instance
-* @throws Exception if mount point is invalid
+* @throws \Exception if mount point is invalid
 */
 
 public static function instance($mnt)
@@ -122,13 +122,13 @@ return self::$phk_tab[$mnt];
 
 //-----
 /**
-* Returns the PHK_Proxy object corresponding to a given mount point
+* Returns the \PHK\Proxy object corresponding to a given mount point
 *
-* If the corresponding PHK_Proxy object does not exist yet, it is created.
+* If the corresponding \PHK\Proxy object does not exist yet, it is created.
 *
 * @param string $mnt Mount point
-* @return PHK_Proxy proxy object
-* @throws Exception if mount point is invalid
+* @return \PHK\Proxy proxy object
+* @throws \Exception if mount point is invalid
 */
 
 public static function proxy($mnt)
@@ -138,7 +138,7 @@ self::validate($mnt);
 if (is_null(self::$proxy_tab[$mnt]))
 	{
 	$phk=self::instance($mnt);
-	self::$proxy_tab[$mnt]=new PHK_Proxy($phk->path(),$phk->flags());
+	self::$proxy_tab[$mnt]=new \PHK\Proxy($phk->path(),$phk->flags());
 	}
 
 return self::$proxy_tab[$mnt];
@@ -192,7 +192,7 @@ self::$caching=$caching;
 * @param array|null $params Command parameters if defined
 * @param string $path Path
 * @return boolean whether the data should be cached or not
-* @throws Exception if mount point is invalid
+* @throws \Exception if mount point is invalid
 */
 
 
@@ -216,7 +216,7 @@ return self::instance($mnt)->cache_enabled($command,$params,$path);
 *
 * @param string $path Path of a PHK package
 * @return the corresponding mount point
-* @throws Exception if the file is not currently mounted
+* @throws \Exception if the file is not currently mounted
 */
 
 public static function path_to_mnt($path)
@@ -226,7 +226,7 @@ self::compute_mnt($path,$dummy1,$mnt,$dummy2);
 
 if (self::is_mounted($mnt)) return $mnt;
 
-throw new Exception($path.': path is not mounted');
+throw new \Exception($path.': path is not mounted');
 }
 
 //---------
@@ -254,10 +254,10 @@ return $path;
 * Mount a PHK package and returns the new (or previous, if already loaded)
 * PHK mount point.
 *
-* Can also create empty PHK_Creator instances (when the 'CREATOR' flag is set).
+* Can also create empty \PHK\Build\Creator instances (when the 'CREATOR' flag is set).
 *
 * @param string $path The path of an existing PHK archive, or the path of the
-*                     archive to create if ($flags & PHK::IS_CREATOR)
+*                     archive to create if ($flags & \PHK::IS_CREATOR)
 * @param int $flags Or-ed combination of PHK mount flags.
 * @return string the mount point
 */
@@ -266,11 +266,11 @@ public static function mount($path,$flags=0)
 {
 try
 {
-if ($flags & PHK::IS_CREATOR)
+if ($flags & \PHK::IS_CREATOR)
 	{
 	$mnt='_tmp_mnt_'.(self::$tmp_mnt_num++);
 	self::$proxy_tab[$mnt]=null;
-	self::$phk_tab[$mnt]=new PHK_Creator($mnt,$path,$flags);
+	self::$phk_tab[$mnt]=new \PHK\Build\Creator($mnt,$path,$flags);
 	}
 else	// Mount an existing archive
 	{
@@ -279,16 +279,16 @@ else	// Mount an existing archive
 	if (self::is_mounted($mnt)) return $mnt;
 
 	self::$proxy_tab[$mnt]=null;
-	self::$phk_tab[$mnt]=$phk=new PHK($parent_mnt,$mnt,$path,$flags,$mtime);
+	self::$phk_tab[$mnt]=$phk=new \PHK($parent_mnt,$mnt,$path,$flags,$mtime);
 
 	self::get_store_data($mnt,$options,$build_info);
 	$phk->init($options,$build_info);
 	}
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
 	if (isset($mnt) && self::is_mounted($mnt)) unset(self::$phk_tab[$mnt]);
-	throw new Exception($path.': Cannot mount - '.$e->getMessage());
+	throw new \Exception($path.': Cannot mount - '.$e->getMessage());
 	}
 
 return $mnt;
@@ -314,16 +314,16 @@ $caching=(is_null(self::$caching) ? true : self::$caching);
 
 // Must check this first
 
-$mv=PHK_Util::get_min_version($mnt,$caching);
+$mv=\PHK\Tools\Util::get_min_version($mnt,$caching);
 
-if (version_compare($mv,PHK::VERSION) > 0)
+if (version_compare($mv,\PHK::VERSION) > 0)
 	{
-	PHK_Util::format_error('Cannot understand this version. '
+	\PHK\Tools\Util::format_error('Cannot understand this version. '
 		.'Requires at least PHK version '.$mv);
 	}
 
-$options=PHK_Util::get_options($mnt,$caching);
-$build_info=PHK_Util::get_build_info($mnt,$caching);
+$options=\PHK\Tools\Util::get_options($mnt,$caching);
+$build_info=\PHK\Tools\Util::get_build_info($mnt,$caching);
 }
 
 //---------------------------------
@@ -345,7 +345,7 @@ $build_info=PHK_Util::get_build_info($mnt,$caching);
 * @param string $mnt returns the computed mount point
 * @param int $mtime returns the modification time
 * @return void
-* @throws Exception with message 'File not found' if unable to stat($path).
+* @throws \Exception with message 'File not found' if unable to stat($path).
 */
 
 private static function compute_mnt($path,&$parent_mnt,&$mnt,&$mtime)
@@ -353,14 +353,14 @@ private static function compute_mnt($path,&$parent_mnt,&$mnt,&$mtime)
 if (self::is_a_phk_uri($path)) // Sub-package
 	{
 	$dummy1=$dummy2=$subpath=$parent_mnt=null;
-	PHK_Stream::parse_uri($path,$dummy1,$dummy2,$parent_mnt,$subpath);
+	\PHK\Stream\Wrapper::parse_uri($path,$dummy1,$dummy2,$parent_mnt,$subpath);
 	self::validate($parent_mnt);
 	$mnt=$parent_mnt.'#'.str_replace('/','*',$subpath);
 	$mtime=self::instance($parent_mnt)->mtime(); // Inherit mtime
 	}
 else
 	{
-	$mnt=PHK_Util::path_unique_id('p',$path,$mtime);
+	$mnt=\PHK\Tools\Util::path_unique_id('p',$path,$mtime);
 	$parent_mnt=null;
 	}
 }
@@ -371,7 +371,7 @@ else
 *
 * We dont use __destruct because :
 *	1. We don't want this to be called on script shutdown
-*	2. Exceptions cannot be caught when sent from a destructor.
+*	2. \Exceptions cannot be caught when sent from a destructor.
 *
 * Accepts to remove a non registered mount point without error
 *
@@ -516,17 +516,17 @@ return str_replace('\\','/',$uri);
 * Returns the mount directory of a subfile's phk uri.
 * Allows to reference other subfiles in the same package if you don't want
 * or cannot use Automap (the preferred method) or a relative path.
-* Example : include(PHK_Mgr::uri(PHK_Mgr::uri_to_mnt(__FILE__),<path>));
+* Example : include(\PHK\Mgr::uri(\PHK\Mgr::uri_to_mnt(__FILE__),<path>));
 *
 * @param string $uri
 * @return string a mount point
-* @throws Exception if the input URI is not a PHK URI
+* @throws \Exception if the input URI is not a PHK URI
 */
 
 public static function uri_to_mnt($uri)
 {
 if (! self::is_a_phk_uri($uri))
-	throw new Exception($uri.': Not a PHK URI');
+	throw new \Exception($uri.': Not a PHK URI');
 
 $buf=substr(self::normalize_uri($uri),6);
 $buf=substr($buf,0,strcspn($buf,'/'));
@@ -550,10 +550,10 @@ return trim($buf);
 
 public static function php_version_check()
 {
-if (version_compare(PHP_VERSION,'5.1.0') < 0)
+if (version_compare(PHP_VERSION,'5.3.0') < 0)
 	{
 	echo PHP_VERSION.': Unsupported PHP version '
-		.'- PHK needs at least version 5.1.0';
+		.'- PHK needs at least version 5.3.0';
 	exit(1);
 	}
 }

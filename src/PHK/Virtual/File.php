@@ -17,7 +17,7 @@
 //
 //=============================================================================
 /**
-* The PHK_TFile class
+* The \PHK\Virtual\File class
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
@@ -26,13 +26,13 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Virtual {
 
-if (!class_exists('PHK_TFile',false))
+if (!class_exists('PHK\Virtual\File',false))
 {
 //============================================================================
 
-class PHK_TFile extends PHK_TNode // Regular file
+class File extends Node // Regular file
 {
 
 private $dc;	// Data container
@@ -48,13 +48,13 @@ public function mode() { return 0100444; }
 public function __call($method,$args)
 {
 try { return call_user_func_array(array($this->dc,$method),$args); }
-catch (Exception $e)
-	{ throw new Exception($this->path.': '.$e->getMessage()); }
+catch (\Exception $e)
+	{ throw new \Exception($this->path.': '.$e->getMessage()); }
 }
 
 //---
-// Must be defined as __call() is tried after PHK_TNode methods, and read()
-// has a default in PHK_TNode.
+// Must be defined as __call() is tried after \PHK\Virtual\Node methods, and read()
+// has a default in \PHK\Virtual\Node.
 
 public function read()
 {
@@ -89,7 +89,7 @@ $path=$this->path;
 if ($html)
 	{
 	if ($this->flags & self::TN_PKG) $link=false;
-	$field= ($link ? '<a href="'.PHK::subpath_url('/view/'
+	$field= ($link ? '<a href="'.\PHK::subpath_url('/view/'
 		.trim($path,'/')).'">'.$path.'</a>' : $path);
 	echo '<tr><td nowrap>F</td><td nowrap>'.$field.'</td><td nowrap>'
 		.$this->size().'</td><td nowrap>'.$flag_string.'</td></tr>';
@@ -107,7 +107,7 @@ public function dump($base)
 {
 $path=$base.$this->path;
 if (file_put_contents($path,$this->read())===false)
-	throw new Exception($path.': cannot dump file');
+	throw new \Exception($path.': cannot dump file');
 }
 
 //---
@@ -116,7 +116,7 @@ public function __construct($path,$tree)
 {
 parent::__construct($path,$tree);
 
-$this->dc=new PHK_DC();
+$this->dc=new DC();
 $this->dc->set_fspace($tree->fspace);
 }
 
@@ -141,13 +141,13 @@ $this->dc->set_flags($flags);
 // If PHK Package, move required extensions up
 // Don't umount the package, it will be used later.
 
-public function get_needed_extensions(PHK_Creator $phk
-	,PHK_ItemLister $item_lister)
+public function get_needed_extensions(\PHK\Build\Creator $phk
+	,\PHK\Tools\ItemLister $item_lister)
 {
-if (PHK::data_is_package($this->read()))
+if (\PHK::data_is_package($this->read()))
 	{
 	$mnt=require($phk->uri($this->path));
-	$source_phk=PHK_Mgr::instance($mnt);
+	$source_phk=\PHK\Mgr::instance($mnt);
 	if (!is_null($elist=$source_phk->option('required_extensions')))
 		{
 		foreach ($elist as $ext) $item_lister->add($ext,true);
@@ -163,18 +163,18 @@ return $this->dc->get_needed_extensions($phk,$item_lister);	// Now, ask DC
 // Register Automap symbols only if $map is non-null
 // Distinction between files and sections: for files, $map is not null
 
-public function export(PHK_Creator $phk,PHK_DataStacker $stacker,$map)
+public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker,$map)
 {
 $path=$this->path;
 $rpath=substr($path,1); // Remove leading '/';
 
-PHK_Util::trace('Processing '.$path);
+\PHK\Tools\Util::trace('Processing '.$path);
 
 if (!is_null($map)) // This is a real file
 	{
 	if (getenv('PHK_NO_STRIP')!==false)	$this->flags &= ~self::TN_STRIP_SOURCE;
 
-	if (PHK::data_is_package($this->read()))	//-- Package ?
+	if (\PHK::data_is_package($this->read()))	//-- Package ?
 		{
 		//-- Set 'package' flag, clear 'strip source', and keep autoload
 		$this->flags |= self::TN_PKG;
@@ -188,7 +188,7 @@ if (!is_null($map)) // This is a real file
 		{
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			PHK_Util::trace("Registering Automap symbols from PHK package");
+			\PHK\Tools\Util::trace("Registering Automap symbols from PHK package");
 			$map->register_phk($phk->uri($path),$rpath);
 			}
 		}
@@ -197,7 +197,7 @@ if (!is_null($map)) // This is a real file
 		//--- Register in automap
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
-			PHK_Util::trace("	Registering Automap symbols");
+			\PHK\Tools\Util::trace("	Registering Automap symbols");
 			$map->register_script_file($phk->uri($path),$rpath);
 			}
 
@@ -254,7 +254,7 @@ foreach(explode("\n",$rbuf) as $line)
 				$state=self::ST_ADD;
 				break;
 			default:
-				throw new Exception($this->path."($lnum): Unknown preprocessor keyword: $keyword - valid keywords are ignore, add, end - ignoring line");
+				throw new \Exception($this->path."($lnum): Unknown preprocessor keyword: $keyword - valid keywords are ignore, add, end - ignoring line");
 			}
 		continue;
 		}
@@ -266,7 +266,7 @@ foreach(explode("\n",$rbuf) as $line)
 			{
 			if ((strlen($line)>=2)&&(substr($line,0,2)==='//'))
 				$line=substr($line,2);
-			else throw new Exception($this->path."($lnum): in an 'add' block, line should start with '//' - copying line as-is");
+			else throw new \Exception($this->path."($lnum): in an 'add' block, line should start with '//' - copying line as-is");
 			}
 		}
 	$buf .= $line."\n";
@@ -277,8 +277,8 @@ $buf=substr($buf,0,-1);
 
 if ($this->flags & self::TN_STRIP_SOURCE)
 	{
-	// PHK_Util::msg("	Stripping script");
-	$buf=PHK_Stream_Backend::_strip_string($buf);
+	// \PHK\Tools\Util::msg("	Stripping script");
+	$buf=\PHK\Stream\Backend::_strip_string($buf);
 	}
 
 $this->set_data($buf);

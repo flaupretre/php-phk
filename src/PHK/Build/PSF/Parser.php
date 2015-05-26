@@ -17,8 +17,6 @@
 //
 //=============================================================================
 /**
-* The PHK_PSF class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -26,11 +24,11 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\Build\PSF {
 
-if (!class_exists('PHK_PSF',false))
+if (!class_exists('PHK\Build\PSF\Parser',false))
 {
-class PHK_PSF 
+class Parser
 {
 private $path; // PSF absolute path
 
@@ -46,13 +44,13 @@ $this->path=$path;
 $this->vars=$vars;
 }
 
-//---- Exception with file name and line number
+//---- \Exception with file name and line number
 // Can be called recursively. So, we decorate the message only once
 
 private function send_error($msg)
 {
-if (($msg!='') && ($msg{0}=='>')) throw new Exception($msg);
-else throw new Exception('> '.$this->path.'(line '.$this->line_nb.') : '.$msg);
+if (($msg!='') && ($msg{0}=='>')) throw new \Exception($msg);
+else throw new \Exception('> '.$this->path.'(line '.$this->line_nb.') : '.$msg);
 }
 
 //---- Read a line with continuation '\' and strip comments (#) + trim()
@@ -123,15 +121,15 @@ $this->vars[$name]=$value;
 }
 
 //---------
-// On entry, $phk is a PHK_Creator object
+// On entry, $phk is a \PHK\Build\Creator object
 
 public function apply_to($phk)
 {
-if (!($phk instanceof PHK_Creator))
-	throw new Exception('Object must be PHK_Creator');
+if (!($phk instanceof \PHK\Build\Creator))
+	throw new \Exception('Object must be \PHK\Build\Creator');
 
 if (!($fp=fopen($this->path,'rb',false)))
-	throw new Exception($this->path.': Cannot open');
+	throw new \Exception($this->path.': Cannot open');
 	
 $this->line_nb=0;
 
@@ -139,9 +137,9 @@ try {
 while (!is_null($line=$this->get_line($fp)))
 	{
 	if ($line{0}==='%') break;	// Next block found
-	$op=new PHK_PSF_Cmd_Options;
+	$op=new CmdOptions;
 	$words=explode(' ',$line);
-	if (!count($words)) throw new Exception('No command');
+	if (!count($words)) throw new \Exception('No command');
 	$command=strtolower(array_shift($words));
 	switch($command)
 		{
@@ -150,7 +148,7 @@ while (!is_null($line=$this->get_line($fp)))
 			
 			$op->parse_all($words);
 			if (count($words)==0)
-				throw new Exception('Usage: add [options] <path1> [<path2> ...]');
+				throw new \Exception('Usage: add [options] <path1> [<path2> ...]');
 			$base_dir=\Phool\File::combine_path(dirname($this->path)
 				,$op->option('directory'));
 			foreach($words as $spath)
@@ -159,7 +157,7 @@ while (!is_null($line=$this->get_line($fp)))
 				if (is_null($target=$op->option('target-path')))
 					{
 					if (\Phool\File::is_absolute_path($spath))
-						throw new Exception("$spath: Arg must be a relative path");
+						throw new \Exception("$spath: Arg must be a relative path");
 					$tbase=$op->option('target-base');
 					if (is_null($tbase)) $tbase='';
 					$target=$tbase.'/'.$spath;
@@ -172,28 +170,28 @@ while (!is_null($line=$this->get_line($fp)))
 		case 'modify':
 			$op->parse_all($words);
 			if (count($words)==0)
-				throw new Exception('Usage: modify [options] <path1> [<path2> ...]');
+				throw new \Exception('Usage: modify [options] <path1> [<path2> ...]');
 			foreach($words as $tpath)
 				$phk->ftree()->modify($tpath,$op->options());
 			break;
 
 		case 'mount':
 			if (count($words)!=2)
-				throw new Exception('Usage: mount <phk-path> <var-name>');
+				throw new \Exception('Usage: mount <phk-path> <var-name>');
 			list($path,$mnt_var)=$words;
-			$mnt=PHK_Mgr::mount($path,PHK::NO_MOUNT_SCRIPT);
+			$mnt=\PHK\Mgr::mount($path,\PHK::NO_MOUNT_SCRIPT);
 			$this->set_var($mnt_var,'phk://'.$mnt);
 			break;
 
 		case 'remove':	// remove <path> [<path>...]
 			if (count($words)==0)
-				throw new Exception('Usage: remove <path1> [<path2> ...]');
+				throw new \Exception('Usage: remove <path1> [<path2> ...]');
 			foreach($words as $tpath) $phk->ftree()->remove(trim($tpath,'/'));
 			break;
 
 		case 'set':
 			if (count($words) < 1)
-				throw new Exception('Usage: set <var-name> [value]');
+				throw new \Exception('Usage: set <var-name> [value]');
 			$var=array_shift($words);
 			$this->set_var($var,implode(' ',$words));
 			break;
@@ -201,7 +199,7 @@ while (!is_null($line=$this->get_line($fp)))
 		case 'section':		//-- Undocumented
 			$op->parse_all($words);
 			if (count($words)!=2)
-				throw new Exception('Usage: section [-C <dir>] <name> <path>');
+				throw new \Exception('Usage: section [-C <dir>] <name> <path>');
 			list($name,$path)=$words;
 			$phk->add_section($name,\Phool\File::readfile($path));
 			break;
@@ -210,14 +208,14 @@ while (!is_null($line=$this->get_line($fp)))
 			$this->send_error($command.': Unknown command');
 		}
 	}
-} catch (Exception $e) { $this->send_error($e->getMessage()); }
+} catch (\Exception $e) { $this->send_error($e->getMessage()); }
 
 if (!is_null($line)) // If we met a '%'
 	{
 	// Get package options (metainfo)
 	// Default syntax: YAML
 
-	$op=new PHK_PSF_Options_Options;
+	$op=new MetaOptions;
 
 	$args=explode(' ',$line);
 	$op->parse_all($args);
@@ -232,15 +230,15 @@ if (!is_null($line)) // If we met a '%'
 			break;
 
 		case 'php':
-			$options=PHK_Stream_Backend::_include_string("<?php\n".$data."\n?>");
+			$options=\PHK\Stream\Backend::_include_string("<?php\n".$data."\n?>");
 			break;
 
 		default:
-			throw new Exception("$syntax: Unknown options syntax");
+			throw new \Exception("$syntax: Unknown options syntax");
 		}
 
 	if (!(is_array($options)))
-		throw new Exception('Options block should define an array');
+		throw new \Exception('Options block should define an array');
 	$phk->set_options($options);
 	}
 
@@ -255,8 +253,8 @@ public static function build($phk_path,$psf_path,$vars)
 //-- Create empty output object
 
 $phk_path=\Phool\File::mk_absolute_path($phk_path);
-$mnt=PHK_Mgr::mount($phk_path,PHK::IS_CREATOR);
-$phk=PHK_Mgr::instance($mnt);
+$mnt=\PHK\Mgr::mount($phk_path,\PHK::IS_CREATOR);
+$phk=\PHK\Mgr::instance($mnt);
 
 if (is_null($psf_path)) // Compute PSF path from PHK path
 	{
@@ -273,7 +271,7 @@ else	// Make PSF path absolute
 
 //-- Interpret PSF
 
-$psf=new PHK_PSF($psf_path,$vars);
+$psf=new self($psf_path,$vars);
 $psf->apply_to($phk);
 
 //-- Dump to file

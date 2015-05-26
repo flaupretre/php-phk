@@ -17,46 +17,64 @@
 //
 //=============================================================================
 /**
-* A utility class used only at package creation time.
-*
-* This class maintains a string buffer and appends strings to it, returning
-* the current offset. When every strings have been appended, returns the
-* resulting buffer.
+* This class manages options for \PHK\CLI\Cmd
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
 */
-//=============================================================================
-
-namespace {
-
-if (!class_exists('PHK_DataStacker',false))
-{
 //============================================================================
 
-class PHK_DataStacker
+namespace PHK\CLI {
+
+if (!class_exists('PHK\CLI\Options',false))
 {
-public $offset;
-public $data;
-
-//---------
-
-public function __construct()
+class Options extends \Phool\Options\Base
 {
-$this->offset=0;
-$this->data='';
-}
 
-//---------
+// Short/long modifier args
 
-public function push($data)
+protected $opt_modifiers=array(
+	array('short' => 'v', 'long' => 'verbose', 'value' => false),
+	array('short' => 'q', 'long' => 'quiet'  , 'value' => false),
+	array('short' => 's', 'long' => 'source'  , 'value' => true),
+	array('short' => 'd', 'long' => 'define'  , 'value' => true)
+	);
+
+// Option values
+
+protected $options=array(
+	'psf_path' => null,
+	'vars' => array()
+	);
+
+
+//-----------------------
+
+protected function process_option($opt,$arg)
 {
-$this->data .= $data;
-$ret_offset=$this->offset;
-$this->offset += strlen($data);
-return $ret_offset;
+switch($opt)
+	{
+	case 'v':
+		\Phool\Display::inc_verbose();
+		break;
+
+	case 'q':
+		\Phool\Display::dec_verbose();
+		break;
+
+	case 's':
+		$this->options['psf_path']=$arg;
+		break;
+
+	case 'd':
+		$a=explode('=',$arg,2);
+		if ((count($a)!=2)||($a[0]===''))
+			throw new \Exception("Invalid variable definition ($arg)");
+		$this->options['vars'][$a[0]]=$a[1];
+		break;
+	}
 }
 
 //---

@@ -65,7 +65,7 @@ try
 	}
 catch (Exception $e)
 	{
-	if (getenv('PHK_DEBUG')!==false) throw $e;
+	if (getenv('SHOW_EXCEPTION')!==false) throw $e;
 	trigger_error($e->getMessage(),E_USER_ERROR);
 	}
 

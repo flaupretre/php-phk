@@ -24,15 +24,15 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK\Build {
 
-if (!class_exists('PHK_Creator',false))
+if (!class_exists('PHK\Build\Creator',false))
 {
 //============================================================================
 /*
 * The package creator class
 *
-* Note: If PHK_Creator is inside a PHK package (usual case), it is
+* Note: If \PHK\Build\Creator is inside a PHK package (usual case), it is
 * absolutely mandatory that Automap and PHK classes as package's files
 * are the same as the Automap and PHK classes included in the prolog. Which
 * means that the package must be generated from its files. If it is not the
@@ -40,13 +40,13 @@ if (!class_exists('PHK_Creator',false))
 * information.
 */
 
-class PHK_Creator extends PHK_Base
+class Creator extends \PHK\Base
 {
 const PHKMGR_VERSION='3.0.0'; // Must be the same as SOFTWARE_VERSION in make.common
 
 const MIN_RUNTIME_VERSION='2.0.0'; // The minimum version of PHK runtime able to
 	// understand the packages I produce. When the package is loaded, this is
-	// checked against PHK_BASE::VERSION.
+	// checked against \PHK\Base::VERSION.
 
 //-----
 
@@ -115,7 +115,7 @@ foreach (array('creator','plain_file') as $pcode)
 		while (($pos=strpos($buffer,'<'.$token.'>'))!==false)
 			{
 			if (($pos2=strpos($buffer,'</'.$token.'>',$pos))===false)
-				throw new Exception('Cannot find end of <'.$token.'> section');
+				throw new \Exception('Cannot find end of <'.$token.'> section');
 			$buffer=substr_replace($buffer,'',$pos,$pos2-$pos+15);
 			}
 		}
@@ -126,7 +126,7 @@ foreach (array('creator','plain_file') as $pcode)
 
 if (!$this->option('plain_prolog'))
 	{
-	$buffer=PHK_Stream_Backend::_strip_string($buffer);
+	$buffer=\PHK\Stream\Backend::_strip_string($buffer);
 	}
 }
 
@@ -142,28 +142,28 @@ public function build_php_code($dir)
 $this->code='';
 
 $automap_base=$dir;
-if (! PHK_Mgr::is_a_phk_uri(__FILE__)) $automap_base .= '/submodules/automap';
-$this->code .= PHK_Util::readfile($automap_base.'/src/Automap/Mgr.php');
-$this->code .= PHK_Util::readfile($automap_base.'/src/Automap/Tools/Display.php');
-$this->code .= PHK_Util::readfile($automap_base.'/src/Automap/Map.php');
+if (! \PHK\Mgr::is_a_phk_uri(__FILE__)) $automap_base .= '/submodules/automap';
+$this->code .= \PHK\Tools\Util::readfile($automap_base.'/src/Automap/Mgr.php');
+$this->code .= \PHK\Tools\Util::readfile($automap_base.'/src/Automap/Tools/Display.php');
+$this->code .= \PHK\Tools\Util::readfile($automap_base.'/src/Automap/Map.php');
 
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Util.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_File.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Cache.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Proxy.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Mgr.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Base.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Backend.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Stream.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Stream_Backend.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_DC.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Tree.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_TNode.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_TDir.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_TFile.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_Webinfo.php');
-$this->code .= PHK_Util::readfile($dir.'/src/PHK/PHK_PHPUnit.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Tools/Util.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/PkgFile.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Cache.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Proxy.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Mgr.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Base.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Backend.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Stream/Wrapper.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Stream/Backend.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Virtual/DC.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Virtual/Tree.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Virtual/Node.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Virtual/Dir.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Virtual/File.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/Web/Info.php');
+$this->code .= \PHK\Tools\Util::readfile($dir.'/src/PHK/UnitTest/PHPUnit.php');
 
 $this->process_php_code($this->code);
 
@@ -179,7 +179,7 @@ public function build_prolog($dir)
 {
 \Phool\Display::trace('Building prolog');
 
-$this->prolog = PHK_Util::readfile($dir.'/scripts/PHK_Prolog.php');
+$this->prolog = \PHK\Tools\Util::readfile($dir.'/scripts/prolog.php');
 
 //-- The four FF chars turn unicode detection off (see PHP bug #42396)
 
@@ -205,15 +205,14 @@ public function dump($path=null)
 if (is_null($path)) $path=$this->path();
 \Phool\Display::trace("Writing package to disk ($path)");
 
-if (! PHK::file_is_package(__FILE__)) // If building PHK_Creator package
+if (! \PHK::file_is_package(__FILE__)) // If building \PHK\Build\Creator package
 	{
-	$base_dir=dirname(__FILE__).'/../..';
+	$base_dir=dirname(dirname(dirname(__DIR__)));
 	}
 else
 	{
-var_dump(__FILE__);
-	$mnt=PHK_Mgr::path_to_mnt(__FILE__);
-	$base_dir=PHK_Mgr::base_uri($mnt);
+	$mnt=\PHK\Mgr::path_to_mnt(__FILE__);
+	$base_dir=\PHK\Mgr::base_uri($mnt);
 	}
 
 $this->build_php_code($base_dir);
@@ -225,7 +224,7 @@ if (is_null($this->prolog)) $this->build_prolog($base_dir);
 //-- Build FILES part and FTREE section
 // Build map, strip sources, etc...
 
-$needed_extensions=new PHK_ItemLister;
+$needed_extensions=new \PHK\Tools\ItemLister;
 
 $this->proxy()->ftree()->walk('get_needed_extensions',$this,$needed_extensions);
 
@@ -238,7 +237,7 @@ unset($files_structure);
 //-- Build Automap section
 
 if ($map->symbol_count())
-	$this->add_section(PHK_Proxy::AUTOMAP_SECTION,$map->serialize());
+	$this->add_section(\PHK\Proxy::AUTOMAP_SECTION,$map->serialize());
 
 $this->update_build_info('map_defined',($map->symbol_count()!=0));
 
@@ -248,7 +247,7 @@ foreach(array('tabs/left.gif','tabs/right.gif','tabs/bottom.gif'
 	,'tabs/tabs.css.php','phk_logo.png') as $f)
 	{
 	$source=$base_dir.'/etc/'.$f;
-	$this->add_section('STATIC/'.$f,PHK_Util::readfile($source));
+	$this->add_section('STATIC/'.$f,\PHK\Tools\Util::readfile($source));
 	}
 
 //-- Build info
@@ -259,7 +258,7 @@ $this->update_build_info('automap_min_version',\Automap\Build\Creator::MIN_RUNTI
 
 //-- Record the user-specified needed extensions
 
-foreach(PHK_Util::mk_array($this->option('required_extensions')) as $ext)
+foreach(\PHK\Tools\Util::mk_array($this->option('required_extensions')) as $ext)
 	{
 	if ($ext!=='') $needed_extensions->add($ext,true);
 	}
@@ -276,7 +275,7 @@ if (count($ext)) $this->update_option('required_extensions',$ext);
 
 if (!is_null($this->option('mime_types')))
 	$this->update_option('mime_types'
-		,PHK_Util::mk_array($this->option('mime_types')));
+		,\PHK\Tools\Util::mk_array($this->option('mime_types')));
 
 $this->add_section('OPTIONS',serialize($this->options()));
 
@@ -286,13 +285,13 @@ $this->add_section('BUILD_INFO',serialize($this->build_info()));
 
 // Now, dump the section tree
 
-PHK_Util::trace('--- Sections');
+\PHK\Tools\Util::trace('--- Sections');
 
 list($sections_structure,$sections_data)=$this->proxy()->stree()->export($this);
 
 //---
 
-$prolog_offset=PHK_Proxy::INTERP_LEN+PHK_Proxy::MAGIC_LINE_LEN;
+$prolog_offset=\PHK\Proxy::INTERP_LEN+\PHK\Proxy::MAGIC_LINE_LEN;
 $code_offset=$prolog_offset+strlen($this->prolog);
 $sections_structure_offset=$code_offset+strlen($this->code);
 $sections_offset=$sections_structure_offset+strlen($sections_structure);
@@ -300,24 +299,24 @@ $files_offset=$sections_offset+strlen($sections_data);
 $sig_offset=$files_offset+strlen($files_data);
 $file_size=$sig_offset;
 
-$buf=PHK_Proxy::fix_crc(PHK_Proxy::interp_block($this->interp)
-	.'<?php '.PHK_Proxy::MAGIC_STRING
-	.' M'  .str_pad(self::MIN_RUNTIME_VERSION,PHK_Proxy::VERSION_SIZE)
-	.' V'  .str_pad(self::PHKMGR_VERSION,PHK_Proxy::VERSION_SIZE)
-	.' FS' .str_pad($file_size,PHK_Proxy::OFFSET_SIZE)
-	.' PO' .str_pad($prolog_offset,PHK_Proxy::OFFSET_SIZE)
-	.' SSO'.str_pad($sections_structure_offset,PHK_Proxy::OFFSET_SIZE)
-	.' STO'.str_pad($sections_offset,PHK_Proxy::OFFSET_SIZE)
-	.' FTO'.str_pad($files_offset,PHK_Proxy::OFFSET_SIZE)
-	.' SIO'.str_pad($sig_offset,PHK_Proxy::OFFSET_SIZE)
+$buf=\PHK\Proxy::fix_crc(\PHK\Proxy::interp_block($this->interp)
+	.'<?php '.\PHK\Proxy::MAGIC_STRING
+	.' M'  .str_pad(self::MIN_RUNTIME_VERSION,\PHK\Proxy::VERSION_SIZE)
+	.' V'  .str_pad(self::PHKMGR_VERSION,\PHK\Proxy::VERSION_SIZE)
+	.' FS' .str_pad($file_size,\PHK\Proxy::OFFSET_SIZE)
+	.' PO' .str_pad($prolog_offset,\PHK\Proxy::OFFSET_SIZE)
+	.' SSO'.str_pad($sections_structure_offset,\PHK\Proxy::OFFSET_SIZE)
+	.' STO'.str_pad($sections_offset,\PHK\Proxy::OFFSET_SIZE)
+	.' FTO'.str_pad($files_offset,\PHK\Proxy::OFFSET_SIZE)
+	.' SIO'.str_pad($sig_offset,\PHK\Proxy::OFFSET_SIZE)
 	.' CRC00000000'
-	.' PCO'.str_pad($code_offset,PHK_Proxy::OFFSET_SIZE)
-	.' PCS'.str_pad(strlen($this->code),PHK_Proxy::OFFSET_SIZE)
+	.' PCO'.str_pad($code_offset,\PHK\Proxy::OFFSET_SIZE)
+	.' PCS'.str_pad(strlen($this->code),\PHK\Proxy::OFFSET_SIZE)
 	.' ?>'
 	.$this->prolog.$this->code.$sections_structure.$sections_data.$files_data);
 
-PHK_Util::trace('Writing PHK file to '.$path);
-PHK_Util::atomic_write($path,$buf);
+\PHK\Tools\Util::trace('Writing PHK file to '.$path);
+\PHK\Tools\Util::atomic_write($path,$buf);
 }
 
 //---

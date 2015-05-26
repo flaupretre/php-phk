@@ -17,6 +17,8 @@
 //
 //=============================================================================
 
+namespace PHK {
+
 // When used outside of a PHK package, the main script includes every other
 // scripts. When used in a PHK package, we use the autoloader.
 
@@ -45,45 +47,48 @@ require(dirname(__FILE__).'/../submodules/Yaml/Parser.php');
 require(dirname(__FILE__).'/../submodules/Yaml/Unescaper.php');
 require(dirname(__FILE__).'/../submodules/Yaml/Yaml.php');
 
-require(dirname(__FILE__).'/../src/PHK/PHK_Base.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Backend.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Cache.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Cmd_Options.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Cmd.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Creator.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_DataStacker.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_DC.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_File.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_ItemLister.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Mgr.php');
-require(dirname(__FILE__).'/../src/PHK/PHK.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_PHPUnit.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Proxy.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_PSF_Cmd_Options.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_PSF_Options_Options.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_PSF.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Stream_Backend.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Stream.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_TNode.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_TDir.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_TFile.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Tree.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Util.php');
-require(dirname(__FILE__).'/../src/PHK/PHK_Webinfo.php');
+require(dirname(__FILE__).'/../src/PHK/Base.php');
+require(dirname(__FILE__).'/../src/PHK/Backend.php');
+require(dirname(__FILE__).'/../src/PHK/Cache.php');
+require(dirname(__FILE__).'/../src/PHK/CLI/Options.php');
+require(dirname(__FILE__).'/../src/PHK/CLI/Cmd.php');
+require(dirname(__FILE__).'/../src/PHK/Build/Creator.php');
+require(dirname(__FILE__).'/../src/PHK/Build/DataStacker.php');
+require(dirname(__FILE__).'/../src/PHK/Virtual/DC.php');
+require(dirname(__FILE__).'/../src/PHK/PkgFile.php');
+require(dirname(__FILE__).'/../src/PHK/Tools/ItemLister.php');
+require(dirname(__FILE__).'/../src/PHK/Mgr.php');
+require(dirname(__FILE__).'/../src/PHK.php');
+require(dirname(__FILE__).'/../src/PHK/UnitTest/PHPUnit.php');
+require(dirname(__FILE__).'/../src/PHK/Proxy.php');
+require(dirname(__FILE__).'/../src/PHK/Build/PSF/CmdOptions.php');
+require(dirname(__FILE__).'/../src/PHK/Build/PSF/MetaOptions.php');
+require(dirname(__FILE__).'/../src/PHK/Build/PSF/Parser.php');
+require(dirname(__FILE__).'/../src/PHK/Stream/Backend.php');
+require(dirname(__FILE__).'/../src/PHK/Stream/Wrapper.php');
+require(dirname(__FILE__).'/../src/PHK/Virtual/Node.php');
+require(dirname(__FILE__).'/../src/PHK/Virtual/Dir.php');
+require(dirname(__FILE__).'/../src/PHK/Virtual/File.php');
+require(dirname(__FILE__).'/../src/PHK/Virtual/Tree.php');
+require(dirname(__FILE__).'/../src/PHK/Tools/Util.php');
+require(dirname(__FILE__).'/../src/PHK/Web/Info.php');
 // <PHK:end>
 
 try
 {
 ini_set('display_errors',true);
-PHK_Mgr::php_version_check();
+Mgr::php_version_check();
 
 $args=$_SERVER['argv'];
 array_shift($args);
-PHK_Cmd::run($args);
+CLI\Cmd::run($args);
 }
-catch(Exception $e)
+catch(\Exception $e)
 	{
-	if (getenv('PHK_DEBUG')!==false) throw $e;
+	if (getenv('SHOW_EXCEPTION')!==false) throw $e;
 	else echo "*** ERROR: ".$e->getMessage()."\n\n";
 	exit(1);
 	}
+
+} // End of namespace
+//===========================================================================

@@ -22,22 +22,22 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Stream {
 
-if (!class_exists('PHK_Stream_Backend',false))
+if (!class_exists('PHK\Stream\Backend',false))
 {
 //=============================================================================
 /**
-* The 'slow' backend to PHK_Stream
+* The 'slow' backend to \PHK\Stream\Wrapper
 *
-* This class is called when PHK_Stream cannot retrieve the information it needs
+* This class is called when \PHK\Stream\Wrapper cannot retrieve the information it needs
 * from the cache or for uncacheable information.
 *
 * Note (30-NOV-2007): As long as the extension does not trap exceptions
 * correctly, we trap them here and return null instead.
 */
 
-class PHK_Stream_Backend
+class Backend
 {
 
 /** @var string		Used as temp storage by string_include() */
@@ -69,18 +69,18 @@ if (is_null($mnt))	// Global command
 			return "Test line 1/3\nTest line2/3\nTest line 3/3\n";
 			break;
 
-		case 'tmp':	// Special: Used by PHK::string_include();
+		case 'tmp':	// Special: Used by \PHK::string_include();
 			$cache=false;
 			return self::$tmp_data;
 			break;
 
 		default:
-			throw new Exception($command.': Unknown global command');
+			throw new \Exception($command.': Unknown global command');
 		}
 	}
 else // Slow path
 	{
-	$proxy=PHK_Mgr::proxy($mnt);
+	$proxy=\PHK\Mgr::proxy($mnt);
 
 	switch ($command)
 		{
@@ -93,7 +93,7 @@ else // Slow path
 		case 'section':
  		case 'magic_field':
 			if (!isset($params['name']))
-				throw new Exception($command
+				throw new \Exception($command
 					.': command needs this argument: name');
 			return $proxy->$command($params['name']);
 
@@ -107,20 +107,20 @@ else // Slow path
 			return serialize($proxy->$command());
 
 		default:
-			throw new Exception($command.': Unknown command');
+			throw new \Exception($command.': Unknown command');
 		}
 	}
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
-	throw new Exception($command.': Error during command execution - '
+	throw new \Exception($command.': Error during command execution - '
 		.$e->getMessage());
 	}
 }
 
 //---------------------------------
 // Segfault in extension if this function throws an exception. As long as
-// this bug is not fixed, trap the exception before returning to PHK_Stream
+// this bug is not fixed, trap the exception before returning to \PHK\Stream\Wrapper
 
 public static function get_file_data($mnt,$command,$params,$path,&$cache)
 {
@@ -130,7 +130,7 @@ try
 {
 if (is_null($command))
 	{
-	$node=PHK_Mgr::proxy($mnt)->ftree()->lookup_file($path,false);
+	$node=\PHK\Mgr::proxy($mnt)->ftree()->lookup_file($path,false);
 	if (is_null($node)) return null;
 	return $node->read();
 	}
@@ -139,7 +139,7 @@ else
 	return self::command_open_or_stat(false,$mnt,$command,$params,$path,$cache);
 	}
 }
-catch (Exception $e) { return null; }
+catch (\Exception $e) { return null; }
 }
 
 //---------------------------------
@@ -151,11 +151,11 @@ try
 {
 if (!is_null($command)) return null;
 
-$node=PHK_Mgr::proxy($mnt)->ftree()->lookup($path,false);
+$node=\PHK\Mgr::proxy($mnt)->ftree()->lookup($path,false);
 if (is_null($node)) return null;
 return $node->getdir();
 }
-catch (Exception $e) { return null; }
+catch (\Exception $e) { return null; }
 }
 
 //---------------------------------
@@ -172,12 +172,12 @@ if (!is_null($command))
 	}
 else
 	{
-	$node=PHK_Mgr::proxy($mnt)->ftree()->lookup($path);
+	$node=\PHK\Mgr::proxy($mnt)->ftree()->lookup($path);
 
 	$mode=$node->mode();
 	$size=$node->size();
 	}
-$mtime=(is_null($mnt) ? time() : PHK_Mgr::instance($mnt)->mtime());
+$mtime=(is_null($mnt) ? time() : \PHK\Mgr::instance($mnt)->mtime());
 }
 
 //----

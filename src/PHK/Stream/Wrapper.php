@@ -22,9 +22,9 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Stream {
 
-if (!class_exists('PHK_Stream',false))
+if (!class_exists('PHK\Stream\Wrapper',false))
 {
 //=============================================================================
 /**
@@ -35,7 +35,7 @@ if (!class_exists('PHK_Stream',false))
 * Note: Always catch exceptions before returning to PHP.
 */
 
-class PHK_Stream
+class Wrapper
 {
 
 private $uri;
@@ -63,25 +63,25 @@ if ($this->raise_errors) trigger_error("PHK: $msg",E_USER_WARNING);
 
 public static function get_file($dir,$uri,$mnt,$command,$params,$path,$cache=null)
 {
-$cache_id=PHK_Cache::cache_id('node',$uri);
-PHK_Util::trace("get_file: Cache ID=<$cache_id>");//TRACE
+$cache_id=\PHK\Cache::cache_id('node',$uri);
+\PHK\Tools\Util::trace("get_file: Cache ID=<$cache_id>");//TRACE
 
-if (is_null($data=PHK_Cache::get($cache_id)))	// Miss
+if (is_null($data=\PHK\Cache::get($cache_id)))	// Miss
 	{
 	$can_cache=true;
 	
 	if (is_null($data=($dir ?
-		PHK_Stream_Backend::get_dir_data($mnt,$command,$params,$path)
-		: PHK_Stream_Backend::get_file_data($mnt,$command,$params,$path
-			,$can_cache)))) throw new Exception("$uri: File not found");
+		Backend::get_dir_data($mnt,$command,$params,$path)
+		: Backend::get_file_data($mnt,$command,$params,$path
+			,$can_cache)))) throw new \Exception("$uri: File not found");
 
 	if ($can_cache && (($cache===true) || (is_null($cache)
-		&& PHK_Mgr::cache_enabled($mnt,$command,$params,$path))))
-			PHK_Cache::set($cache_id,$data);
+		&& \PHK\Mgr::cache_enabled($mnt,$command,$params,$path))))
+			\PHK\Cache::set($cache_id,$data);
 	}
 
-if ($dir && (!is_array($data))) throw new Exception('Not a directory');
-if ((!$dir) && (!is_string($data))) throw new Exception('Not a regular file');
+if ($dir && (!is_array($data))) throw new \Exception('Not a directory');
+if ((!$dir) && (!is_string($data))) throw new \Exception('Not a regular file');
 
 return $data;
 }
@@ -99,7 +99,7 @@ return $data;
 
 public function stream_open($uri,$mode,$options,&$opened_path)
 {
-PHK_Util::trace("Starting stream_open: uri=$uri");//TRACE
+\PHK\Tools\Util::trace("Starting stream_open: uri=$uri");//TRACE
 
 try
 {
@@ -108,11 +108,11 @@ $this->raise_errors=($options & STREAM_REPORT_ERRORS);
 if ($options & STREAM_USE_PATH) $opened_path=$uri;
 
 if (($mode!='r')&&($mode!='rb'))
-	throw new Exception($mode.': unsupported mode (Read only)');
+	throw new \Exception($mode.': unsupported mode (Read only)');
 
 self::parse_uri($uri,$this->command,$this->params,$this->mnt,$this->path);
 
-if (!is_null($this->mnt)) PHK_Mgr::validate($this->mnt);
+if (!is_null($this->mnt)) \PHK\Mgr::validate($this->mnt);
 
 $this->data=self::get_file(false,$uri,$this->mnt,$this->command
 	,$this->params,$this->path);
@@ -120,13 +120,13 @@ $this->data=self::get_file(false,$uri,$this->mnt,$this->command
 $this->size=strlen($this->data);
 $this->position=0;
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
 	$msg=$uri.': Open error - '.$e->getMessage();
 	$this->raise_warning($msg);
 	return false;
 	}
-PHK_Util::trace("Exiting stream_open: uri=$uri");//TRACE
+\PHK\Tools\Util::trace("Exiting stream_open: uri=$uri");//TRACE
 return true;
 }
 
@@ -135,7 +135,7 @@ return true;
 
 public function stream_read($nb)
 {
-PHK_Util::trace("Starting stream_read: uri=".$this->uri." - nb=$nb - position=".$this->position." size=".$this->size);//TRACE
+\PHK\Tools\Util::trace("Starting stream_read: uri=".$this->uri." - nb=$nb - position=".$this->position." size=".$this->size);//TRACE
 
 if ($this->position==$this->size) return false;
 $max=$this->size-($pos=$this->position);
@@ -166,7 +166,7 @@ return $this->position;
 
 public function stream_seek($offset,$whence)
 {
-PHK_Util::trace("Starting stream_seek: uri=".$this->uri." - offset=$offset - whence=$whence");//TRACE
+\PHK\Tools\Util::trace("Starting stream_seek: uri=".$this->uri." - offset=$offset - whence=$whence");//TRACE
 
 switch($whence)
 	{
@@ -198,7 +198,7 @@ $this->raise_errors=($options & STREAM_REPORT_ERRORS);
 self::parse_uri($uri,$this->command,$this->params,$this->mnt
 	,$this->path);
 
-if (!is_null($this->mnt)) PHK_Mgr::validate($this->mnt);
+if (!is_null($this->mnt)) \PHK\Mgr::validate($this->mnt);
 
 $this->data=self::get_file(true,$uri,$this->mnt,$this->command
 	,$this->params,$this->path);
@@ -206,7 +206,7 @@ $this->data=self::get_file(true,$uri,$this->mnt,$this->command
 $this->size=count($this->data);
 $this->position=0;
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
 	$msg=$uri.': PHK opendir error - '.$e->getMessage();
 	$this->raise_warning($msg);
@@ -258,7 +258,7 @@ return array(
 
 public function stream_stat()
 {
-PHK_Util::trace("Entering stream_stat");//TRACE
+\PHK\Tools\Util::trace("Entering stream_stat");//TRACE
 
 return $this->url_stat($this->uri,0,true);
 }
@@ -279,7 +279,7 @@ return $this->url_stat($this->uri,0,true);
 
 public function url_stat($uri,$flags,$fstat=false)
 {
-PHK_Util::trace("Entering url_stat($uri,$flags,$fstat)");//TRACE
+\PHK\Tools\Util::trace("Entering url_stat($uri,$flags,$fstat)");//TRACE
 
 try
 {
@@ -292,31 +292,31 @@ if (!$fstat)
 	self::parse_uri($uri,$this->command,$this->params,$this->mnt
 		,$this->path);
 
-	if (!is_null($this->mnt)) PHK_Mgr::validate($this->mnt);
+	if (!is_null($this->mnt)) \PHK\Mgr::validate($this->mnt);
 	}
 
-$cache_id=PHK_Cache::cache_id('stat',$uri);
-if (is_null($data=PHK_Cache::get($cache_id)))	// Miss - Slow path
+$cache_id=\PHK\Cache::cache_id('stat',$uri);
+if (is_null($data=\PHK\Cache::get($cache_id)))	// Miss - Slow path
 	{
-	PHK_Util::trace("url_stat($uri): not found in cache");//TRACE
+	\PHK\Tools\Util::trace("url_stat($uri): not found in cache");//TRACE
 	try
 		{
 		$cache=true;
 		$mode=$size=$mtime=null;
-		PHK_Stream_Backend::get_stat_data($this->mnt,$this->command
+		Backend::get_stat_data($this->mnt,$this->command
 			,$this->params,$this->path,$cache,$mode,$size,$mtime);
 		$data=array($mode,$size,$mtime);
 		}
-	catch (Exception $e) // Mark entry as non-existent
+	catch (\Exception $e) // Mark entry as non-existent
 		{
-		PHK_Util::trace("url_stat($uri): lookup failed");//TRACE
+		\PHK\Tools\Util::trace("url_stat($uri): lookup failed");//TRACE
 		$data='';
 		}
 
-	if ($cache && (!is_null($this->mnt)) && PHK_Mgr::cache_enabled($this->mnt
+	if ($cache && (!is_null($this->mnt)) && \PHK\Mgr::cache_enabled($this->mnt
 		,$this->command,$this->params,$this->path))
 		{
-		PHK_Cache::set($cache_id,$data);
+		\PHK\Cache::set($cache_id,$data);
 		}
 	}
 
@@ -325,9 +325,9 @@ if (is_array($data))
 	list($mode,$size,$mtime)=$data;
 	return self::stat_array($mode,$size,$mtime);
 	}
-else throw new Exception('File not found');	// Negative hit
+else throw new \Exception('File not found');	// Negative hit
 }
-catch (Exception $e)
+catch (\Exception $e)
 	{
 	$msg=$uri.': PHK Stat error - '.$e->getMessage();
 	$this->raise_warning($msg);
@@ -360,28 +360,28 @@ catch (Exception $e)
 * @param string|null $mnt Return value - Null only if global command
 * @param string|null $path Return value - Null only if global command
 * @return void
-* @throws Exception on invalid syntax
+* @throws \Exception on invalid syntax
 */
 
 public static function parse_uri($uri,&$command,&$params,&$mnt,&$path)
 {
-PHK_Util::trace("Entering parse_uri($uri)");//TRACE
+\PHK\Tools\Util::trace("Entering parse_uri($uri)");//TRACE
 
-if (! PHK_Mgr::is_a_phk_uri($uri=str_replace('\\','/',$orig_uri=$uri)))
-	throw new Exception('Not a PHK URI');
+if (! \PHK\Mgr::is_a_phk_uri($uri=str_replace('\\','/',$orig_uri=$uri)))
+	throw new \Exception('Not a PHK URI');
 $uri=substr($uri,6);	// Remove 'phk://'
 
 if (($pos=strpos($uri,'?'))!==false)	// If the uri contains a command
 	{
-	$cmd=PHK_Util::substr($uri,$pos+1);
+	$cmd=\PHK\Tools\Util::substr($uri,$pos+1);
 	$uri=substr($uri,0,$pos);
 	if (($pos=strpos($cmd,'&'))!==false)	// params present
 		{
 		$command=substr($cmd,0,$pos);
-		parse_str(PHK_Util::substr($cmd,$pos+1),$params); // Get parameters
+		parse_str(\PHK\Tools\Util::substr($cmd,$pos+1),$params); // Get parameters
 		}
 	else $command=$cmd;
-	if ($command=='') throw new Exception('Empty command');
+	if ($command=='') throw new \Exception('Empty command');
 	}
 
 $uri=trim($uri,'/');	// Suppress leading and trailing '/'
@@ -392,7 +392,7 @@ if ($uri!='') // Not a global command
 	$path=isset($a[1]) ? $a[1] : '';
 	}
 
-if (is_null($command) && is_null($mnt)) throw new Exception('Empty URI');
+if (is_null($command) && is_null($mnt)) throw new \Exception('Empty URI');
 }
 
 //---------------------------------
@@ -400,7 +400,7 @@ if (is_null($command) && is_null($mnt)) throw new Exception('Empty URI');
 //=============================================================================
 // Register the PHK wrapper
 
-stream_wrapper_register('phk','PHK_Stream');
+stream_wrapper_register('phk','PHK\Stream\Wrapper');
 
 //=============================================================================
 } // End of class_exists

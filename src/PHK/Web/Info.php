@@ -17,8 +17,6 @@
 //
 //=============================================================================
 /**
-* The PHK_Webinfo class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
@@ -26,13 +24,13 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Web {
 
-if (!class_exists('PHK_Webinfo',false))
+if (!class_exists('PHK\Web\Info',false))
 {
 //============================================================================
 
-class PHK_Webinfo
+class Info
 {
 const VERSION='0.2.5';
 
@@ -51,14 +49,14 @@ public function __construct($phk)
 {
 $this->PHK=$phk;
 
-PHK_Mgr::set_cache(false); // Don't cache anything in webinfo mode
+\PHK\Mgr::set_cache(false); // Don't cache anything in webinfo mode
 }
 
 //----
 
 private static function display_tab($url,$name)
 {
-echo '<li id="'.$name.'"><a href="'.PHK::subpath_url($url)
+echo '<li id="'.$name.'"><a href="'.\PHK::subpath_url($url)
 	.'"><span>'.$name.'</span></a></li>';
 }
 
@@ -72,7 +70,7 @@ $win_title=(is_null($title) ? $name : "$name - $title");
 
 echo '<head>'
 	."<title>$win_title</title>"
-	.'<link href="'.PHK::subpath_url('/php_section/STATIC/tabs/tabs.css.php')
+	.'<link href="'.\PHK::subpath_url('/php_section/STATIC/tabs/tabs.css.php')
 	.'" rel="stylesheet" type="text/css">'
 	."<style type=text/css><!--\n"
 	."a,a:active,a:link { color: blue; text-decoration: none; }\n"
@@ -125,7 +123,7 @@ echo "<tr><td width=$icon_width $bg_string align=center>";
 $url=$this->PHK->option('url');
 if (!is_null($url)) echo '<a href="'.$url.'" target=_blank>';
 if (!is_null($icon_path=$this->PHK->option('icon')))
-	echo '<img border=0 src="'.PHK::subpath_url('/file/'.trim($icon_path,'/'))
+	echo '<img border=0 src="'.\PHK::subpath_url('/file/'.trim($icon_path,'/'))
 		.'" alt="Package Home">';
 elseif (!is_null($url)) echo '&lt;Website&gt;';
 if (!is_null($url)) echo '</a>';
@@ -135,7 +133,7 @@ echo '<td bgcolor="#D7E2FF" align=center><h1>'.$name.'</h1></td>';
 
 echo '<td width=151 align=center><a href="http://phk.tekwire.net"'
 	.' target=_blank><img width=151 height=88 border=0 src="'
-	.PHK::subpath_url('/section/STATIC/phk_logo.png')
+	.\PHK::subpath_url('/section/STATIC/phk_logo.png')
 	.'" alt="PHK Home"></a></td>';
 echo '</tr>';
 
@@ -171,7 +169,7 @@ if (isset($_REQUEST['debug']))
 
 #-- Get the command and optional arg. Supports both URL formats
 
-$command=trim(PHK::get_subpath(),'/');
+$command=trim(\PHK::get_subpath(),'/');
 if (($pos=strpos($command,'/'))!==false)
 	{
 	$arg=substr($command,$pos+1);
@@ -210,13 +208,13 @@ switch($command)
 				break;
 
 			case 'text/html':
-				echo PHK_Util::readfile($path);
+				echo \PHK\Tools\Util::readfile($path);
 				break;
 
 			default:
 				if (strpos($mime_type,'image/')===0) // Is it an image ?
-					echo 'Image: <img src="'.PHK::subpath_url('/file'.$arg).'">';
-				else echo '<pre>'.htmlspecialchars(PHK_Util::readfile($path))
+					echo 'Image: <img src="'.\PHK::subpath_url('/file'.$arg).'">';
+				else echo '<pre>'.htmlspecialchars(\PHK\Tools\Util::readfile($path))
 					.'</pre>';
 			}
 		break;
@@ -269,11 +267,11 @@ self::footer();
 
 //----
 // Convert a subfile path to an URL. Needed because Automap must not
-// directly reference PHK or PHK_Webinfo (to avoid cyclic dependencies).
+// directly reference PHK or \PHK\Web\Info (to avoid cyclic dependencies).
 
 public static function view_subfile_url($fname)
 {
-return PHK::subpath_url('/view/'.trim($fname,'/'));
+return \PHK::subpath_url('/view/'.trim($fname,'/'));
 }
 
 //----

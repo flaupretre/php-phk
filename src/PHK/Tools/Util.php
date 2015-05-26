@@ -17,7 +17,7 @@
 //
 //=============================================================================
 /**
-* The PHK_Util class
+* The \PHK\Tools\Util class
 *
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
@@ -26,7 +26,7 @@
 */
 //=============================================================================
 
-namespace {
+namespace PHK\Tools {
 
 // Ensures PHP_VERSION_ID is set. If version < 5.2.7, emulate.
 
@@ -38,11 +38,11 @@ if (!defined('PHP_VERSION_ID'))
 
 //=============================================================================
 
-if (!class_exists('PHK_Util',false))
+if (!class_exists('PHK\Tools\Util',false))
 {
 //============================================================================
 
-class PHK_Util	// Static only
+class Util	// Static only
 {
 //-----
 
@@ -174,7 +174,7 @@ else $suffix = PHP_SHLIB_SUFFIX;
 
 @dl('php_'.$ext.'.'.$suffix) || @dl($ext.'.'.$suffix);
 
-if (!extension_loaded($ext)) throw new Exception("$ext: Cannot load extension");
+if (!extension_loaded($ext)) throw new \Exception("$ext: Cannot load extension");
 }
 
 //---------
@@ -187,10 +187,10 @@ $failed_ext=array();
 foreach($ext_list as $ext)
 	{
 	try { self::load_extension($ext); }
-	catch (Exception $e) { $failed_ext[]=$ext; }
+	catch (\Exception $e) { $failed_ext[]=$ext; }
 	}
 if (count($failed_ext))
-	throw new Exception('Cannot load the following required extension(s): '
+	throw new \Exception('Cannot load the following required extension(s): '
 		.implode(' ',$failed_ext));
 }
 
@@ -320,7 +320,7 @@ return $cond ? 'Yes' : 'No';
 public static function readfile($path)
 {
 if (($data=@file_get_contents($path))===false)
-	throw new Exception($path.': Cannot get file content');
+	throw new \Exception($path.': Cannot get file content');
 return $data;
 }
 
@@ -330,7 +330,7 @@ return $data;
 public static function scandir($path)
 {
 if (($subnames=scandir($path))===false)
-	throw new Exception($path.': Cannot read directory');
+	throw new \Exception($path.': Cannot read directory');
 
 $a=array();
 foreach($subnames as $f)
@@ -346,7 +346,7 @@ public static function trace($msg)
 if (($tfile=getenv('PHK_TRACE_FILE')) !== false)
         {
         // Append message to trace file
-        if (($fp=fopen($tfile,'a'))===false) throw new Exception($tfile.': Cannot open trace file');
+        if (($fp=fopen($tfile,'a'))===false) throw new \Exception($tfile.': Cannot open trace file');
         fwrite($fp,self::timestring().': '.$msg."\n");
         fclose($fp);
         }
@@ -377,13 +377,13 @@ public static function display_slow_path()
 {
 if (getenv('PHK_DEBUG_SLOW_PATH')!==false)
 	{
-	$html=PHK_Util::env_is_web();
+	$html=self::env_is_web();
 
 	if (isset($GLOBALS['__PHK_SLOW_PATH']))
 		$data="Slow path entered at:\n".$GLOBALS['__PHK_SLOW_PATH'];
 	else $data="Fast path OK\n";
 
-	PHK::info_section($html,'Fast path result');
+	\PHK::info_section($html,'Fast path result');
 
 	if ($html) echo "<pre>";
 	echo $data;
@@ -398,46 +398,46 @@ public static function slow_path()
 if ((getenv('PHK_DEBUG_SLOW_PATH')!==false)
 	&& (!isset($GLOBALS['__PHK_SLOW_PATH'])))
 	{
-	$e=new Exception();
+	$e=new \Exception();
 	$GLOBALS['__PHK_SLOW_PATH']=$e->getTraceAsString();
 	}
 }
 
 //-----
 /**
-* Sends an Exception with a message starting with 'Format error'
+* Sends an \Exception with a message starting with 'Format error'
 *
 * @param string $msg Message to send
 * @return void
-* @throws Exception
+* @throws \Exception
 */
 
 public static function format_error($msg)
 {
-throw new Exception('Format error: '.$msg);
+throw new \Exception('Format error: '.$msg);
 }
 
 //---------------------------------
-// Utility functions called by PHK_Mgr. When using the accelerator, this
+// Utility functions called by \PHK\Mgr. When using the accelerator, this
 // data is persistent. So, retrieving it to populate the cache can be done
 // in PHP.
 
 public static function get_min_version($mnt,$caching)
 {
-return PHK_Stream::get_file(false,PHK_Mgr::command_uri($mnt
+return \PHK\Stream\Wrapper::get_file(false,\PHK\Mgr::command_uri($mnt
 	,'magic_field&name=mv'),$mnt,'magic_field',array('name' => 'mv'),''
 	,$caching);
 }
 
 public static function get_options($mnt,$caching)
 {
-return unserialize(PHK_Stream::get_file(false,PHK_Mgr::section_uri($mnt
+return unserialize(\PHK\Stream\Wrapper::get_file(false,\PHK\Mgr::section_uri($mnt
 	,'OPTIONS'),$mnt,'section',array('name' => 'OPTIONS'),'',$caching));
 }
 
 public static function get_build_info($mnt,$caching)
 {
-return unserialize(PHK_Stream::get_file(false,PHK_Mgr::section_uri($mnt
+return unserialize(\PHK\Stream\Wrapper::get_file(false,\PHK\Mgr::section_uri($mnt
 	,'BUILD_INFO'),$mnt,'section',array('name' => 'BUILD_INFO'),'',$caching));
 }
 
@@ -453,7 +453,7 @@ return call_user_func_array(array($object,$method),$args);
 public static function run_webinfo($phk)
 {
 $phk->proxy()->crc_check();	//-- check CRC before running webinfo
-$phkw=new PHK_Webinfo($phk);
+$phkw=new \PHK\Web\Info($phk);
 $phkw->run();
 }
 
@@ -464,16 +464,16 @@ public static function atomic_write($path,$data)
 $tmpf=tempnam(dirname($path),'tmp_');
 
 if (file_put_contents($tmpf,$data)!=strlen($data))
-	throw new Exception($tmpf.": Cannot write");
+	throw new \Exception($tmpf.": Cannot write");
 
 // Windows does not support renaming to an existing file (looses atomicity)
 
-if (PHK_Util::env_is_windows()) @unlink($path);
+if (self::env_is_windows()) @unlink($path);
 
 if (!rename($tmpf,$path))
 	{
 	unlink($tmpf);
-	throw new Exception($path.': Cannot replace file');
+	throw new \Exception($path.': Cannot replace file');
 	}
 }
 
@@ -491,7 +491,7 @@ if (!rename($tmpf,$path))
 *
 * @param string $path The path to be mounted
 * @return string the computed mount point
-* @throws Exception
+* @throws \Exception
 */
 
 private static $simul_inode_array=array();
@@ -499,7 +499,7 @@ private static $simul_inode_index=1;
 
 public static function path_unique_id($prefix,$path,&$mtime)
 {
-if (($s=stat($path))===false) throw new Exception("$path: File not found");
+if (($s=stat($path))===false) throw new \Exception("$path: File not found");
 
 $dev=$s[0];
 $inode=$s[1];
@@ -508,7 +508,7 @@ $mtime=$s[9];
 if ($inode==0) // This system does not support inodes
 	{
 	$rpath=realpath($path);
-	if ($rpath === false) throw new Exception("$path: Cannot compute realpath");
+	if ($rpath === false) throw new \Exception("$path: Cannot compute realpath");
 
 	if (isset(self::$simul_inode_array[$rpath]))
 		$inode=self::$simul_inode_array[$rpath];

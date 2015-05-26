@@ -26,13 +26,13 @@
 */
 //============================================================================
 
-namespace {
+namespace PHK {
 
-if (!class_exists('PHK_File',false))
+if (!class_exists('PHK\PkgFile',false))
 {
 
 //-------------------------
-class PHK_File
+class PkgFile
 {
 
 private $fp=null;
@@ -49,7 +49,7 @@ public function __construct($path,$flags)
 $this->set_params($path,$flags);
 
 if (($this->size=filesize($path))===false)
-	throw new Exception($path.': Cannot get file size');
+	throw new \Exception($path.': Cannot get file size');
 }
 
 //------
@@ -58,7 +58,7 @@ public function set_params($path,$flags)
 {
 $this->path=$path;
 
-$this->keep_open_flag=PHK_Mgr::is_a_phk_uri($path);
+$this->keep_open_flag=\PHK\Mgr::is_a_phk_uri($path);
 }
 
 //---
@@ -90,14 +90,14 @@ if (!is_null($this->fp))
 //------
 // Open in read-only mode. Maintains a count for close(), throws exceptions,
 // and force 'b' mode (for Windows).
-// Called from self or PHK_FileSpace only
+// Called from self or \PHK\PkgFileSpace only
 
 public function _open()
 {
 if (is_null($this->fp))
 	{
 	if (!($this->fp=fopen($this->path,'rb',false)))	//-- 'b' mode is for Windows
-		throw new Exception($this->path.': Cannot open for reading');
+		throw new \Exception($this->path.': Cannot open for reading');
 	$this->open_count=1;
 	}
 else $this->open_count++;
@@ -105,7 +105,7 @@ else $this->open_count++;
 
 //-----
 // fclose() the file pointer. Maintains an open count.
-// Called from self or PHK_FileSpace only
+// Called from self or \PHK\PkgFileSpace only
 
 public function _close()
 {
@@ -124,7 +124,7 @@ $data='';
 $nb_chunks=intval($size/8192);
 $rest=$size % 8192;
 
-PHK_Util::disable_mqr();
+\PHK\Tools\Util::disable_mqr();
 while ($nb_chunks > 0)
 	{
 	$data .= $this->read_chunk(8192);
@@ -132,7 +132,7 @@ while ($nb_chunks > 0)
 	}
 
 if ($rest) $data .= $this->read_chunk($rest);
-PHK_Util::restore_mqr();
+\PHK\Tools\Util::restore_mqr();
 
 return $data;
 }
@@ -143,15 +143,15 @@ return $data;
 private function read_chunk($size)
 {
 $buf=fread($this->fp,$size);
-if ($buf===false) throw new Exception('Cannot read');
+if ($buf===false) throw new \Exception('Cannot read');
 if (($bsize=strlen($buf))!=$size)
-	throw new Exception("Short read ($bsize/$size)");
+	throw new \Exception("Short read ($bsize/$size)");
 return $buf;
 }
 
 //-----
 // Reads a block from file.
-// Called only from PHK_FileSpace. So:
+// Called only from \PHK\PkgFileSpace. So:
 //		- we don't need to check bounds,
 //		- we don't provide default args,
 //		- we are sure that size is > 0
@@ -162,14 +162,14 @@ try
 	{
 	$this->_open();
 	if (fseek($this->fp,$offset,SEEK_SET) == -1)
-		throw new Exception('Cannot seek');
+		throw new \Exception('Cannot seek');
 	$buf=$this->read($size);
 	$this->_close();	// At the end. Everything before can raise an exception
 	}				// and we don't want to close it twice
-catch (Exception $e)
+catch (\Exception $e)
 	{
 	$this->_close();
-	throw new Exception($e->getMessage());
+	throw new \Exception($e->getMessage());
 	}
 return $buf;
 }
@@ -188,32 +188,32 @@ public function path()
 return $this->path;
 }
 
-}	// End of class PHK_File
+}	// End of class \PHK\PkgFile
 //-------------------------
-} // End of class_exists('PHK_File')
+} // End of class_exists('PHK\PkgFile')
 //=============================================================================
 
-if (!class_exists('PHK_FileSpace',false))
+if (!class_exists('PHK\PkgFileSpace',false))
 {
 //-------------------------
-class PHK_FileSpace
+class PkgFileSpace
 {
 
-public $file;	// underlying  PHK_File object
+public $file;	// underlying  \PHK\PkgFile object
 private $offset;
 private $size;
 
 //------
 // Two possibles syntaxes :
-// new PHK_FileSpace(String $path,int $flags) : creates a first space for a file
-// new PHK_FileSpace(PHK_FileSpace $parent, int $offset, int $size) :
+// new \PHK\PkgFileSpace(String $path,int $flags) : creates a first space for a file
+// new \PHK\PkgFileSpace(\PHK\PkgFileSpace $parent, int $offset, int $size) :
 //		creates a subspace inside an existing FileSpace.
 
 public function __construct($arg1,$arg2,$size=null)
 {
 if (is_string($arg1))
 	{
-	$this->file=new PHK_File($arg1,$arg2);
+	$this->file=new \PHK\PkgFile($arg1,$arg2);
 	$this->offset=0;
 	$this->size=$this->file->size();
 	}
@@ -224,7 +224,7 @@ else
 		|| (!is_numeric($size))
 		|| ($arg2 < 0)
 		|| (($arg2+$size) > $arg1->size))
-		throw new Exception("PHK_FileSpace: cannot create - invalid arguments");
+		throw new \Exception("PkgFileSpace: cannot create - invalid arguments");
 
 	$this->file=$arg1->file;
 	$this->offset=$arg1->offset + $arg2;
@@ -237,18 +237,18 @@ else
 
 public function read_block($offset=0,$size=null)
 {
-//PHK_Util::trace("Starting PHK_FileSpace::read_block - offset=$offset - size=$size");//TRACE
+//\PHK\Tools\Util::trace("Starting PkgFileSpace::read_block - offset=$offset - size=$size");//TRACE
 
 if (is_null($size)) $size=$this->size-$offset; // Read up to the end
 
 if (($offset<0)||($size<0)||($offset+$size>$this->size))
-	throw new Exception('PHK_FileSpace: Read out of bound');
+	throw new \Exception('PkgFileSpace: Read out of bound');
 
 if ($size==0) return '';
 
 $data=$this->file->_read_block($this->offset+$offset,$size);
 
-//PHK_Util::trace("Ending PHK_FileSpace::read_block");//TRACE
+//\PHK\Tools\Util::trace("Ending PkgFileSpace::read_block");//TRACE
 return $data;
 }
 
