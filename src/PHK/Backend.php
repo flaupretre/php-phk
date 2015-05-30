@@ -21,8 +21,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK {
 
@@ -62,12 +61,7 @@ return $this->front->$name();
 
 public function __call($method,$args)
 {
-// Special care to avoid endless loops (as PHK\Base has a mirror __call() method)
-
-if (!method_exists($this->front,$method))
-	throw new \Exception("$method: calling non existing method");
-
-return call_user_func_array(array($this->front,$method),$args);
+return \PHK\Tools\Util::callMethod($this->front,$method,$args);
 }
 
 //---------------------------------
@@ -614,6 +608,29 @@ public function sectionList()
 return unserialize(file_get_contents($this->commandURI(__FUNCTION)));
 }
 
+//-----
+/**
+* Check a package
+*
+* TODO: There a lot more things to check...
+*
+* @return array of error messages
+*/
+
+public function check()
+{
+$errors=array();
+
+$id=$this->automapID();
+if ($id)
+	{
+	$map=\Automap\Mgr::map($id);
+	$errors=array_merge($errors,$map->check());
+	}
+
+return $errors;
+}
+
 //---------------------------------
 // Workaround for PHP bug/issue when trying to use PATH_INFO when PHP is
 // run as an Apache CGI executable. In this mode, an url in the form of
@@ -648,6 +665,7 @@ echo "	- @license          Display license\n";
 echo "	- @get <path>       Display a subfile content\n";
 echo "	- @showmap          Display symbol map, if present\n";
 echo "	- @showfiles        List subfiles\n";
+echo "	- @check            Check package\n";
 echo "	- @option <name>    Display a package option\n";
 echo "	- @set_interp <string>  Set the first line of the PHK to '#!<string>'\n";
 echo "	- @info             Display information about the PHK file\n";
@@ -688,6 +706,7 @@ switch($command)
 	case 'info':
 	case 'techinfo':
 	case 'showfiles':
+	case 'check':
 		$this->$command();
 		break;
 

@@ -445,6 +445,11 @@ return unserialize(\PHK\Stream\Wrapper::getFile(false,\PHK\Mgr::sectionURI($mnt
 
 public static function callMethod($object,$method,$args)
 {
+// Special care to avoid endless loops
+
+if (!method_exists($object,$method))
+	throw new \Exception("$method: calling non existing method");
+
 return call_user_func_array(array($object,$method),$args);
 }
 

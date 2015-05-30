@@ -149,6 +149,7 @@ if (! \PHK\Mgr::isPhkUri(__FILE__)) $automap_base .= '/submodules/automap';
 $this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Mgr.php');
 $this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Tools/Display.php');
 $this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Map.php');
+$this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Tools/Check.php');
 
 $this->code .= \PHK\Tools\Util::readFile($dir.'/src/PHK/Tools/Util.php');
 $this->code .= \PHK\Tools\Util::readFile($dir.'/src/PHK/PkgFile.php');

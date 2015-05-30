@@ -95,7 +95,13 @@ switch($action)
 		$phk_path=array_shift($args);
 		$mnt=\PHK\Mgr::mount($phk_path);
 		$obj=\PHK\Mgr::instance($mnt);
-		$obj->check();
+		$errs=$obj->check();
+		if (count($errs))
+			{
+			foreach($errs as $err) \Phool\Display::error($err);
+			throw new \Exception("*** The check procedure found errors in $phk_path");
+			}
+		\Phool\Display::info('Check OK');
 		break;
 
 	case 'help':
