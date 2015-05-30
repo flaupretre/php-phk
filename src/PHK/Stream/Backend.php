@@ -40,7 +40,7 @@ if (!class_exists('PHK\Stream\Backend',false))
 class Backend
 {
 
-/** @var string		Used as temp storage by string_include() */
+/** @var string		Used as temp storage by stringInclude() */
 
 private static $tmp_data=null;
 
@@ -54,7 +54,7 @@ const TMP_URI='phk://?tmp';
 // stat() calls are used mainly for file existence/type. Size is less
 // important.
 
-private static function command_open_or_stat($stat_flag,$mnt,$command,$params
+private static function commandOpenOrStat($stat_flag,$mnt,$command,$params
 	,$path,&$cache)
 {
 $cache=true; // Default
@@ -69,7 +69,7 @@ if (is_null($mnt))	// Global command
 			return "Test line 1/3\nTest line2/3\nTest line 3/3\n";
 			break;
 
-		case 'tmp':	// Special: Used by \PHK::string_include();
+		case 'tmp':	// Special: Used by \PHK::stringInclude();
 			$cache=false;
 			return self::$tmp_data;
 			break;
@@ -91,7 +91,7 @@ else // Slow path
 		//	- take the data returned by the method
 
 		case 'section':
- 		case 'magic_field':
+ 		case 'magicField':
 			if (!isset($params['name']))
 				throw new \Exception($command
 					.': command needs this argument: name');
@@ -102,8 +102,8 @@ else // Slow path
 		//	- are cached
 		//	- serialize the data returned by the method
 
-		case 'path_list':
-		case 'section_list':
+		case 'pathList':
+		case 'sectionList':
 			return serialize($proxy->$command());
 
 		default:
@@ -120,9 +120,9 @@ catch (\Exception $e)
 
 //---------------------------------
 // Segfault in extension if this function throws an exception. As long as
-// this bug is not fixed, trap the exception before returning to \PHK\Stream\Wrapper
+// this bug is not fixed, trap the exception before returning to PHK\Stream\Wrapper
 
-public static function get_file_data($mnt,$command,$params,$path,&$cache)
+public static function getFileData($mnt,$command,$params,$path,&$cache)
 {
 $cache=true;
 
@@ -130,22 +130,22 @@ try
 {
 if (is_null($command))
 	{
-	$node=\PHK\Mgr::proxy($mnt)->ftree()->lookup_file($path,false);
+	$node=\PHK\Mgr::proxy($mnt)->ftree()->lookupFile($path,false);
 	if (is_null($node)) return null;
 	return $node->read();
 	}
 else
 	{
-	return self::command_open_or_stat(false,$mnt,$command,$params,$path,$cache);
+	return self::commandOpenOrStat(false,$mnt,$command,$params,$path,$cache);
 	}
 }
 catch (\Exception $e) { return null; }
 }
 
 //---------------------------------
-// Must accept the same parameters as get_file_data()
+// Must accept the same parameters as getFileData()
 
-public static function get_dir_data($mnt,$command,$params,$path)
+public static function getDirData($mnt,$command,$params,$path)
 {
 try
 {
@@ -153,21 +153,21 @@ if (!is_null($command)) return null;
 
 $node=\PHK\Mgr::proxy($mnt)->ftree()->lookup($path,false);
 if (is_null($node)) return null;
-return $node->getdir();
+return $node->getDir();
 }
 catch (\Exception $e) { return null; }
 }
 
 //---------------------------------
 
-public static function get_stat_data($mnt,$command,$params,$path,$cache
+public static function getStatData($mnt,$command,$params,$path,$cache
 	,&$mode,&$size,&$mtime)
 {
 if (!is_null($command))
 	{
 	$mode=0100444;	// Pseudo regular file
 	// Throws exception if command invalid or no target
-	$size=strlen(self::command_open_or_stat(true,$mnt,$command,$params
+	$size=strlen(self::commandOpenOrStat(true,$mnt,$command,$params
 		,$path,$cache));
 	}
 else
@@ -183,7 +183,7 @@ $mtime=(is_null($mnt) ? time() : \PHK\Mgr::instance($mnt)->mtime());
 //----
 // Undocumented
 
-public static function set_tmp_data($str)
+public static function setTmpData($str)
 {
 $prev=self::$tmp_data;
 self::$tmp_data=$str;
@@ -194,13 +194,13 @@ return $prev;
 // Undocumented
 // Applies php_strip_whitespace() to a string
 
-public static function _strip_string($str)
+public static function _stripString($str)
 {
 if (getenv('PHK_NO_STRIP')!==false) return $str;
 
-$save=self::set_tmp_data($str);
+$save=self::setTmpData($str);
 $res=php_strip_whitespace(self::TMP_URI);
-self::set_tmp_data($save);
+self::setTmpData($save);
 return $res;
 }
 
@@ -208,11 +208,11 @@ return $res;
 // Undocumented
 // Include a string as if it was in a source file
 
-public static function _include_string($str)
+public static function _includeString($str)
 {
-$save=self::set_tmp_data($str);
+$save=self::setTmpData($str);
 $res=require(self::TMP_URI);
-self::set_tmp_data($save);
+self::setTmpData($save);
 return $res;
 }
 

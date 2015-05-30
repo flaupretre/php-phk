@@ -49,35 +49,35 @@ private $data;	// File data (regular file) or dir content
 private $size;	// Size of buffer or number of dir entries
 private $position; // Byte position or position in array
 
-private $raise_errors=true;
+private $raiseErrors=true;
 
 //---------------------------------
 // Display a warning if they are allowed
 
-private function raise_warning($msg)
+private function raiseWarning($msg)
 {
-if ($this->raise_errors) trigger_error("PHK: $msg",E_USER_WARNING);
+if ($this->raiseErrors) trigger_error("PHK: $msg",E_USER_WARNING);
 }
 
 //---------------------------------
 
-public static function get_file($dir,$uri,$mnt,$command,$params,$path,$cache=null)
+public static function getFile($dir,$uri,$mnt,$command,$params,$path,$cache=null)
 {
-$cache_id=\PHK\Cache::cache_id('node',$uri);
-\PHK\Tools\Util::trace("get_file: Cache ID=<$cache_id>");//TRACE
+$cacheID=\PHK\Cache::cacheID('node',$uri);
+\PHK\Tools\Util::trace("get_file: Cache ID=<$cacheID>");//TRACE
 
-if (is_null($data=\PHK\Cache::get($cache_id)))	// Miss
+if (is_null($data=\PHK\Cache::get($cacheID)))	// Miss
 	{
 	$can_cache=true;
 	
 	if (is_null($data=($dir ?
-		Backend::get_dir_data($mnt,$command,$params,$path)
-		: Backend::get_file_data($mnt,$command,$params,$path
+		Backend::getDirData($mnt,$command,$params,$path)
+		: Backend::getFileData($mnt,$command,$params,$path
 			,$can_cache)))) throw new \Exception("$uri: File not found");
 
 	if ($can_cache && (($cache===true) || (is_null($cache)
-		&& \PHK\Mgr::cache_enabled($mnt,$command,$params,$path))))
-			\PHK\Cache::set($cache_id,$data);
+		&& \PHK\Mgr::cacheEnabled($mnt,$command,$params,$path))))
+			\PHK\Cache::set($cacheID,$data);
 	}
 
 if ($dir && (!is_array($data))) throw new \Exception('Not a directory');
@@ -104,17 +104,17 @@ public function stream_open($uri,$mode,$options,&$opened_path)
 try
 {
 $this->uri=$uri;
-$this->raise_errors=($options & STREAM_REPORT_ERRORS);
+$this->raiseErrors=($options & STREAM_REPORT_ERRORS);
 if ($options & STREAM_USE_PATH) $opened_path=$uri;
 
 if (($mode!='r')&&($mode!='rb'))
 	throw new \Exception($mode.': unsupported mode (Read only)');
 
-self::parse_uri($uri,$this->command,$this->params,$this->mnt,$this->path);
+self::parseURI($uri,$this->command,$this->params,$this->mnt,$this->path);
 
 if (!is_null($this->mnt)) \PHK\Mgr::validate($this->mnt);
 
-$this->data=self::get_file(false,$uri,$this->mnt,$this->command
+$this->data=self::getFile(false,$uri,$this->mnt,$this->command
 	,$this->params,$this->path);
 
 $this->size=strlen($this->data);
@@ -123,7 +123,7 @@ $this->position=0;
 catch (\Exception $e)
 	{
 	$msg=$uri.': Open error - '.$e->getMessage();
-	$this->raise_warning($msg);
+	$this->raiseWarning($msg);
 	return false;
 	}
 \PHK\Tools\Util::trace("Exiting stream_open: uri=$uri");//TRACE
@@ -193,14 +193,14 @@ public function dir_opendir($uri,$options)
 try
 {
 $this->uri=$uri;
-$this->raise_errors=($options & STREAM_REPORT_ERRORS);
+$this->raiseErrors=($options & STREAM_REPORT_ERRORS);
 
-self::parse_uri($uri,$this->command,$this->params,$this->mnt
+self::parseURI($uri,$this->command,$this->params,$this->mnt
 	,$this->path);
 
 if (!is_null($this->mnt)) \PHK\Mgr::validate($this->mnt);
 
-$this->data=self::get_file(true,$uri,$this->mnt,$this->command
+$this->data=self::getFile(true,$uri,$this->mnt,$this->command
 	,$this->params,$this->path);
 
 $this->size=count($this->data);
@@ -209,7 +209,7 @@ $this->position=0;
 catch (\Exception $e)
 	{
 	$msg=$uri.': PHK opendir error - '.$e->getMessage();
-	$this->raise_warning($msg);
+	$this->raiseWarning($msg);
 	return false;
 	}
 return true;
@@ -235,7 +235,7 @@ $this->position=0;
 //---------------------------------
 // Utility function called by stream_stat and url_stat
 
-private static function stat_array($mode,$size,$mtime)
+private static function statArray($mode,$size,$mtime)
 {
 return array(
 	'dev' => 0,
@@ -283,27 +283,27 @@ public function url_stat($uri,$flags,$fstat=false)
 
 try
 {
-$this->raise_errors=!($flags & STREAM_URL_STAT_QUIET);
+$this->raiseErrors=!($flags & STREAM_URL_STAT_QUIET);
 
 // If we are coming from stream_fstat(), the uri is already parsed.
 
 if (!$fstat)
 	{
-	self::parse_uri($uri,$this->command,$this->params,$this->mnt
+	self::parseURI($uri,$this->command,$this->params,$this->mnt
 		,$this->path);
 
 	if (!is_null($this->mnt)) \PHK\Mgr::validate($this->mnt);
 	}
 
-$cache_id=\PHK\Cache::cache_id('stat',$uri);
-if (is_null($data=\PHK\Cache::get($cache_id)))	// Miss - Slow path
+$cacheID=\PHK\Cache::cacheID('stat',$uri);
+if (is_null($data=\PHK\Cache::get($cacheID)))	// Miss - Slow path
 	{
 	\PHK\Tools\Util::trace("url_stat($uri): not found in cache");//TRACE
 	try
 		{
 		$cache=true;
 		$mode=$size=$mtime=null;
-		Backend::get_stat_data($this->mnt,$this->command
+		Backend::getStatData($this->mnt,$this->command
 			,$this->params,$this->path,$cache,$mode,$size,$mtime);
 		$data=array($mode,$size,$mtime);
 		}
@@ -313,24 +313,24 @@ if (is_null($data=\PHK\Cache::get($cache_id)))	// Miss - Slow path
 		$data='';
 		}
 
-	if ($cache && (!is_null($this->mnt)) && \PHK\Mgr::cache_enabled($this->mnt
+	if ($cache && (!is_null($this->mnt)) && \PHK\Mgr::cacheEnabled($this->mnt
 		,$this->command,$this->params,$this->path))
 		{
-		\PHK\Cache::set($cache_id,$data);
+		\PHK\Cache::set($cacheID,$data);
 		}
 	}
 
 if (is_array($data))
 	{
 	list($mode,$size,$mtime)=$data;
-	return self::stat_array($mode,$size,$mtime);
+	return self::statArray($mode,$size,$mtime);
 	}
 else throw new \Exception('File not found');	// Negative hit
 }
 catch (\Exception $e)
 	{
 	$msg=$uri.': PHK Stat error - '.$e->getMessage();
-	$this->raise_warning($msg);
+	$this->raiseWarning($msg);
 	return false;
 	}
 }
@@ -363,11 +363,11 @@ catch (\Exception $e)
 * @throws \Exception on invalid syntax
 */
 
-public static function parse_uri($uri,&$command,&$params,&$mnt,&$path)
+public static function parseURI($uri,&$command,&$params,&$mnt,&$path)
 {
-\PHK\Tools\Util::trace("Entering parse_uri($uri)");//TRACE
+\PHK\Tools\Util::trace("Entering parseURI($uri)");//TRACE
 
-if (! \PHK\Mgr::is_a_phk_uri($uri=str_replace('\\','/',$orig_uri=$uri)))
+if (! \PHK\Mgr::isPhkUri($uri=str_replace('\\','/',$orig_uri=$uri)))
 	throw new \Exception('Not a PHK URI');
 $uri=substr($uri,6);	// Remove 'phk://'
 

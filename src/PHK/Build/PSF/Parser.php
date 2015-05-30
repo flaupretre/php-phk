@@ -47,7 +47,7 @@ $this->vars=$vars;
 //---- \Exception with file name and line number
 // Can be called recursively. So, we decorate the message only once
 
-private function send_error($msg)
+private function sendError($msg)
 {
 if (($msg!='') && ($msg{0}=='>')) throw new \Exception($msg);
 else throw new \Exception('> '.$this->path.'(line '.$this->line_nb.') : '.$msg);
@@ -56,7 +56,7 @@ else throw new \Exception('> '.$this->path.'(line '.$this->line_nb.') : '.$msg);
 //---- Read a line with continuation '\' and strip comments (#) + trim()
 //---- Returns false on EOF
 
-private function get_line($fp)
+private function getLine($fp)
 {
 $line='';
 
@@ -66,7 +66,7 @@ while (true)
 	if (($line1=fgets($fp))===false) // EOF
 		{
 		if ($line=='') return null;
-		else $this->send_error('Unexpected EOF'); // If it was a continuation
+		else $this->sendError('Unexpected EOF'); // If it was a continuation
 		}
 	if (($pos=strpos($line1,'#'))!==false)	// Remove comments
 		$line1=substr($line1,0,$pos);
@@ -87,10 +87,10 @@ while (true)
 	while (($pos=strpos($line,'$('))!==false) // always search the whole line
 		{
 		$pos2=strpos($line,')',$pos);
-		if ($pos2==($pos+2)) $this->send_error('Empty variable');
-		if ($pos2===false) $this->send_error('No variable end');
+		if ($pos2==($pos+2)) $this->sendError('Empty variable');
+		if ($pos2===false) $this->sendError('No variable end');
 		$var=substr($line,$pos+2,$pos2-($pos+2));
-		$val=$this->get_var($var);
+		$val=$this->getVar($var);
 		$line=substr_replace($line,$val,$pos,$pos2+1-$pos);
 		}
 
@@ -106,16 +106,16 @@ return $line;
 
 //---------
 
-private function get_var($name)
+private function getVar($name)
 {
 if (isset($this->vars[$name])) return $this->vars[$name];
 if (($val=getenv($name))!==false) return $val;
-$this->send_error($name.': reference to undefined variable');
+$this->sendError($name.': reference to undefined variable');
 }
 
 //---------
 
-private function set_var($name,$value)
+private function setVar($name,$value)
 {
 $this->vars[$name]=$value;
 }
@@ -123,7 +123,7 @@ $this->vars[$name]=$value;
 //---------
 // On entry, $phk is a \PHK\Build\Creator object
 
-public function apply_to($phk)
+public function applyTo($phk)
 {
 if (!($phk instanceof \PHK\Build\Creator))
 	throw new \Exception('Object must be \PHK\Build\Creator');
@@ -134,7 +134,7 @@ if (!($fp=fopen($this->path,'rb',false)))
 $this->line_nb=0;
 
 try {
-while (!is_null($line=$this->get_line($fp)))
+while (!is_null($line=$this->getLine($fp)))
 	{
 	if ($line{0}==='%') break;	// Next block found
 	$op=new CmdOptions;
@@ -146,29 +146,29 @@ while (!is_null($line=$this->get_line($fp)))
 		case 'add':	// add [-t <target-path>] [-d <target-base>] [-C <dir>]
 					//   [-c <compression-scheme>] <source1> [<source2>...]
 			
-			$op->parse_all($words);
+			$op->parseAll($words);
 			if (count($words)==0)
 				throw new \Exception('Usage: add [options] <path1> [<path2> ...]');
-			$base_dir=\Phool\File::combine_path(dirname($this->path)
+			$base_dir=\Phool\File::combinePath(dirname($this->path)
 				,$op->option('directory'));
 			foreach($words as $spath)
 				{
 				$spath=rtrim($spath,'/');	// Beware of trailing '/'
 				if (is_null($target=$op->option('target-path')))
 					{
-					if (\Phool\File::is_absolute_path($spath))
+					if (\Phool\File::isAbsolutePath($spath))
 						throw new \Exception("$spath: Arg must be a relative path");
 					$tbase=$op->option('target-base');
 					if (is_null($tbase)) $tbase='';
 					$target=$tbase.'/'.$spath;
 					}
-				$sapath=\Phool\File::combine_path($base_dir,$spath);
-				$phk->ftree()->merge_into_file_tree($target,$sapath,$op->options());
+				$sapath=\Phool\File::combinePath($base_dir,$spath);
+				$phk->ftree()->mergeIntoFileTree($target,$sapath,$op->options());
 				}
 			break;
 
 		case 'modify':
-			$op->parse_all($words);
+			$op->parseAll($words);
 			if (count($words)==0)
 				throw new \Exception('Usage: modify [options] <path1> [<path2> ...]');
 			foreach($words as $tpath)
@@ -180,7 +180,7 @@ while (!is_null($line=$this->get_line($fp)))
 				throw new \Exception('Usage: mount <phk-path> <var-name>');
 			list($path,$mnt_var)=$words;
 			$mnt=\PHK\Mgr::mount($path,\PHK::NO_MOUNT_SCRIPT);
-			$this->set_var($mnt_var,'phk://'.$mnt);
+			$this->setVar($mnt_var,'phk://'.$mnt);
 			break;
 
 		case 'remove':	// remove <path> [<path>...]
@@ -193,22 +193,22 @@ while (!is_null($line=$this->get_line($fp)))
 			if (count($words) < 1)
 				throw new \Exception('Usage: set <var-name> [value]');
 			$var=array_shift($words);
-			$this->set_var($var,implode(' ',$words));
+			$this->setVar($var,implode(' ',$words));
 			break;
 
 		case 'section':		//-- Undocumented
-			$op->parse_all($words);
+			$op->parseAll($words);
 			if (count($words)!=2)
 				throw new \Exception('Usage: section [-C <dir>] <name> <path>');
 			list($name,$path)=$words;
-			$phk->add_section($name,\Phool\File::readfile($path));
+			$phk->addSection($name,\Phool\File::readFile($path));
 			break;
 			
 		default:
-			$this->send_error($command.': Unknown command');
+			$this->sendError($command.': Unknown command');
 		}
 	}
-} catch (\Exception $e) { $this->send_error($e->getMessage()); }
+} catch (\Exception $e) { $this->sendError($e->getMessage()); }
 
 if (!is_null($line)) // If we met a '%'
 	{
@@ -218,7 +218,7 @@ if (!is_null($line)) // If we met a '%'
 	$op=new MetaOptions;
 
 	$args=explode(' ',$line);
-	$op->parse_all($args);
+	$op->parseAll($args);
 
 	$data='';
 	while (($line=fgets($fp))!==false) $data .= $line;
@@ -230,7 +230,7 @@ if (!is_null($line)) // If we met a '%'
 			break;
 
 		case 'php':
-			$options=\PHK\Stream\Backend::_include_string("<?php\n".$data."\n?>");
+			$options=\PHK\Stream\Backend::_includeString("<?php\n".$data."\n?>");
 			break;
 
 		default:
@@ -239,7 +239,7 @@ if (!is_null($line)) // If we met a '%'
 
 	if (!(is_array($options)))
 		throw new \Exception('Options block should define an array');
-	$phk->set_options($options);
+	$phk->setOptions($options);
 	}
 
 fclose($fp);
@@ -252,7 +252,7 @@ public static function build($phk_path,$psf_path,$vars)
 {
 //-- Create empty output object
 
-$phk_path=\Phool\File::mk_absolute_path($phk_path);
+$phk_path=\Phool\File::mkAbsolutePath($phk_path);
 $mnt=\PHK\Mgr::mount($phk_path,\PHK::IS_CREATOR);
 $phk=\PHK\Mgr::instance($mnt);
 
@@ -266,13 +266,13 @@ if (is_null($psf_path)) // Compute PSF path from PHK path
 	}
 else	// Make PSF path absolute
 	{
-	$psf_path=\Phool\File::mk_absolute_path($psf_path);
+	$psf_path=\Phool\File::mkAbsolutePath($psf_path);
 	}
 
 //-- Interpret PSF
 
 $psf=new self($psf_path,$vars);
-$psf->apply_to($phk);
+$psf->applyTo($phk);
 
 //-- Dump to file
 

@@ -31,7 +31,7 @@ if (!class_exists('PHK\Proxy',false))
 * The 'back-end' object providing physical access to the package file. This
 * object is created and called by the stream wrapper on cache misses.
 *
-* Runtime code -> 100% read-only except set_buffer_interp().
+* Runtime code -> 100% read-only except setBufferInterp().
 *
 * @see \PHK\Stream\Wrapper
 * @see PHK
@@ -88,11 +88,11 @@ const CRC_OFFSET=200;
 
 private	$path;
 
-/** @var \PHK\Virtual\Tree	Section tree */
+/** @var PHK\Virtual\Tree	Section tree */
 
 protected	$stree=null;
 
-/** @var \PHK\Virtual\Tree	File tree */
+/** @var PHK\Virtual\Tree	File tree */
 
 public		$ftree=null;
 
@@ -100,7 +100,7 @@ public		$ftree=null;
 
 protected	$flags;
 
-/** @var \PHK\PkgFileSpace	File Handler */
+/** @var PHK\PkgFileSpace	File Handler */
 
 protected	$fspace;
 
@@ -113,7 +113,7 @@ private		$magic=null;
 /**
 * Constructor
 *
-* This method must be called only from \PHK\Mgr::proxy()
+* This method must be called only from PHK\Mgr::proxy()
 *
 * @param string mount point
 *
@@ -124,7 +124,7 @@ public function __construct($path,$flags)
 {
 try
 {
-Tools\Util::slow_path();
+Tools\Util::slowPath();
 
 //Tools\Util::trace("Starting proxy init");//TRACE
 
@@ -133,10 +133,10 @@ $this->flags=$flags;
 
 if (!($this->flags & \PHK::IS_CREATOR))
 	{
-	// file_is_package() moved here from \PHK\Mgr::compute_mnt() because we don't
+	// fileIsPackage() moved here from \PHK\Mgr::computeMnt() because we don't
 	// need to check this if data is already in cache.
 
-	if (! self::file_is_package($path))
+	if (! self::fileIsPackage($path))
 		throw new \Exception($path.'is not a PHK package');
 
 	$this->fspace= new PkgFileSpace($path,$flags);
@@ -144,24 +144,24 @@ if (!($this->flags & \PHK::IS_CREATOR))
 
 	// Get magic block
 
-	$this->get_magic_values();
+	$this->getMagicValues();
 
 	// Check that file size corresponds to the value stored in the magic block.
 	// Done only once in slow path because, if the file size changes, the
 	// modification date will change too, and thus the mount point.
 
 	if ($this->fspace->size()!=$this->magic['fs']) // Check file size
-		Tools\Util::format_error('Invalid file size. Should be '.$this->magic['fs']);
+		Tools\Util::formatError('Invalid file size. Should be '.$this->magic['fs']);
 
 	// Import section tree
 
-	$this->stree=Virtual\Tree::create_from_edata(
-		$this->fspace->read_block($this->magic['sso']
+	$this->stree=Virtual\Tree::createFromEdata(
+		$this->fspace->readBlock($this->magic['sso']
 			,$this->magic['sto']-$this->magic['sso'])
 		,new PkgFileSpace($this->fspace,$this->magic['sto']
 			,$this->magic['fto']-$this->magic['sto']));
 
-	$this->ftree=Virtual\Tree::create_from_edata($this->section('FTREE')
+	$this->ftree=Virtual\Tree::createFromEdata($this->section('FTREE')
 		,new PkgFileSpace($this->fspace,$this->magic['fto']
 			,$this->magic['sio']-$this->magic['fto']));
 
@@ -169,8 +169,8 @@ if (!($this->flags & \PHK::IS_CREATOR))
 	}
 else
 	{
-	$this->ftree=Virtual\Tree::create_empty();
-	$this->stree=Virtual\Tree::create_empty();
+	$this->ftree=Virtual\Tree::createEmpty();
+	$this->stree=Virtual\Tree::createEmpty();
 	}
 }
 catch (\Exception $e)
@@ -182,11 +182,11 @@ catch (\Exception $e)
 
 //---------
 
-public function crc_check()
+public function crcCheck()
 {
 try
 	{
-	self::check_crc_buffer($this->fspace->read_block());
+	self::checkCrcBuffer($this->fspace->readBlock());
 	}
 catch(\Exception $e)
 	{
@@ -205,7 +205,7 @@ catch(\Exception $e)
 * @return string	The modified buffer
 */
 
-public static function insert_crc($buffer,$crc)
+public static function insertCrc($buffer,$crc)
 {
 return substr_replace($buffer,$crc,self::CRC_OFFSET,8);
 }
@@ -218,7 +218,7 @@ return substr_replace($buffer,$crc,self::CRC_OFFSET,8);
 * @return string The extracted 8-char hex CRC
 */
 
-private static function get_crc($buffer)
+private static function getCrc($buffer)
 {
 return substr($buffer,self::CRC_OFFSET,8);
 }
@@ -233,9 +233,9 @@ return substr($buffer,self::CRC_OFFSET,8);
 * @return string The computed 8-char hex CRC
 */
 
-private static function compute_crc($buffer)
+private static function computeCrc($buffer)
 {
-return hash('crc32',self::insert_crc($buffer,'00000000'));
+return hash('crc32',self::insertCrc($buffer,'00000000'));
 }
 
 //---------------------------------
@@ -251,9 +251,9 @@ return hash('crc32',self::insert_crc($buffer,'00000000'));
 * @throws \Exception
 */
 
-public static function check_crc_buffer($buffer)
+public static function checkCrcBuffer($buffer)
 {
-if (self::compute_crc($buffer) !== self::get_crc($buffer))
+if (self::computeCrc($buffer) !== self::getCrc($buffer))
 	throw new \Exception('CRC check failed');
 }
 
@@ -265,9 +265,9 @@ if (self::compute_crc($buffer) !== self::get_crc($buffer))
 * @return string	The modified buffer
 */
 
-public static function fix_crc($buffer)
+public static function fixCrc($buffer)
 {
-return self::insert_crc($buffer,self::compute_crc($buffer));
+return self::insertCrc($buffer,self::computeCrc($buffer));
 }
 
 //---------
@@ -278,7 +278,7 @@ return self::insert_crc($buffer,self::compute_crc($buffer));
 * @return boolean
 */
 
-public static function file_is_package($path)
+public static function fileIsPackage($path)
 {
 if (filesize($path)< (self::INTERP_LEN+self::MAGIC_LINE_LEN)) return false;
 if (($fp=fopen($path,'rb',false))===false) return false;
@@ -296,7 +296,7 @@ return ($m===self::MAGIC_STRING);
 * @return boolean
 */
 
-public static function data_is_package($data)
+public static function dataIsPackage($data)
 {
 if (strlen($data) < (self::INTERP_LEN+self::MAGIC_LINE_LEN)) return false;
 return (substr($data,self::MAGIC_STRING_OFFSET,self::MAGIC_STRING_LEN)
@@ -305,7 +305,7 @@ return (substr($data,self::MAGIC_STRING_OFFSET,self::MAGIC_STRING_LEN)
 
 //---------------------------------
 /**
-* Extracts the value values out of a magic line buffer
+* Extracts the values out of a magic line buffer
 *
 * Note: A package is signed if (Signature offset != File size)
 *
@@ -313,9 +313,9 @@ return (substr($data,self::MAGIC_STRING_OFFSET,self::MAGIC_STRING_LEN)
 * @return array An array containing the magic values
 */
 
-public function get_magic_values()
+public function getMagicValues()
 {
-$buf=$this->fspace->read_block(self::INTERP_LEN,self::MAGIC_LINE_LEN);
+$buf=$this->fspace->readBlock(self::INTERP_LEN,self::MAGIC_LINE_LEN);
 
 $fsize=(int)substr($buf,47,self::OFFSET_SIZE);
 $sio=(int)substr($buf,121,self::OFFSET_SIZE);
@@ -339,7 +339,7 @@ $this->magic=array(
 
 //---------------------------------
 
-public function magic_field($name)
+public function magicField($name)
 {
 return $this->magic[$name];
 }
@@ -355,7 +355,7 @@ return $this->magic[$name];
 * @return void
 */
 
-private function cache_data()
+private function cacheData()
 {
 $this->stree->walk('read');
 $this->ftree->walk('read');
@@ -370,7 +370,7 @@ $this->ftree->walk('read');
 * @return void
 */
 
-private function clear_cache()
+private function clearCache()
 {
 $this->stree->walk('clear_cache');
 $this->ftree->walk('clear_cache');
@@ -378,16 +378,16 @@ $this->ftree->walk('clear_cache');
 
 //---------------------------------
 
-public function path_list()
+public function pathList()
 {
-return $this->ftree->path_list();
+return $this->ftree->pathList();
 }
 
 //---------------------------------
 
-public function section_list()
+public function sectionList()
 {
-return $this->stree->path_list();
+return $this->stree->pathList();
 }
 
 
@@ -415,7 +415,7 @@ return $this->magic['signed'];
 
 public function interp()
 {
-$block=$this->fspace->read_block(0,self::INTERP_LEN);
+$block=$this->fspace->readBlock(0,self::INTERP_LEN);
 
 if ((($block{0}!='#')||($block{1}!='!')) && (($block{0}!='<')||($block{1}!='?')))
 	throw new \Exception('Invalid interpreter block');
@@ -433,7 +433,7 @@ return ($block{0}=='#') ? trim(substr($block,2)) : '';
 * @return string Interpreter block (INTERP_LEN). Including trailing '\n'
 */
 
-public static function interp_block($interp)
+public static function interpBlock($interp)
 {
 if (($interp!=='') && (strlen($interp) > (\PHK\Proxy::INTERP_LEN-3)))
 	throw new \Exception('Length of interpreter string is limited to '
@@ -460,10 +460,10 @@ else return '#!'.str_pad($interp,\PHK\Proxy::INTERP_LEN-3)."\n";
 * @return string The modified buffer (the file is not overwritten)
 */
 
-public static function set_buffer_interp($path,$interp='')
+public static function setBufferInterp($path,$interp='')
 {
-return self::fix_crc(substr_replace(Tools\Util::readfile($path)
-	,self::interp_block($interp),0,\PHK\Proxy::INTERP_LEN));
+return self::fixCrc(substr_replace(Tools\Util::readFile($path)
+	,self::interpBlock($interp),0,\PHK\Proxy::INTERP_LEN));
 }
 
 //-----
@@ -501,7 +501,7 @@ return $this->fspace->path();
 
 public function section($name)
 {
-try { $node=$this->stree->lookup_file($name); }
+try { $node=$this->stree->lookupFile($name); }
 catch (\Exception $e) { throw new \Exception($name.': Unknown section'); }
 
 try { return $node->read(); }
@@ -537,9 +537,9 @@ return $this->flags;
 
 //---------------------------------
 
-public function display_packages()
+public function displayPackages()
 {
-$this->ftree->display_packages();
+$this->ftree->displayPackages();
 }
 
 //---------------------------------

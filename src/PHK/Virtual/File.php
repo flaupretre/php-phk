@@ -63,9 +63,9 @@ return $this->dc->read();
 
 //---
 
-public function flag_string()
+public function flagString()
 {
-$string=parent::flag_string().','.$this->dc->flag_string();
+$string=parent::flagString().','.$this->dc->flagString();
 $string=trim($string,',');
 
 return $string;
@@ -73,7 +73,7 @@ return $string;
 
 //---
 
-public function display_package($html)
+public function displayPackage($html)
 {
 if ($this->flags & self::TN_PKG) $this->display($html);
 }
@@ -83,21 +83,21 @@ if ($this->flags & self::TN_PKG) $this->display($html);
 
 public function display($html,$link=false)
 {
-$flag_string=$this->flag_string();
+$flagString=$this->flagString();
 $path=$this->path;
 
 if ($html)
 	{
 	if ($this->flags & self::TN_PKG) $link=false;
-	$field= ($link ? '<a href="'.\PHK::subpath_url('/view/'
+	$field= ($link ? '<a href="'.\PHK::subpathURL('/view/'
 		.trim($path,'/')).'">'.$path.'</a>' : $path);
 	echo '<tr><td nowrap>F</td><td nowrap>'.$field.'</td><td nowrap>'
-		.$this->size().'</td><td nowrap>'.$flag_string.'</td></tr>';
+		.$this->size().'</td><td nowrap>'.$flagString.'</td></tr>';
 	}
 else
 	{
-	if ($flag_string!='') $flag_string = ' ('.$flag_string.')';
-	echo 'F '.str_pad($this->size(),11).' '.$path.$flag_string."\n";
+	if ($flagString!='') $flagString = ' ('.$flagString.')';
+	echo 'F '.str_pad($this->size(),11).' '.$path.$flagString."\n";
 	}
 }
 
@@ -117,7 +117,7 @@ public function __construct($path,$tree)
 parent::__construct($path,$tree);
 
 $this->dc=new DC();
-$this->dc->set_fspace($tree->fspace);
+$this->dc->setFspace($tree->fspace);
 }
 
 //---
@@ -129,10 +129,10 @@ $this->dc->import(parent::import($edata));
 
 //---
 
-public function set_flags($flags)
+public function setFlags($flags)
 {
-parent::set_flags($flags);
-$this->dc->set_flags($flags);
+parent::setFlags($flags);
+$this->dc->setFlags($flags);
 }
 
 //---
@@ -141,10 +141,10 @@ $this->dc->set_flags($flags);
 // If PHK Package, move required extensions up
 // Don't umount the package, it will be used later.
 
-public function get_needed_extensions(\PHK\Build\Creator $phk
+public function getNeededExtensions(\PHK\Build\Creator $phk
 	,\PHK\Tools\ItemLister $item_lister)
 {
-if (\PHK::data_is_package($this->read()))
+if (\PHK::dataIsPackage($this->read()))
 	{
 	$mnt=require($phk->uri($this->path));
 	$source_phk=\PHK\Mgr::instance($mnt);
@@ -155,7 +155,7 @@ if (\PHK::data_is_package($this->read()))
 	
 	}
 
-return $this->dc->get_needed_extensions($phk,$item_lister);	// Now, ask DC
+return $this->dc->getNeededExtensions($phk,$item_lister);	// Now, ask DC
 }
 
 //---------------
@@ -174,7 +174,7 @@ if (!is_null($map)) // This is a real file
 	{
 	if (getenv('PHK_NO_STRIP')!==false)	$this->flags &= ~self::TN_STRIP_SOURCE;
 
-	if (\PHK::data_is_package($this->read()))	//-- Package ?
+	if (\PHK::dataIsPackage($this->read()))	//-- Package ?
 		{
 		//-- Set 'package' flag, clear 'strip source', and keep autoload
 		$this->flags |= self::TN_PKG;
@@ -189,19 +189,19 @@ if (!is_null($map)) // This is a real file
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
 			\PHK\Tools\Util::trace("Registering Automap symbols from PHK package");
-			$map->register_phk($phk->uri($path),$rpath);
+			$map->registerPhkPkg($phk->uri($path),$rpath);
 			}
 		}
-	elseif ($phk->is_php_source_path($path))
+	elseif ($phk->isPHPSourcePath($path))
 		{
 		//--- Register in automap
 		if (!($this->flags & self::TN_NO_AUTOLOAD))
 			{
 			\PHK\Tools\Util::trace("	Registering Automap symbols");
-			$map->register_script_file($phk->uri($path),$rpath);
+			$map->registerScriptFile($phk->uri($path),$rpath);
 			}
 
-		$this->process_php_script();	//--- Script pre-processor
+		$this->processPHPScript();	//--- Script pre-processor
 		}
 	else
 		{
@@ -210,7 +210,7 @@ if (!is_null($map)) // This is a real file
 		}
 	}
 
-return $this->tnode_export($this->dc->export($phk,$stacker));
+return $this->nodeExport($this->dc->export($phk,$stacker));
 }
 
 //---------------
@@ -220,7 +220,7 @@ const ST_OUT=0;
 const ST_ADD=1;
 const ST_IGNORE=2;
 
-private function process_php_script()
+private function processPHPScript()
 {
 $buf=$this->read();
 
@@ -278,10 +278,10 @@ $buf=substr($buf,0,-1);
 if ($this->flags & self::TN_STRIP_SOURCE)
 	{
 	// \PHK\Tools\Util::msg("	Stripping script");
-	$buf=\PHK\Stream\Backend::_strip_string($buf);
+	$buf=\PHK\Stream\Backend::_stripString($buf);
 	}
 
-$this->set_data($buf);
+$this->setData($buf);
 }
 
 // </CREATOR> //---------------

@@ -34,7 +34,7 @@ class Cmd
 {
 //---------
 
-private static function error_abort($msg,$usage=true)
+private static function errorAbort($msg,$usage=true)
 {
 if ($usage) $msg .= " - Use 'help' command for syntax";
 throw new \Exception($msg);
@@ -79,19 +79,19 @@ More information at http://phk.tekwire.net\n\n";
 public static function run($args)
 {
 $op=new Options;
-$op->parse_all($args);
+$op->parseAll($args);
 $action=(count($args)) ? array_shift($args) : 'help';
 
 switch($action)
 	{
 	case 'build':
-		if (count($args)!=1) self::error_abort("$action requires 1 argument");
+		if (count($args)!=1) self::errorAbort("$action requires 1 argument");
 		$phk_path=array_shift($args);
 		\PHK\Build\PSF\Parser::build($phk_path,$op->option('psf_path'),$op->option('vars'));
 		break;
 
 	case 'check':
-		if (count($args)!=1) self::error_abort("$action requires 1 argument");
+		if (count($args)!=1) self::errorAbort("$action requires 1 argument");
 		$phk_path=array_shift($args);
 		$mnt=\PHK\Mgr::mount($phk_path);
 		$obj=\PHK\Mgr::instance($mnt);
@@ -103,7 +103,7 @@ switch($action)
 		break;
 
 	default:
-		self::error_abort("Unknown action: '$action'");
+		self::errorAbort("Unknown action: '$action'");
 	}
 }
 

@@ -59,21 +59,21 @@ private static $compression_needed_extensions=array(null,'zlib','bz2');
 //---------
 // Clears the data cache
 
-public function clear_cache()
+public function clearCache()
 {
 $data=null;
 }
 
 //---------
 
-public function set_fspace($fspace)
+public function setFspace($fspace)
 {
 $this->fspace=$fspace;
 }
 
 //---------
 
-private function compression_type()
+private function compressionType()
 {
 return $this->flags & self::COMPRESS_TYPE;
 }
@@ -83,7 +83,7 @@ return $this->flags & self::COMPRESS_TYPE;
 
 private function expand($buf)
 {
-$ctype=$this->compression_type();
+$ctype=$this->compressionType();
 
 if ($buf==='' || $ctype==self::COMPRESS_NONE) return $buf;
 
@@ -115,7 +115,7 @@ if (is_null($this->data))
 	if ($this->rsz==0) $this->data='';	// Empty file
 	else
 		{
-		$rbuf=$this->expand($this->fspace->read_block($this->off,$this->csz));
+		$rbuf=$this->expand($this->fspace->readBlock($this->off,$this->csz));
 		if (strlen($rbuf)!=$this->rsz) throw new \Exception('Wrong expanded size');
 		$this->data=$rbuf;
 		}
@@ -125,18 +125,18 @@ return $this->data;
 
 //---
 
-private static function compression_ratio($rsz,$csz)
+private static function compressionRatio($rsz,$csz)
 {
 return ($rsz==0) ? '-' : (round(($csz/$rsz)*100));
 }
 
 //---
 
-public function flag_string()
+public function flagString()
 {
 if ($ctype=$this->flags & self::COMPRESS_TYPE)
 	return 'compress/'.self::$compression_method_names[$ctype]
-		.' ('.self::compression_ratio($this->rsz,$this->csz).'%)';
+		.' ('.self::compressionRatio($this->rsz,$this->csz).'%)';
 
 return '';
 }
@@ -159,29 +159,29 @@ $this->data=null; // Must be reset as the object is created as an empty file
 
 public function __construct()
 {
-$this->set_flags(0);
-$this->set_data('');
+$this->setFlags(0);
+$this->setData('');
 $this->csz=$this->off=null;
 }
 
 //---
 // Set only the DC flags
 
-public function set_flags($flags)
+public function setFlags($flags)
 {
 $this->flags=($flags & \PHK\Virtual\Node::TN_DC_FLAG_MASK);
 }
 
 //---
 
-public function set_data($data)
+public function setData($data)
 {
 $this->rsz=strlen($this->data=$data);
 }
 
 // <CREATOR> //---------------
 
-public function get_needed_extensions(\PHK\Build\Creator $phk
+public function getNeededExtensions(\PHK\Build\Creator $phk
 	,\PHK\Tools\ItemLister $item_lister)
 {
 if (!is_null($ext=self::$compression_needed_extensions
@@ -191,7 +191,7 @@ if (!is_null($ext=self::$compression_needed_extensions
 
 //---
 
-public function append_data($data)
+public function appendData($data)
 {
 $this->data.=$data;
 $this->rsz+=strlen($data);
@@ -210,7 +210,7 @@ return pack('vV3',$this->flags,$this->csz,$this->rsz,$this->off);
 
 //------
 
-private function deny_compress($msg,$buf)
+private function denyCompress($msg,$buf)
 {
 \PHK\Tools\Util::trace("	No compression: $msg");
 $this->flags &= ~self::COMPRESS_TYPE; // Set to COMPRESS_NONE
@@ -221,29 +221,29 @@ return $buf;
 
 private function compress($buf,\PHK\Build\Creator $phk)
 {
-if (!($ctype=$this->compression_type())) return $buf;
+if (!($ctype=$this->compressionType())) return $buf;
 
 $comp_min_size=$phk->option('compress_min_size');
 $comp_max_size=$phk->option('compress_max_size');
 $comp_ratio_limit=$phk->option('compress_ratio_limit');
 
-if ($buf==='') return $this->deny_compress('Empty file',$buf);
+if ($buf==='') return $this->denyCompress('Empty file',$buf);
 if ((!is_null($comp_min_size)) && (strlen($buf) < $comp_min_size))
-		return $this->deny_compress('File too small',$buf);
+		return $this->denyCompress('File too small',$buf);
 if ((!is_null($comp_max_size)) && (strlen($buf) > $comp_max_size))
-		return $this->deny_compress('File too large',$buf);
+		return $this->denyCompress('File too large',$buf);
 
 switch($ctype)
 	{
 	case self::COMPRESS_BZIP2:
-		\PHK\Tools\Util::load_extension('bz2');
+		\PHK\Tools\Util::loadExtension('bz2');
 		\PHK\Tools\Util::trace("	Compressing (bzip2)");
 		if(is_int($cbuf=bzcompress($buf,9)))
 			throw new \Exception("Cannot bzcompress data - Error code $buf");
 		break;
 
 	case self::COMPRESS_GZIP:
-		\PHK\Tools\Util::load_extension('zlib');
+		\PHK\Tools\Util::loadExtension('zlib');
 		\PHK\Tools\Util::trace("	Compressing (gzip)");
 		if(($cbuf=gzcompress($buf))===false) 
 			throw new \Exception("Cannot gzcompress data");
@@ -256,8 +256,8 @@ switch($ctype)
 // Default: Deny if compressed buffer is larger than 90% of original
 
 if (is_null($comp_ratio_limit)) $comp_ratio_limit=90;
-if (($r=self::compression_ratio(strlen($buf),strlen($cbuf))) >$comp_ratio_limit)
-	return $this->deny_compress("Compression ratio exceeded ($r%)",$buf);
+if (($r=self::compressionRatio(strlen($buf),strlen($cbuf))) >$comp_ratio_limit)
+	return $this->denyCompress("Compression ratio exceeded ($r%)",$buf);
 
 return $cbuf;
 }

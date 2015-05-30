@@ -47,7 +47,7 @@ private static $char_to_class=array( 'D' => 'Dir', 'F' => 'File');
 //---
 // Create a tree from the edata stored in the PHK archive
 
-public static function create_from_edata($serial_edata,\PHK\PkgFileSpace $fspace)
+public static function createFromEdata($serial_edata,\PHK\PkgFileSpace $fspace)
 {
 $tree=new self($fspace);
 
@@ -58,14 +58,14 @@ return $tree;
 
 //---
 
-public function path_list()
+public function pathList()
 {
 return array_keys($this->edata);
 }
 
 //---
 
-public function path_exists($rpath)
+public function pathExists($rpath)
 {
 return array_key_exists($rpath,$this->edata);
 }
@@ -84,7 +84,7 @@ public function walk($method)
 $args=func_get_args();
 array_shift($args);
 
-foreach($this->path_list() as $path)
+foreach($this->pathList() as $path)
 	{
 	$node=$this->rlookup($path);
 	call_user_func_array(array($node,$method),$args);
@@ -152,7 +152,7 @@ else return null;
 
 //---
 
-public function lookup_file($path,$exception_flag=true)
+public function lookupFile($path,$exception_flag=true)
 {
 $f=$this->lookup($path,$exception_flag);
 
@@ -167,7 +167,7 @@ return $f;
 
 //---
 
-public function display_header($html)
+public function displayHeader($html)
 {
 if ($html) echo '<table border=1 bordercolor="#BBBBBB" cellpadding=3 '
 	.'cellspacing=0 style="border-collapse: collapse"><tr><th>T</th>'
@@ -176,7 +176,7 @@ if ($html) echo '<table border=1 bordercolor="#BBBBBB" cellpadding=3 '
 
 //---
 
-public function display_footer($html)
+public function displayFooter($html)
 {
 if ($html) echo '</table>';
 }
@@ -186,28 +186,28 @@ if ($html) echo '</table>';
 
 public function display($link)
 {
-$html=\PHK\Tools\Util::env_is_web();
+$html=\PHK\Tools\Util::envIsWeb();
 
-$this->display_header($html);
+$this->displayHeader($html);
 $this->walk('display',$html,$link);
-$this->display_footer($html);
+$this->displayFooter($html);
 }
 
 //---
 
-public function display_packages()
+public function displayPackages()
 {
-$html=\PHK\Tools\Util::env_is_web();
+$html=\PHK\Tools\Util::envIsWeb();
 
 ob_start();
-$this->walk('display_package',$html);
+$this->walk('displayPackage',$html);
 $data=ob_get_clean();
 
 if ($data!=='')
 	{
-	$this->display_header($html);
-	$this->walk('display_package',$html);
-	$this->display_footer($html);
+	$this->displayHeader($html);
+	$this->walk('displayPackage',$html);
+	$this->displayFooter($html);
 	}
 }
 
@@ -223,7 +223,7 @@ $this->walk('dump',$base);
 // - Always use '/' as separator
 // - Returns '' for 1st level paths ('/xxx')
 
-public static function dir_base_name($path)
+public static function dirBaseName($path)
 {
 $dir=preg_replace(',/[^/]*$,','',$path);
 $base=preg_replace(',^.*/,','',$path);
@@ -231,7 +231,7 @@ return array($dir,$base);
 }
 
 //---
-// called from create_empty() or create_from_edata() only => private
+// called from createEmpty() or createFromEdata() only => private
 
 private function __construct($fspace)
 {
@@ -245,7 +245,7 @@ $this->nodes=array();
 // '#*' which can create conflicts in mount points (for subpackages), and ';'
 // which is used as separator when exporting the list of dir children.
 
-public function add_node($path,$node)
+public function addNode($path,$node)
 {
 $path=self::realpath($path);
 
@@ -254,7 +254,7 @@ if (strpbrk($path,'#*?!&~"|`\^@[]={}$;,<>')!==false)
 
 if ($path != '')
 	{
-	list($dir,$basename)=self::dir_base_name($path);
+	list($dir,$basename)=self::dirBaseName($path);
 
 	$dirnode=$this->rlookup($dir,false);
 	if (is_null($dirnode)) $dirnode=$this->mkdir($dir);
@@ -262,7 +262,7 @@ if ($path != '')
 	if (!($dirnode instanceof Dir))
 		throw new \Exception("Cannot add node over a non-directory node ($dir)");
 
-	$dirnode->add_child($basename);
+	$dirnode->addChild($basename);
 	}
 
 // Add the node
@@ -274,10 +274,10 @@ $this->nodes[$path]=$node;
 //---
 // Create an empty tree
 
-public static function create_empty()
+public static function createEmpty()
 {
 $tree=new self(null);
-$tree->add_node('',new Dir('',$tree));
+$tree->addNode('',new Dir('',$tree));
 
 return $tree;
 }
@@ -304,7 +304,7 @@ return array(serialize($edata),$stacker->data);
 // sapath: Absolute source path
 // modifiers: array received from \PHK\Build\PSF\CmdOptions
 
-public function merge_into_file_tree($target,$sapath,$modifiers)
+public function mergeIntoFileTree($target,$sapath,$modifiers)
 {
 if (!file_exists($sapath))
 	throw new \Exception($sapath.': Path not found');
@@ -316,13 +316,13 @@ switch($type=filetype($sapath))
 	case 'file':
 		if ($target=='') throw new \Exception('Cannot replace root dir with a file');
 		$this->remove($target);
-		$this->mkfile($target,\PHK\Tools\Util::readfile($sapath),$modifiers);
+		$this->mkfile($target,\PHK\Tools\Util::readFile($sapath),$modifiers);
 		break;
 
 	case 'dir':
 		foreach(\PHK\Tools\Util::scandir($sapath) as $subname)
 			{
-			$this->merge_into_file_tree($target.'/'.$subname,$sapath.'/'.$subname
+			$this->mergeIntoFileTree($target.'/'.$subname,$sapath.'/'.$subname
 				,$modifiers);
 			}
 		break;
@@ -334,16 +334,16 @@ switch($type=filetype($sapath))
 
 //---
 
-private function get_subtree($path)
+private function getSubtree($path)
 {
 $rpath=self::realpath($path);
 
-if ($rpath=='') return $this->path_list();
+if ($rpath=='') return $this->pathList();
 
 $result=array();
 $prefix=$rpath.'/';
 $len=strlen($prefix);
-foreach($this->path_list() as $p)
+foreach($this->pathList() as $p)
 	{
 	if (($p==$rpath)||((strlen($p)>=$len)&&(substr($p,0,$len)==$prefix)))
 		$result[]=$p;
@@ -357,14 +357,14 @@ public function modify($path,$modifiers)
 {
 $path=self::realpath($path);
 
-foreach ($this->get_subtree($path) as $subpath)
+foreach ($this->getSubtree($path) as $subpath)
 	{
 	$this->lookup($subpath)->modify($modifiers);
 	}
 }
 
 //---
-// If parent dir does not exist, add_node() will call us back to create it,
+// If parent dir does not exist, addNode() will call us back to create it,
 // and it goes on recursively until the root node is reached.
 
 public function mkdir($path,$modifiers=array())
@@ -375,7 +375,7 @@ if (is_null($node=$this->rlookup($rpath,false))) // If node does not exist
 	{
 	$node=new Dir($path,$this);
 	$node->modify($modifiers);
-	$this->add_node($path,$node);
+	$this->addNode($path,$node);
 	}
 else // If node already exists, check that it is a directory
 	{
@@ -392,10 +392,10 @@ public function mkfile($path,$data,$modifiers=array())
 $rpath=self::realpath($path);
 
 $node=new File($rpath,$this);
-$node->set_data($data);
+$node->setData($data);
 $node->modify($modifiers);
 
-$this->add_node($rpath,$node);
+$this->addNode($rpath,$node);
 
 return $node;
 }
@@ -409,14 +409,14 @@ if ($rpath=='') throw new \Exception('Cannot remove root directory');
 
 if (is_null($this->rlookup($rpath,false))) return; // Path does not exist
 
-foreach($this->get_subtree($rpath) as $p)
+foreach($this->getSubtree($rpath) as $p)
 	{
 	unset($this->nodes[$p]);
 	unset($this->edata[$p]);
 	}
 
-list($dir,$name)=self::dir_base_name($rpath);
-$this->rlookup($dir)->remove_child($name);
+list($dir,$name)=self::dirBaseName($rpath);
+$this->rlookup($dir)->removeChild($name);
 }
 
 // </CREATOR> //---------------

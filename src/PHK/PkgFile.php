@@ -46,7 +46,7 @@ private $keep_open_flag;
 
 public function __construct($path,$flags)
 {
-$this->set_params($path,$flags);
+$this->setParams($path,$flags);
 
 if (($this->size=filesize($path))===false)
 	throw new \Exception($path.': Cannot get file size');
@@ -54,11 +54,11 @@ if (($this->size=filesize($path))===false)
 
 //------
 
-public function set_params($path,$flags)
+public function setParams($path,$flags)
 {
 $this->path=$path;
 
-$this->keep_open_flag=\PHK\Mgr::is_a_phk_uri($path);
+$this->keep_open_flag=\PHK\Mgr::isPhkUri($path);
 }
 
 //---
@@ -72,12 +72,12 @@ return array('size');
 
 public function __destruct()
 {
-$this->really_close();
+$this->reallyClose();
 }
 
 //------
 
-private function really_close()
+private function reallyClose()
 {
 if (!is_null($this->fp))
 	{
@@ -110,7 +110,7 @@ else $this->open_count++;
 public function _close()
 {
 $this->open_count--;
-if (($this->open_count <= 0) && (!$this->keep_open_flag)) $this->really_close();
+if (($this->open_count <= 0) && (!$this->keep_open_flag)) $this->reallyClose();
 }
 
 //-----
@@ -124,15 +124,15 @@ $data='';
 $nb_chunks=intval($size/8192);
 $rest=$size % 8192;
 
-\PHK\Tools\Util::disable_mqr();
+\PHK\Tools\Util::disableMQR();
 while ($nb_chunks > 0)
 	{
-	$data .= $this->read_chunk(8192);
+	$data .= $this->readChunk(8192);
 	$nb_chunks--;
 	}
 
-if ($rest) $data .= $this->read_chunk($rest);
-\PHK\Tools\Util::restore_mqr();
+if ($rest) $data .= $this->readChunk($rest);
+\PHK\Tools\Util::restoreMQR();
 
 return $data;
 }
@@ -140,7 +140,7 @@ return $data;
 //-----
 // Read up to 8192 bytes
 
-private function read_chunk($size)
+private function readChunk($size)
 {
 $buf=fread($this->fp,$size);
 if ($buf===false) throw new \Exception('Cannot read');
@@ -156,7 +156,7 @@ return $buf;
 //		- we don't provide default args,
 //		- we are sure that size is > 0
 
-public function _read_block($offset,$size)
+public function _readBlock($offset,$size)
 {
 try
 	{
@@ -188,9 +188,9 @@ public function path()
 return $this->path;
 }
 
-}	// End of class \PHK\PkgFile
+}	// End of class PHK\PkgFile
 //-------------------------
-} // End of class_exists('PHK\PkgFile')
+} // End of class_exists
 //=============================================================================
 
 if (!class_exists('PHK\PkgFileSpace',false))
@@ -205,8 +205,8 @@ private $size;
 
 //------
 // Two possibles syntaxes :
-// new \PHK\PkgFileSpace(String $path,int $flags) : creates a first space for a file
-// new \PHK\PkgFileSpace(\PHK\PkgFileSpace $parent, int $offset, int $size) :
+// new \PHK\PkgFileSpace(string $path,int $flags) : creates a first space for a file
+// new \PHK\PkgFileSpace(PkgFileSpace $parent, int $offset, int $size) :
 //		creates a subspace inside an existing FileSpace.
 
 public function __construct($arg1,$arg2,$size=null)
@@ -233,9 +233,9 @@ else
 }
 
 //------
-// Default args so that read_block() without args returns the whole filespace
+// Default args so that readBlock() without args returns the whole filespace
 
-public function read_block($offset=0,$size=null)
+public function readBlock($offset=0,$size=null)
 {
 //\PHK\Tools\Util::trace("Starting PkgFileSpace::read_block - offset=$offset - size=$size");//TRACE
 
@@ -246,7 +246,7 @@ if (($offset<0)||($size<0)||($offset+$size>$this->size))
 
 if ($size==0) return '';
 
-$data=$this->file->_read_block($this->offset+$offset,$size);
+$data=$this->file->_readBlock($this->offset+$offset,$size);
 
 //\PHK\Tools\Util::trace("Ending PkgFileSpace::read_block");//TRACE
 return $data;

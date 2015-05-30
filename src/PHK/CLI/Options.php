@@ -52,16 +52,16 @@ protected $options=array(
 
 //-----------------------
 
-protected function process_option($opt,$arg)
+protected function processOption($opt,$arg)
 {
 switch($opt)
 	{
 	case 'v':
-		\Phool\Display::inc_verbose();
+		\Phool\Display::incVerbose();
 		break;
 
 	case 'q':
-		\Phool\Display::dec_verbose();
+		\Phool\Display::decVerbose();
 		break;
 
 	case 's':

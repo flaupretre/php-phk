@@ -53,11 +53,11 @@ abstract public function type(); // returns type string
 //---
 // Default: do nothing
 
-public function display_package($html) {}
+public function displayPackage($html) {}
 
 //---
 
-public function is_package()
+public function isPackage()
 {
 return ($this->flags & self::TN_PKG);
 }
@@ -65,9 +65,9 @@ return ($this->flags & self::TN_PKG);
 //---
 // Default: error if the method is not overloaded
 
-public function getdir()
+public function getDir()
 {
-throw new \Exception($this->path.': Cannot getdir() on a '.$this->type());
+throw new \Exception($this->path.': Cannot getDir() on a '.$this->type());
 }
 
 //---
@@ -80,22 +80,22 @@ throw new \Exception($this->path.': Cannot read() a '.$this->type());
 
 //---
 
-protected function flag_string()
+protected function flagString()
 {
-$flag_string='';
-if ($this->flags & self::TN_PKG) $flag_string .=',package';
+$flagString='';
+if ($this->flags & self::TN_PKG) $flagString .=',package';
 else
 	{
-	if ($this->flags & self::TN_STRIP_SOURCE) $flag_string .=',strip';
-	if ($this->flags & self::TN_NO_AUTOLOAD) $flag_string .=',no_autoload';
+	if ($this->flags & self::TN_STRIP_SOURCE) $flagString .=',strip';
+	if ($this->flags & self::TN_NO_AUTOLOAD) $flagString .=',no_autoload';
 	}
 
-return $flag_string;
+return $flagString;
 }
 
 //---
 
-// Cannot call set_flags() here, as it will call the derived
+// Cannot call setFlags() here, as it will call the derived
 // method when it is defined (as in \PHK\Virtual\File)
 
 protected function __construct($path,$tree)
@@ -119,21 +119,21 @@ abstract public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $
 
 //---
 
-protected function tnode_export($derived_edata)
+protected function nodeExport($derived_edata)
 {
 return pack('v',$this->flags).$derived_edata;
 }
 
 //---
 
-public function set_flags($flags)
+public function setFlags($flags)
 {
 $this->flags=$flags;
 }
 
 //---
 
-private static function compute_flags(array $modifiers,$flags=0)
+private static function computeFlags(array $modifiers,$flags=0)
 {
 foreach($modifiers as $name => $value)
 	{
@@ -181,7 +181,7 @@ return $flags;
 
 public function modify($modifiers)
 {
-$this->set_flags(self::compute_flags($modifiers,$this->flags));
+$this->setFlags(self::computeFlags($modifiers,$this->flags));
 }
 
 // </CREATOR> //---------------

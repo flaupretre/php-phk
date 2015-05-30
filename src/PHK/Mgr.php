@@ -38,6 +38,8 @@ if (!class_exists('PHK\Mgr',false))
 *
 * Runtime code -> 100% read-only.
 *
+* <Public API>
+*
 * @package PHK
 */
 
@@ -45,15 +47,11 @@ if (!class_exists('PHK\Mgr',false))
 
 class Mgr	// Static only
 {
-/** Class version */
-
-const VERSION='1.4.0';
-
 //-- Global static properties
 
 /** @var array		Currently mounted PHK instances */
 
-private static $phk_tab=array(); // Key=mount directory, value=PHK instance
+private static $phk_tab=array(); // Key=mount ID, value=PHK instance
 
 /**
 * @var array		Proxy objects for each currently mounted package. As
@@ -62,7 +60,7 @@ private static $phk_tab=array(); // Key=mount directory, value=PHK instance
 * keys as $phk_tab.
 */
 
-private static $proxy_tab=array(); // Key=mount directory, value=\PHK\Proxy|null
+private static $proxy_tab=array(); // Key=mount ID, value=PHK\Proxy|null
 
 /* @var int Running value for \PHK\Build\Creator mount points */
 
@@ -81,14 +79,14 @@ private static $caching=null;
 * @return boolean
 */
 
-public static function is_mounted($mnt)
+public static function isMounted($mnt)
 {
 return isset(self::$phk_tab[$mnt]);
 }
 
 //-----
 /**
-* Same as is_mounted but throws an exception is the mount point is invalid.
+* Same as isMounted but throws an exception is the mount point is invalid.
 *
 * Returns the mount point so that it can be embedded in a call string.
 *
@@ -99,7 +97,7 @@ return isset(self::$phk_tab[$mnt]);
 
 public static function validate($mnt)
 {
-if (!self::is_mounted($mnt)) throw new \Exception($mnt.': Invalid mount point');
+if (!self::isMounted($mnt)) throw new \Exception($mnt.': Invalid mount point');
 
 return $mnt;
 }
@@ -151,7 +149,7 @@ return self::$proxy_tab[$mnt];
 * @return array
 */
 
-public static function mnt_list()
+public static function mntList()
 {
 return array_keys(self::$phk_tab);
 }
@@ -170,7 +168,7 @@ return array_keys(self::$phk_tab);
 * @return void
 */
 
-public static function set_cache($caching)
+public static function setCache($caching)
 {
 self::$caching=$caching;
 }
@@ -196,13 +194,13 @@ self::$caching=$caching;
 */
 
 
-public static function cache_enabled($mnt,$command,$params,$path)
+public static function cacheEnabled($mnt,$command,$params,$path)
 {
 if (!is_null(self::$caching)) return self::$caching;
 
 if (is_null($mnt)) return false;
 
-return self::instance($mnt)->cache_enabled($command,$params,$path);
+return self::instance($mnt)->cacheEnabled($command,$params,$path);
 }
 
 //---------
@@ -219,12 +217,12 @@ return self::instance($mnt)->cache_enabled($command,$params,$path);
 * @throws \Exception if the file is not currently mounted
 */
 
-public static function path_to_mnt($path)
+public static function pathToMnt($path)
 {
 $dummy1=$mnt=$dummy2=null;
-self::compute_mnt($path,$dummy1,$mnt,$dummy2);
+self::computeMnt($path,$dummy1,$mnt,$dummy2);
 
-if (self::is_mounted($mnt)) return $mnt;
+if (self::isMounted($mnt)) return $mnt;
 
 throw new \Exception($path.': path is not mounted');
 }
@@ -238,11 +236,11 @@ throw new \Exception($path.': path is not mounted');
 * @return the physical path of the 1st-level package containing this path
 */
 
-public static function toplevel_path($path)
+public static function topLevelPath($path)
 {
-while (self::is_a_phk_uri($path))
+while (self::isPhkUri($path))
 	{
-	$mnt=self::uri_to_mnt($path);
+	$mnt=self::uriToMnt($path);
 	$map=self::instance($mnt);
 	$path=$map->path();
 	}
@@ -274,20 +272,20 @@ if ($flags & \PHK::IS_CREATOR)
 	}
 else	// Mount an existing archive
 	{
-	$parent_mnt=$mnt=$mtime=$options=$build_info=null;
-	self::compute_mnt($path,$parent_mnt,$mnt,$mtime);
-	if (self::is_mounted($mnt)) return $mnt;
+	$parentMnt=$mnt=$mtime=$options=$buildInfo=null;
+	self::computeMnt($path,$parentMnt,$mnt,$mtime);
+	if (self::isMounted($mnt)) return $mnt;
 
 	self::$proxy_tab[$mnt]=null;
-	self::$phk_tab[$mnt]=$phk=new \PHK($parent_mnt,$mnt,$path,$flags,$mtime);
+	self::$phk_tab[$mnt]=$phk=new \PHK($parentMnt,$mnt,$path,$flags,$mtime);
 
-	self::get_store_data($mnt,$options,$build_info);
-	$phk->init($options,$build_info);
+	self::getStoreData($mnt,$options,$buildInfo);
+	$phk->init($options,$buildInfo);
 	}
 }
 catch (\Exception $e)
 	{
-	if (isset($mnt) && self::is_mounted($mnt)) unset(self::$phk_tab[$mnt]);
+	if (isset($mnt) && self::isMounted($mnt)) unset(self::$phk_tab[$mnt]);
 	throw new \Exception($path.': Cannot mount - '.$e->getMessage());
 	}
 
@@ -297,33 +295,33 @@ return $mnt;
 //-----
 /**
 * Checks the PHK version this package requires against the current version.
-* Then, retrieves the 'options' and 'build_info' arrays.
+* Then, retrieves the 'options' and 'buildInfo' arrays.
 *
 * This function is separated from mount() to mimic the behavior of the PHK
 * extension, where this data is cached in persistent memory.
 *
 * @param string $mnt the mount point
 * @param array $options on return, contains the options array
-* @param array $build_info on return, contains the build_info array
+* @param array $buildInfo on return, contains the buildInfo array
 * @return void
 */
 
-private static function get_store_data($mnt,&$options,&$build_info)
+private static function getStoreData($mnt,&$options,&$buildInfo)
 {
 $caching=(is_null(self::$caching) ? true : self::$caching);
 
 // Must check this first
 
-$mv=\PHK\Tools\Util::get_min_version($mnt,$caching);
+$mv=\PHK\Tools\Util::getMinVersion($mnt,$caching);
 
 if (version_compare($mv,\PHK::VERSION) > 0)
 	{
-	\PHK\Tools\Util::format_error('Cannot understand this version. '
+	\PHK\Tools\Util::formatError('Cannot understand this version. '
 		.'Requires at least PHK version '.$mv);
 	}
 
-$options=\PHK\Tools\Util::get_options($mnt,$caching);
-$build_info=\PHK\Tools\Util::get_build_info($mnt,$caching);
+$options=\PHK\Tools\Util::getOptions($mnt,$caching);
+$buildInfo=\PHK\Tools\Util::getBuildInfo($mnt,$caching);
 }
 
 //---------------------------------
@@ -340,7 +338,7 @@ $build_info=\PHK\Tools\Util::get_build_info($mnt,$caching);
 * Sub-packages inherit their parent's modification time.
 *
 * @param string $path The path to be mounted
-* @param $parent_mnt string|null returns the parent mount point. Not
+* @param $parentMnt string|null returns the parent mount point. Not
 * null only for sub-packages.
 * @param string $mnt returns the computed mount point
 * @param int $mtime returns the modification time
@@ -348,20 +346,20 @@ $build_info=\PHK\Tools\Util::get_build_info($mnt,$caching);
 * @throws \Exception with message 'File not found' if unable to stat($path).
 */
 
-private static function compute_mnt($path,&$parent_mnt,&$mnt,&$mtime)
+private static function computeMnt($path,&$parentMnt,&$mnt,&$mtime)
 {
-if (self::is_a_phk_uri($path)) // Sub-package
+if (self::isPhkUri($path)) // Sub-package
 	{
-	$dummy1=$dummy2=$subpath=$parent_mnt=null;
-	\PHK\Stream\Wrapper::parse_uri($path,$dummy1,$dummy2,$parent_mnt,$subpath);
-	self::validate($parent_mnt);
-	$mnt=$parent_mnt.'#'.str_replace('/','*',$subpath);
-	$mtime=self::instance($parent_mnt)->mtime(); // Inherit mtime
+	$dummy1=$dummy2=$subpath=$parentMnt=null;
+	\PHK\Stream\Wrapper::parseURI($path,$dummy1,$dummy2,$parentMnt,$subpath);
+	self::validate($parentMnt);
+	$mnt=$parentMnt.'#'.str_replace('/','*',$subpath);
+	$mtime=self::instance($parentMnt)->mtime(); // Inherit mtime
 	}
 else
 	{
-	$mnt=\PHK\Tools\Util::path_unique_id('p',$path,$mtime);
-	$parent_mnt=null;
+	$mnt=\PHK\Tools\Util::pathUniqueID('p',$path,$mtime);
+	$parentMnt=null;
 	}
 }
 
@@ -380,14 +378,14 @@ else
 
 public static function umount($mnt)
 {
-if (self::is_mounted($mnt))
+if (self::isMounted($mnt))
 	{
 	// Umount children
 
 	foreach (array_keys(self::$phk_tab) as $dmnt)
 		{
 		if (isset(self::$phk_tab[$dmnt])
-			&& self::$phk_tab[$dmnt]->parent_mnt()===$mnt)
+			&& self::$phk_tab[$dmnt]->parentMnt()===$mnt)
 				self::umount($dmnt);
 		}
 
@@ -404,7 +402,7 @@ if (self::is_mounted($mnt))
 
 //---------
 /**
-* Builds a 'phk://' uri, from a mount directory and a path
+* Builds a 'phk://' uri, from a mount ID and a path
 *
 * @param string $mnt The mount point
 * @param string $path The path
@@ -413,7 +411,7 @@ if (self::is_mounted($mnt))
 
 public static function uri($mnt,$path)
 {
-return self::base_uri($mnt).ltrim($path,'/');
+return self::baseURI($mnt).ltrim($path,'/');
 }
 
 //-----
@@ -423,7 +421,7 @@ return self::base_uri($mnt).ltrim($path,'/');
 * @return boolean
 */
 
-public static function is_a_phk_uri($uri)
+public static function isPhkUri($uri)
 {
 $u=$uri.'      ';
 
@@ -445,7 +443,7 @@ return ($u{0}=='p' && $u{1}=='h' && $u{2}=='k' && $u{3}==':'
 * @return string
 */
 
-public static function base_uri($mnt)
+public static function baseURI($mnt)
 {
 return 'phk://'.$mnt.'/';
 }
@@ -461,7 +459,7 @@ return 'phk://'.$mnt.'/';
 * @return string
 */
 
-public static function command_uri($mnt,$command)
+public static function commandURI($mnt,$command)
 {
 return self::uri($mnt,'?'.$command);
 }
@@ -477,9 +475,9 @@ return self::uri($mnt,'?'.$command);
 * @return string
 */
 
-public static function section_uri($mnt,$section)
+public static function sectionURI($mnt,$section)
 {
-return self::command_uri($mnt,'section&name='.$section);
+return self::commandURI($mnt,'section&name='.$section);
 }
 
 //-----
@@ -490,12 +488,12 @@ return self::command_uri($mnt,'section&name='.$section);
 * @return string|null returns null if the package does not define an automap.
 */
 
-public static function automap_uri($mnt)
+public static function automapURI($mnt)
 {
-if ((!self::is_mounted($mnt))||(!self::instance($mnt)->map_defined()))
+if ((!self::isMounted($mnt))||(!self::instance($mnt)->mapDefined()))
 	return null;
 
-return self::section_uri($mnt,'AUTOMAP');
+return self::sectionURI($mnt,'AUTOMAP');
 }
 
 //---------------------------------
@@ -506,29 +504,29 @@ return self::section_uri($mnt,'AUTOMAP');
 * @return string
 */
 
-public static function normalize_uri($uri)
+public static function normalizeURI($uri)
 {
 return str_replace('\\','/',$uri);
 }
 
 //-----
 /**
-* Returns the mount directory of a subfile's phk uri.
+* Returns the mount ID of a subfile's phk uri.
 * Allows to reference other subfiles in the same package if you don't want
 * or cannot use Automap (the preferred method) or a relative path.
-* Example : include(\PHK\Mgr::uri(\PHK\Mgr::uri_to_mnt(__FILE__),<path>));
+* Example : include(\PHK\Mgr::uri(\PHK\Mgr::uriToMnt(__FILE__),<path>));
 *
 * @param string $uri
 * @return string a mount point
 * @throws \Exception if the input URI is not a PHK URI
 */
 
-public static function uri_to_mnt($uri)
+public static function uriToMnt($uri)
 {
-if (! self::is_a_phk_uri($uri))
+if (! self::isPhkUri($uri))
 	throw new \Exception($uri.': Not a PHK URI');
 
-$buf=substr(self::normalize_uri($uri),6);
+$buf=substr(self::normalizeURI($uri),6);
 $buf=substr($buf,0,strcspn($buf,'/'));
 return trim($buf);
 }
@@ -537,18 +535,19 @@ return trim($buf);
 /**
 * Check if the current PHP version is supported.
 *
-* Note that, if PHP version < 5.1, parsing fails and we don't even start
-* execution. So, this test is only executed when PHP version >= 5.1
+* Note that, if PHP version < 5.3, parsing fails because of namespaces and we
+* don't even start execution. So, this test is only executed when PHP version
+* >= 5.3
 *
-* As a side effect, until we request a version > 5.1, this function
-* will never fail.
+* As a side effect, until we require a version > 5.3, this function
+* never fails.
 *
 * Calls exit(1) if PHP version is not supported by the PHK runtime
 *
 * @return void
 */
 
-public static function php_version_check()
+public static function checkPhpVersion()
 {
 if (version_compare(PHP_VERSION,'5.3.0') < 0)
 	{

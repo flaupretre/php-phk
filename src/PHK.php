@@ -30,11 +30,13 @@ if (!class_exists('PHK',false))
 {
 //=============================================================================
 /**
-* This class is just an empty extension of the \PHK\Base class. This is done
-* this way so that \PHK\Build\Creator uses the PHP code even if the extension
+* This class is just an empty extension of the PHK\Base class. This is done
+* this way so that PHK\Build\Creator uses the PHP code even if the extension
 * is present.
 *
-* @see \PHK\Base
+* <Public API>
+*
+* @see PHK\Base
 */
 
 class PHK extends \PHK\Base
@@ -44,7 +46,7 @@ class PHK extends \PHK\Base
 // If we get here, the PHP runtime is already loaded.
 // But the method has to exist.
 
-public static function need_php_runtime()
+public static function needPhpRuntime()
 {
 }
 

@@ -31,7 +31,7 @@ DIV.tabs
 {
    float            : left;
    width            : 100%;
-   background       : url('<?php echo PHK::subpath_url('/section/STATIC/tabs/bottom.gif'); ?>') repeat-x bottom;
+   background       : url('<?php echo \PHK::subpathURL('/section/STATIC/tabs/bottom.gif'); ?>') repeat-x bottom;
    margin-bottom    : 0px
 }
 
@@ -57,7 +57,7 @@ DIV.tabs FORM
 DIV.tabs A
 {
    float            : left;
-   background       : url('<?php echo PHK::subpath_url('/section/STATIC/tabs/right.gif'); ?>') no-repeat right top;
+   background       : url('<?php echo \PHK::subpathURL('/section/STATIC/tabs/right.gif'); ?>') no-repeat right top;
    border-bottom    : 1px solid #84B0C7;
 /*   font-size        : x-small;*/
    font-weight      : bold;
@@ -79,7 +79,7 @@ DIV.tabs SPAN
 {
    float            : left;
    display          : block;
-   background       : url('<?php echo PHK::subpath_url('/section/STATIC/tabs/left.gif'); ?>') no-repeat left top;
+   background       : url('<?php echo \PHK::subpathURL('/section/STATIC/tabs/left.gif'); ?>') no-repeat left top;
    white-space      : nowrap; padding-left:9px; padding-right:9px; padding-top:5px; padding-bottom:5px
 }
 

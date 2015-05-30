@@ -40,7 +40,7 @@ private $children; // array of basenames
 public function type() { return 'dir'; }
 public function mode() { return 040555; }
 public function size() { return count($this->children); }
-public function get_needed_extensions() {}
+public function getNeededExtensions() {}
 
 //---
 
@@ -56,7 +56,7 @@ else echo "D      $path\n";
 
 //---
 
-public function getdir()
+public function getDir()
 {
 return $this->children;
 }
@@ -94,14 +94,14 @@ return $this->path.'/'.$name;
 
 // <CREATOR> //---------------
 
-public function add_child($name)
+public function addChild($name)
 {
 if (array_search($name,$this->children)===false) $this->children[]=$name;
 }
 
 //---
 
-public function remove_child($name)
+public function removeChild($name)
 {
 if (($key=array_search($name,$this->children))===false)
 	unset ($this->children[$key]);
@@ -111,7 +111,7 @@ if (($key=array_search($name,$this->children))===false)
 
 public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker,$map)
 {
-return $this->tnode_export(implode(';',$this->children));
+return $this->nodeExport(implode(';',$this->children));
 }
 
 // </CREATOR> //---------------

@@ -31,10 +31,12 @@ if (!class_exists('PHK\Backend',false))
 //=============================================================================
 /**
 * This class contains the non-accelerated runtime code. This code must
-* never be called by the 'fast path' scenarios.
+* never be accessed during 'fast path' scenarios.
 *
 * Each \PHK\Backend instance is associated with a 'front-end' PHK instance
 * (accelerated or not).
+*
+* <Public API>
 */
 
 class Backend
@@ -60,6 +62,11 @@ return $this->front->$name();
 
 public function __call($method,$args)
 {
+// Special care to avoid endless loops (as PHK\Base has a mirror __call() method)
+
+if (!method_exists($this->front,$method))
+	throw new \Exception("$method: calling non existing method");
+
 return call_user_func_array(array($this->front,$method),$args);
 }
 
@@ -105,33 +112,33 @@ error_reporting($errlevel);
 
 public function envinfo()
 {
-$html=\PHK\Tools\Util::env_is_web();
+$html=\PHK\Tools\Util::envIsWeb();
 
 //-- Accelerator
 
-self::info_section($html,'PHK Accelerator');
+self::infoSection($html,'PHK Accelerator');
 
-self::start_info_table($html);
-if (\PHK::accelerator_is_present()) \PHK::accel_techinfo();
-else self::show_info_line($html,'PHK Accelerator','No');
+self::startInfoTable($html);
+if (\PHK::acceleratorIsPresent()) \PHK::accelTechInfo();
+else self::showInfoLine($html,'PHK Accelerator','No');
 
-self::info_section($html,'Cache');
+self::infoSection($html,'Cache');
 
-self::show_info_line($html,'Cache system used',\PHK\Cache::cache_name());
-self::end_info_table($html);
+self::showInfoLine($html,'Cache system used',\PHK\Cache::cacheName());
+self::endInfoTable($html);
 
 //-- Environment
 
-self::info_section($html,'Environment');
+self::infoSection($html,'Environment');
 
-self::start_info_table($html);
-self::show_info_line($html,'PHP SAPI',php_sapi_name());
-self::show_info_line($html,'Mount point',$this->mnt);
+self::startInfoTable($html);
+self::showInfoLine($html,'PHP SAPI',php_sapi_name());
+self::showInfoLine($html,'Mount point',$this->mnt);
 
 //-- Mount options
 
 $string='';
-$class=new ReflectionClass('PHK');
+$class=new ReflectionClass('\PHK');
 foreach($class->getConstants() as $name => $value)
 	{
 	if ((strlen($name)>1) && (substr($name,0,2)=='F_')
@@ -139,9 +146,9 @@ foreach($class->getConstants() as $name => $value)
 	}
 unset($class);
 $string=trim($string,',');
-self::show_info_line($html,'Current mount options'
+self::showInfoLine($html,'Current mount options'
 	,$string=='' ? '<none>' : $string);
-self::end_info_table($html);
+self::endInfoTable($html);
 }
 
 //---------------------------------
@@ -157,8 +164,8 @@ $this->proxy()->showfiles();
 
 public function showmap($subfile_to_url_function=null)
 {
-if ($this->map_defined())
-	\Automap\Mgr::map($this->automap_id)->show(null,$subfile_to_url_function);
+if ($this->mapDefined())
+	\Automap\Mgr::map($this->automapID)->show(null,$subfile_to_url_function);
 else echo "This package does not contain a map\n";
 }
 
@@ -175,9 +182,9 @@ else echo "This package does not contain a map\n";
 * @return void
 */
 
-private function plugin_info($html)
+private function pluginInfo($html)
 {
-self::info_section($html,'Plugin');
+self::infoSection($html,'Plugin');
 
 if (is_null($class=$this->option('plugin_class')))
 	{
@@ -185,15 +192,15 @@ if (is_null($class=$this->option('plugin_class')))
 	return;
 	}
 
-if ($this->is_callable_plugin_method('_webinfo'))
+if ($this->isCallablePluginMethod('_webinfo'))
 	{
-	$this->call_plugin_method('_webinfo',$html);
+	$this->callPluginMethod('_webinfo',$html);
 	echo $html ? '<p>' : "\n";
 	}
 
-self::start_info_table($html);
+self::startInfoTable($html);
 
-self::show_info_line($html,'Class',$class);
+self::showInfoLine($html,'Class',$class);
 
 $rc=new ReflectionClass($class);
 
@@ -217,10 +224,10 @@ foreach ($rc->getMethods() as $method)
 			}
 		$a[]=$s;
 		}
-	self::show_info_line($html,'Method',$name.' ( '.implode(', ',$a).' )');
+	self::showInfoLine($html,'Method',$name.' ( '.implode(', ',$a).' )');
 	}
 		
-self::end_info_table($html);
+self::endInfoTable($html);
 }
 
 //-----
@@ -237,7 +244,7 @@ self::end_info_table($html);
 * @return void
 */
 
-private function show_option($html,$opt,$default=null)
+private function showOption($html,$opt,$default=null)
 {
 $str1=ucfirst(str_replace('_',' ',$opt));
 
@@ -259,12 +266,12 @@ else
 	elseif (($vlen>=1) && ($val{0}=='/') && file_exists($this->uri($val)))
 		{
 		// Warning: We build an HTTP URL going to \PHK\Web\Info, not a stream wrapper URI.
-		$url=\PHK::subpath_url('/view/'.trim($val,'/'));
+		$url=\PHK::subpathURL('/view/'.trim($val,'/'));
 		$newwin=false;
 		}
 	}
 
-self::show_info_line($html,$str1,$str2,$url,$newwin);
+self::showInfoLine($html,$str1,$str2,$url,$newwin);
 }
 
 //-----
@@ -276,7 +283,7 @@ self::show_info_line($html,$str1,$str2,$url,$newwin);
 * @return void
 */
 
-public static function info_section($html,$title)
+public static function infoSection($html,$title)
 {
 echo $html ? '<h2>'.htmlspecialchars($title).'</h2>'
 	: "\n==== ".str_pad($title.' ',70,'='). "\n\n";
@@ -287,7 +294,7 @@ echo $html ? '<h2>'.htmlspecialchars($title).'</h2>'
 * <Info> Displays an information line
 *
 * In html mode, the information is displayed in a table. This table must
-* have been opened by a previous call to \PHK::start_info_table().
+* have been opened by a previous call to \PHK::startInfoTable().
 *
 * Note: The URLs starting with a '/' char are internal (generated by \PHK\Web\Info
 * ) and, so, are displayed in html mode only.
@@ -301,11 +308,11 @@ echo $html ? '<h2>'.htmlspecialchars($title).'</h2>'
 *    a new window when clicked.
 * @return void
 *
-* @see start_info_table()
-* @see end_info_table()
+* @see startInfoTable()
+* @see endInfoTable()
 */
 
-public static function show_info_line($html,$string,$value,$url=null
+public static function showInfoLine($html,$string,$value,$url=null
 	,$newwin=true)
 {
 if (is_null($value)) $value='<>';
@@ -345,14 +352,14 @@ else
 * @return void
 */
 
-public static function start_info_table($html)
+public static function startInfoTable($html)
 {
 echo $html ? '<table border=0>' : '';
 }
 
 //-----
 
-public static function end_info_table($html)
+public static function endInfoTable($html)
 {
 echo $html ? '</table>' : '';
 }
@@ -363,30 +370,30 @@ echo $html ? '</table>' : '';
 
 public function info()
 {
-$html=\PHK\Tools\Util::env_is_web();
+$html=\PHK\Tools\Util::envIsWeb();
 
 if ($html && (!is_null($info_script=$this->option('info_script'))))
 	{ require($this->uri($info_script)); }
 else
 	{
-	self::start_info_table($html);
-	$this->show_option($html,'name');
-	$this->show_option($html,'summary');
-	$this->show_option($html,'version');
-	$this->show_option($html,'release');
-	$this->show_option($html,'distribution');
-	$this->show_option($html,'license');
-	$this->show_option($html,'copyright');
-	$this->show_option($html,'url');
-	$this->show_option($html,'author');
-	$this->show_option($html,'packager');
-	$this->show_option($html,'requires');
+	self::startInfoTable($html);
+	$this->showOption($html,'name');
+	$this->showOption($html,'summary');
+	$this->showOption($html,'version');
+	$this->showOption($html,'release');
+	$this->showOption($html,'distribution');
+	$this->showOption($html,'license');
+	$this->showOption($html,'copyright');
+	$this->showOption($html,'url');
+	$this->showOption($html,'author');
+	$this->showOption($html,'packager');
+	$this->showOption($html,'requires');
 
-	$req=implode(' ',\PHK\Tools\Util::mk_array($this->option('required_extensions')));
+	$req=implode(' ',\PHK\Tools\Util::mkArray($this->option('required_extensions')));
 	if ($req=='') $req='<none>';
-	self::show_info_line($html,'Required extensions',$req);
+	self::showInfoLine($html,'Required extensions',$req);
 
-	self::end_info_table($html);
+	self::endInfoTable($html);
 	}
 }
 
@@ -394,90 +401,90 @@ else
 
 public function techinfo()
 {
-$html=\PHK\Tools\Util::env_is_web();
+$html=\PHK\Tools\Util::envIsWeb();
 
-self::info_section($html,'Package');
+self::infoSection($html,'Package');
 
-self::start_info_table($html);
-$this->show_option($html,'name');
-$this->show_option($html,'summary');
-$this->show_option($html,'version');
-$this->show_option($html,'release');
-$this->show_option($html,'distribution');
-$this->show_option($html,'license');
-$this->show_option($html,'copyright');
-$this->show_option($html,'url');
-$this->show_option($html,'author');
-$this->show_option($html,'packager');
-$this->show_option($html,'requires');
-self::show_info_line($html,'Signed',$this->proxy()->signed());
-self::show_info_line($html,'Automap defined',$this->map_defined());
-self::show_info_line($html,'File path',$this->path);
-self::show_info_line($html,'File size',filesize($this->path));
+self::startInfoTable($html);
+$this->showOption($html,'name');
+$this->showOption($html,'summary');
+$this->showOption($html,'version');
+$this->showOption($html,'release');
+$this->showOption($html,'distribution');
+$this->showOption($html,'license');
+$this->showOption($html,'copyright');
+$this->showOption($html,'url');
+$this->showOption($html,'author');
+$this->showOption($html,'packager');
+$this->showOption($html,'requires');
+self::showInfoLine($html,'Signed',$this->proxy()->signed());
+self::showInfoLine($html,'Automap defined',$this->mapDefined());
+self::showInfoLine($html,'File path',$this->path);
+self::showInfoLine($html,'File size',filesize($this->path));
 
-$req=implode(', ',\PHK\Tools\Util::mk_array($this->option('required_extensions')));
+$req=implode(', ',\PHK\Tools\Util::mkArray($this->option('required_extensions')));
 if ($req=='') $req='<none>';
-self::show_info_line($html,'Required extensions',$req);
+self::showInfoLine($html,'Required extensions',$req);
 
-self::show_info_line($html,'Build date'
-	,\PHK\Tools\Util::timestring($this->build_info('build_timestamp')));
-$this->show_option($html,'icon');
-$this->show_option($html,'crc_check',false);
-$this->show_option($html,'help_prefix');
-$this->show_option($html,'license_prefix');
-$this->show_option($html,'auto_umount',false);
-$this->show_option($html,'no_cache',false);
-$this->show_option($html,'no_opcode_cache',false);
-$this->show_option($html,'prolog_code_creator',false);
-$this->show_option($html,'plain_prolog',false);
-self::show_info_line($html,'File count',count($this->path_list()));
-self::end_info_table($html);
+self::showInfoLine($html,'Build date'
+	,\PHK\Tools\Util::timeString($this->buildInfo('build_timestamp')));
+$this->showOption($html,'icon');
+$this->showOption($html,'crc_check',false);
+$this->showOption($html,'help_prefix');
+$this->showOption($html,'license_prefix');
+$this->showOption($html,'auto_umount',false);
+$this->showOption($html,'no_cache',false);
+$this->showOption($html,'no_opcode_cache',false);
+$this->showOption($html,'prolog_code_creator',false);
+$this->showOption($html,'plain_prolog',false);
+self::showInfoLine($html,'File count',count($this->pathList()));
+self::endInfoTable($html);
 
-$this->plugin_info($html);
+$this->pluginInfo($html);
 
-self::info_section($html,'Package scripts');
+self::infoSection($html,'Package scripts');
 
-self::start_info_table($html);
-$this->show_option($html,'cli_run_script');
-$this->show_option($html,'web_run_script');
-$this->show_option($html,'lib_run_script');
-$this->show_option($html,'info_script');
-$this->show_option($html,'mount_script');
-$this->show_option($html,'umount_script');
-$this->show_option($html,'test_script');
-$this->show_option($html,'phpunit_package');
-$this->show_option($html,'phpunit_test_package');
+self::startInfoTable($html);
+$this->showOption($html,'cli_run_script');
+$this->showOption($html,'web_run_script');
+$this->showOption($html,'lib_run_script');
+$this->showOption($html,'info_script');
+$this->showOption($html,'mount_script');
+$this->showOption($html,'umount_script');
+$this->showOption($html,'test_script');
+$this->showOption($html,'phpunit_package');
+$this->showOption($html,'phpunit_test_package');
 
-self::end_info_table($html);
+self::endInfoTable($html);
 
-self::info_section($html,'Module versions');
+self::infoSection($html,'Module versions');
 
-self::start_info_table($html);
-self::show_info_line($html,'PHK Manager',$this->build_info('phkmgr_version'));
-self::show_info_line($html,'Automap Creator',$this->build_info('automap_creator_version'));
-self::show_info_line($html,'Automap min version',$this->build_info('automap_min_version'));
-self::end_info_table($html);
+self::startInfoTable($html);
+self::showInfoLine($html,'PHK Manager',$this->buildInfo('phkmgr_version'));
+self::showInfoLine($html,'Automap Creator',$this->buildInfo('automap_creator_version'));
+self::showInfoLine($html,'Automap min version',$this->buildInfo('automap_minVersion'));
+self::endInfoTable($html);
 
-self::info_section($html,'Sub-packages');
+self::infoSection($html,'Sub-packages');
 
 ob_start();
-$this->proxy()->display_packages();
+$this->proxy()->displayPackages();
 $data=ob_get_clean();
 if ($data==='')	echo ($html ? '<p>' : '')."None\n";
 else echo $data;
 
-self::info_section($html,'Web direct access');
+self::infoSection($html,'Web direct access');
 
-self::start_info_table($html);
-$list=\PHK\Tools\Util::mk_array($this->option('web_access'));
-self::show_info_line($html,'State',count($list) ? 'Enabled' : 'Disabled');
-$this->show_option($html,'web_main_redirect',false);
-foreach($list as $path) self::show_info_line($html,'Path',$path);
-self::end_info_table($html);
+self::startInfoTable($html);
+$list=\PHK\Tools\Util::mkArray($this->option('web_access'));
+self::showInfoLine($html,'State',count($list) ? 'Enabled' : 'Disabled');
+$this->showOption($html,'web_main_redirect',false);
+foreach($list as $path) self::showInfoLine($html,'Path',$path);
+self::endInfoTable($html);
 
 //-- Options
 
-self::info_section($html,'Package options');
+self::infoSection($html,'Package options');
 
 $a=$this->options();
 $data=(is_null($a) ? '<>' : print_r($a,true));
@@ -485,7 +492,7 @@ echo ($html ? ('<pre>'.htmlspecialchars($data).'</pre>') : $data);
 
 //-- Sections
 
-self::info_section($html,'Sections');
+self::infoSection($html,'Sections');
 $this->proxy()->stree()->display(false);
 }
 
@@ -503,9 +510,9 @@ $this->proxy()->stree()->display(false);
 * @return string|null The requested content or null if not found
 */
 
-public function auto_file($prefix)
+public function autoFile($prefix)
 {
-$html=\PHK\Tools\Util::env_is_web();
+$html=\PHK\Tools\Util::envIsWeb();
 $txt_suffixes=array('.txt','');
 $suffixes=($html ? array('.htm','.html') : $txt_suffixes);
 
@@ -514,7 +521,7 @@ foreach($suffixes as $suffix)
 	{
 	if (is_readable($base_path.$suffix))
 		{
-		return \PHK\Tools\Util::readfile($base_path.$suffix);
+		return \PHK\Tools\Util::readFile($base_path.$suffix);
 		break;
 		}
 	}
@@ -525,7 +532,7 @@ if ($html)
 	{
 	foreach ($txt_suffixes as $suffix)
 		if (is_readable($base_path.$suffix))	
-			return '<pre>'.htmlspecialchars(\PHK\Tools\Util::readfile($base_path.$suffix))
+			return '<pre>'.htmlspecialchars(\PHK\Tools\Util::readFile($base_path.$suffix))
 				.'</pre>';
 	}
 
@@ -536,24 +543,24 @@ return null;
 /**
 * Returns a multi-type content from an option name
 *
-* Option ($name.'_prefix') gives the prefix to send to auto_file()
+* Option ($name.'_prefix') gives the prefix to send to autoFile()
 *
 * @param string $name Option prefix
 * @return string Requested content or an informative error string.
 */
 
-public function auto_option($name)
+public function autoOption($name)
 {
 $data=null;
 
 $prefix=$this->option($name.'_prefix');
 
-if (!is_null($prefix)) $data=$this->auto_file($prefix);
+if (!is_null($prefix)) $data=$this->autoFile($prefix);
 
 if (is_null($data))
 	{
 	$data='<No '.$name.' file>'."\n";
-	if (\PHK\Tools\Util::env_is_web()) $data=htmlspecialchars($data);
+	if (\PHK\Tools\Util::envIsWeb()) $data=htmlspecialchars($data);
 	}
 
 return $data;
@@ -567,7 +574,7 @@ return $data;
 * @return boolean
 */
 
-public function is_callable_plugin_method($method)
+public function isCallablePluginMethod($method)
 {
 return (is_null($this->plugin)) ? false
 	: is_callable(array($this->plugin,$method));
@@ -582,9 +589,9 @@ return (is_null($this->plugin)) ? false
 * @throws \Exception if the plugin or the method does not exist
 */
 
-public function call_plugin_method($method)
+public function callPluginMethod($method)
 {
-if (!$this->is_callable_plugin_method($method))
+if (!$this->isCallablePluginMethod($method))
 	throw new \Exception($method.': Undefined plugin method');
 
 $args=func_get_args();
@@ -595,16 +602,16 @@ return call_user_func_array(array($this->plugin,$method),$args);
 
 //-----
 
-public function path_list()
+public function pathList()
 {
-return unserialize(file_get_contents($this->command_uri(__FUNCTION__)));
+return unserialize(file_get_contents($this->commandURI(__FUNCTION__)));
 }
 
 //-----
 
-public function section_list()
+public function sectionList()
 {
-return unserialize(file_get_contents($this->command_uri(__FUNCTION)));
+return unserialize(file_get_contents($this->commandURI(__FUNCTION)));
 }
 
 //---------------------------------
@@ -620,18 +627,18 @@ return unserialize(file_get_contents($this->command_uri(__FUNCTION)));
 // Allows a PHK package to become fully compatible with CGI mode by computing
 // every relative URLs through this method.
 
-public static function subpath_url($path)
+public static function subpathURL($path)
 {
-if ($path{0}!='/') $path=\PHK::get_subpath().'/'.$path; //-- Make path absolute
+if ($path{0}!='/') $path=\PHK::setSubpath().'/'.$path; //-- Make path absolute
 $path=preg_replace(',//+,','/',$path);
 
-return \PHK\Tools\Util::http_base_url().((php_sapi_name()=='cgi')
+return \PHK\Tools\Util::httpBaseURL().((php_sapi_name()=='cgi')
 	? ('?_phk_path='.urlencode($path)) : $path);
 }
 
 //-----
 
-private static function cmd_usage($msg=null)
+private static function cmdUsage($msg=null)
 {
 if (!is_null($msg)) echo "** ERROR: $msg\n";
 
@@ -653,14 +660,14 @@ if (!is_null($msg)) exit(1);
 
 //-----
 
-public function builtin_prolog($file)
+public function builtinProlog($file)
 {
 $retcode=0;
 $args=$_SERVER['argv'];
 
 try
 {
-$this->proxy()->crc_check();
+$this->proxy()->crcCheck();
 
 $command=\PHK\Tools\Util::substr($args[1],1);
 array_shift($args);
@@ -670,16 +677,13 @@ switch($command)
 	{
 	case 'get':
 		if (is_null($param))
-			self::cmd_usage($command.": needs argument");
+			self::cmdUsage($command.": needs argument");
 		$uri=$this->uri($param);
 		if (is_file($uri)) readfile($uri);
 		else throw new \Exception("$param: file not found");
 		break;
 
 	case 'test':
-		$this->test();
-		break;
-
 	case 'showmap':
 	case 'info':
 	case 'techinfo':
@@ -695,40 +699,40 @@ switch($command)
 
 	case 'set_interp':
 		if (is_null($param))
-			self::cmd_usage($command.": needs argument");
+			self::cmdUsage($command.": needs argument");
 
 		//-- This is the only place in the runtime code where we write something
 		//-- into an existing PHK archive.
 
 		if (file_put_contents($file
-			,\PHK\Proxy::set_buffer_interp($file,$param))===false)
+			,\PHK\Proxy::setBufferInterp($file,$param))===false)
 			throw new \Exception('Cannot write file');
 		break;
 
 	case 'license':
 	case 'licence':
-		echo $this->auto_option('license');
+		echo $this->autoOption('license');
 		break;
 
 	case 'help':
-		echo $this->auto_option($command);
+		echo $this->autoOption($command);
 		break;
 
 	case 'dump':
 		if (is_null($param))
-			self::cmd_usage($command.": needs argument");
+			self::cmdUsage($command.": needs argument");
 		$this->proxy()->ftree()->dump($param);
 		break;
 
 	case '':
-		self::cmd_usage();
+		self::cmdUsage();
 		break;
 
 	default:
-		self::cmd_usage($command.': Unknown command');
+		self::cmdUsage($command.': Unknown command');
 	}
 
-\PHK\Tools\Util::display_slow_path();
+\PHK\Tools\Util::displaySlowPath();
 }
 catch (\Exception $e)
 	{

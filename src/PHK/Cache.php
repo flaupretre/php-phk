@@ -47,12 +47,12 @@ const TTL=3600;	// Arbitrary TTL of one hour
 
 private static $caches=array("apc","xcache","eaccelerator");
 
-private static $cache_name;	// Info
+private static $cacheName;	// Info
 
 /** @var Object|false|null	The cache system we are using for PHK instances
 *
 * False means 'no cache'.
-* null until set by set_cache_object().
+* null until set by setCacheObject().
 */
 
 private static $cache=null;
@@ -61,7 +61,7 @@ private static $cache_maxsize=524288;	// 512 Kb
 
 //-----
 
-public static function cache_id($prefix,$key)
+public static function cacheID($prefix,$key)
 {
 return 'phk.'.$prefix.'.'.$key;
 }
@@ -69,12 +69,12 @@ return 'phk.'.$prefix.'.'.$key;
 //---------------------------------
 // If the cache's init() method returns an exception, don't use it.
 
-private static function set_cache_object()
+private static function setCacheObject()
 {
 if (is_null(self::$cache))
 	{
 	self::$cache=false;
-	self::$cache_name='none';
+	self::$cacheName='none';
 	foreach(self::$caches as $c)
 		{
 		if (!extension_loaded($c)) continue;
@@ -86,36 +86,36 @@ if (is_null(self::$cache))
 		if ($status)
 			{
 			self::$cache=$obj;
-			self::$cache_name=$c;
+			self::$cacheName=$c;
 			break;
 			}
 		unset($obj);
 		}
-	\PHK\Tools\Util::trace("Cache system used : ".self::$cache_name);//TRACE
+	\PHK\Tools\Util::trace("Cache system used : ".self::$cacheName);//TRACE
 	}
 }
 
 //---------------------------------
 
-public static function set_cache_maxsize($size)
+public static function setCacheMaxSize($size)
 {
 $this->cache_maxsize=$size;
 }
 
 //---------------------------------
 
-public static function cache_name()
+public static function cacheName()
 {
-if (is_null(self::$cache)) self::set_cache_object();
+if (is_null(self::$cache)) self::setCacheObject();
 
-return self::$cache_name;
+return self::$cacheName;
 }
 
 //---------------------------------
 
-public static function cache_present()
+public static function cachePresent()
 {
-if (is_null(self::$cache)) self::set_cache_object();
+if (is_null(self::$cache)) self::setCacheObject();
 
 return (self::$cache!==false);
 }
@@ -132,7 +132,7 @@ return (self::$cache!==false);
 
 public static function get($id)
 {
-if (is_null(self::$cache)) self::set_cache_object();
+if (is_null(self::$cache)) self::setCacheObject();
 
 if (self::$cache===false) return null;
 
@@ -154,7 +154,7 @@ return $result;
 
 public static function set($id,$data)
 {
-if (is_null(self::$cache)) self::set_cache_object();
+if (is_null(self::$cache)) self::setCacheObject();
 
 if (is_object(self::$cache))
 	{
@@ -169,7 +169,7 @@ if (is_object(self::$cache))
 } // End of class \PHK\Cache
 //=============================================================================
 
-abstract class Cache_Base
+abstract class CacheBase
 {
 // Returns true if this system can be used. \Exception if unavailable
 
@@ -186,14 +186,14 @@ abstract public function set($id,$data);
 
 //=============================================================================
 
-class Cache_apc extends Cache_Base
+class Cache_apc extends CacheBase
 {
 
 public function init()
 {
 // Valid only in a web environment or if CLI is explicitely enabled
 
-return \PHK\Tools\Util::env_is_web() || ini_get('apc.enable_cli');
+return \PHK\Tools\Util::envIsWeb() || ini_get('apc.enable_cli');
 }
 
 //------
@@ -214,12 +214,12 @@ apc_store($id,$data,\PHK\Cache::TTL);
 } // End of class \PHK\Cache_apc
 //=============================================================================
 
-class Cache_xcache extends Cache_Base
+class Cache_xcache extends CacheBase
 {
 
 public function init()
 {
-return \PHK\Tools\Util::env_is_web(); // Valid only in a web environment
+return \PHK\Tools\Util::envIsWeb(); // Valid only in a web environment
 }
 
 //------
@@ -240,7 +240,7 @@ xcache_set($id,$data,\PHK\Cache::TTL);
 } // End of class \PHK\Cache_xcache
 //=============================================================================
 
-class Cache_eaccelerator extends Cache_Base
+class Cache_eaccelerator extends CacheBase
 {
 
 public function init()
@@ -250,7 +250,7 @@ public function init()
 
 if (!function_exists('eaccelerator_get')) return false;
 
-return \PHK\Tools\Util::env_is_web(); // Valid only in a web environment
+return \PHK\Tools\Util::envIsWeb(); // Valid only in a web environment
 }
 
 //------

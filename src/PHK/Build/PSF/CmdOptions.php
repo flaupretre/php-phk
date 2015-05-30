@@ -57,7 +57,7 @@ protected $options=array(
 
 //-----------------------
 
-protected function process_option($opt,$arg)
+protected function processOption($opt,$arg)
 {
 switch($opt)
 	{

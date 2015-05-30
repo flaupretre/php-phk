@@ -49,14 +49,14 @@ public function __construct($phk)
 {
 $this->PHK=$phk;
 
-\PHK\Mgr::set_cache(false); // Don't cache anything in webinfo mode
+\PHK\Mgr::setCache(false); // Don't cache anything in webinfo mode
 }
 
 //----
 
-private static function display_tab($url,$name)
+private static function displayTab($url,$name)
 {
-echo '<li id="'.$name.'"><a href="'.\PHK::subpath_url($url)
+echo '<li id="'.$name.'"><a href="'.\PHK::subpathURL($url)
 	.'"><span>'.$name.'</span></a></li>';
 }
 
@@ -70,7 +70,7 @@ $win_title=(is_null($title) ? $name : "$name - $title");
 
 echo '<head>'
 	."<title>$win_title</title>"
-	.'<link href="'.\PHK::subpath_url('/php_section/STATIC/tabs/tabs.css.php')
+	.'<link href="'.\PHK::subpathURL('/php_section/STATIC/tabs/tabs.css.php')
 	.'" rel="stylesheet" type="text/css">'
 	."<style type=text/css><!--\n"
 	."a,a:active,a:link { color: blue; text-decoration: none; }\n"
@@ -84,28 +84,28 @@ echo '<table width=100% border=0 cellpadding=0 cellspacing=0>';
 
 echo '<tr><td><div class="tabs"><ul>';
 
-self::display_tab('/info','Home');
+self::displayTab('/info','Home');
 
 if (!is_null($this->PHK->option('help_prefix')))
-	self::display_tab('/auto_option/help','Help');
+	self::displayTab('/autoOption/help','Help');
 
 if (!is_null($this->PHK->option('license_prefix')))
-	self::display_tab('/auto_option/license','License');
+	self::displayTab('/autoOption/license','License');
 
-self::display_tab('/techinfo','Info');
-self::display_tab('/showfiles','Files');
+self::displayTab('/techinfo','Info');
+self::displayTab('/showfiles','Files');
 
-if ($this->PHK->map_defined())
-	self::display_tab('/showmap','Symbol map');
+if ($this->PHK->mapDefined())
+	self::displayTab('/showmap','Symbol map');
 
 if ((!is_null($this->PHK->option('test_script')))
 	||(!is_null($this->PHK->option('phpunit_test_package'))))
-	self::display_tab('/test','Tests');
+	self::displayTab('/test','Tests');
 
 //-- Package specific tabs
 
 if (!is_null($tabs=$this->PHK->option('tabs')))
-	foreach($tabs as $n => $url) self::display_tab($url,$n);
+	foreach($tabs as $n => $url) self::displayTab($url,$n);
 
 echo '</ul></div></td></tr>';
 
@@ -123,7 +123,7 @@ echo "<tr><td width=$icon_width $bg_string align=center>";
 $url=$this->PHK->option('url');
 if (!is_null($url)) echo '<a href="'.$url.'" target=_blank>';
 if (!is_null($icon_path=$this->PHK->option('icon')))
-	echo '<img border=0 src="'.\PHK::subpath_url('/file/'.trim($icon_path,'/'))
+	echo '<img border=0 src="'.\PHK::subpathURL('/file/'.trim($icon_path,'/'))
 		.'" alt="Package Home">';
 elseif (!is_null($url)) echo '&lt;Website&gt;';
 if (!is_null($url)) echo '</a>';
@@ -133,7 +133,7 @@ echo '<td bgcolor="#D7E2FF" align=center><h1>'.$name.'</h1></td>';
 
 echo '<td width=151 align=center><a href="http://phk.tekwire.net"'
 	.' target=_blank><img width=151 height=88 border=0 src="'
-	.\PHK::subpath_url('/section/STATIC/phk_logo.png')
+	.\PHK::subpathURL('/section/STATIC/phk_logo.png')
 	.'" alt="PHK Home"></a></td>';
 echo '</tr>';
 
@@ -169,7 +169,7 @@ if (isset($_REQUEST['debug']))
 
 #-- Get the command and optional arg. Supports both URL formats
 
-$command=trim(\PHK::get_subpath(),'/');
+$command=trim(\PHK::setSubpath(),'/');
 if (($pos=strpos($command,'/'))!==false)
 	{
 	$arg=substr($command,$pos+1);
@@ -181,7 +181,7 @@ if ($command=='') $command='info'; //-- Default command
 
 #-- Run command
 
-self::send_cache_header();
+self::sendCacheHeader();
 
 switch($command)
 	{
@@ -198,34 +198,34 @@ switch($command)
 		echo "<table border=0>\n";
 		echo '<tr><td>Size:</td><td>'.filesize($path).'</td></tr>';
 		echo '<tr><td>Storage flags:</td><td>'
-			.$this->PHK->proxy()->ftree()->lookup($arg)->flag_string().'</td></tr>';
+			.$this->PHK->proxy()->ftree()->lookup($arg)->flagString().'</td></tr>';
 		echo "</table><hr/>";
 
-		switch($mime_type=$this->PHK->mime_type($arg))
+		switch($mime_type=$this->PHK->mimeType($arg))
 			{
 			case 'application/x-httpd-php':
 				highlight_file($path);
 				break;
 
 			case 'text/html':
-				echo \PHK\Tools\Util::readfile($path);
+				echo \PHK\Tools\Util::readFile($path);
 				break;
 
 			default:
 				if (strpos($mime_type,'image/')===0) // Is it an image ?
-					echo 'Image: <img src="'.\PHK::subpath_url('/file'.$arg).'">';
-				else echo '<pre>'.htmlspecialchars(\PHK\Tools\Util::readfile($path))
+					echo 'Image: <img src="'.\PHK::subpathURL('/file'.$arg).'">';
+				else echo '<pre>'.htmlspecialchars(\PHK\Tools\Util::readFile($path))
 					.'</pre>';
 			}
 		break;
 
 	case 'run':
 		$this->header();
-		eval($this->PHK->web_tunnel($arg,true));
+		eval($this->PHK->webTunnel($arg,true));
 		break;
 
 	case 'file':	// Bare file
-		eval($this->PHK->web_tunnel($arg,true));
+		eval($this->PHK->webTunnel($arg,true));
 		return; // Don't put anything after the file
 
 	case 'info':
@@ -237,25 +237,25 @@ switch($command)
 		if (isset($this->cmd_titles[$command])) $t=$this->cmd_titles[$command];
 		else $t=ucfirst($command);
 		$this->header($t);
-		$this->PHK->$command(array(__CLASS__,'view_subfile_url'));
+		$this->PHK->$command(array(__CLASS__,'viewSubfileURL'));
 		break;
 
-	case 'auto_file':
+	case 'autoFile':
 		$this->header();
-		echo $this->PHK->auto_file('/'.$arg);
+		echo $this->PHK->autoFile('/'.$arg);
 		break;
 
-	case 'auto_option':
+	case 'autoOption':
 		$this->header(ucfirst($arg));
-		echo $this->PHK->auto_option($arg);
+		echo $this->PHK->autoOption($arg);
 		break;
 
 	case 'php_section':
-		require($this->PHK->section_uri($arg));
+		require($this->PHK->sectionURI($arg));
 		return; // Don't put anything after the file
 
 	case 'section':	// Bare section (image, css,...) with PHP source auto-exec
-		eval($this->PHK->web_tunnel('/?section&name='.$arg,true));
+		eval($this->PHK->webTunnel('/?section&name='.$arg,true));
 		return; // Don't put anything after the file
 
 	default:
@@ -269,9 +269,9 @@ self::footer();
 // Convert a subfile path to an URL. Needed because Automap must not
 // directly reference PHK or \PHK\Web\Info (to avoid cyclic dependencies).
 
-public static function view_subfile_url($fname)
+public static function viewSubfileURL($fname)
 {
-return \PHK::subpath_url('/view/'.trim($fname,'/'));
+return \PHK::subpathURL('/view/'.trim($fname,'/'));
 }
 
 //----
@@ -283,7 +283,7 @@ return \PHK::subpath_url('/view/'.trim($fname,'/'));
 // compatible with PHP in CGI mode, most browsers won't cache URLs containing
 // a '?' char.
 
-private static function send_cache_header()
+private static function sendCacheHeader()
 {
 header('Expires: '.gmdate('D, d M Y H:i:s \G\M\T',time()+600));
 header('Cache-Control: public, max-age=600'); //rfc2616-sec14.html#sec14.9

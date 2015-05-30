@@ -77,7 +77,7 @@ require(dirname(__FILE__).'/../src/PHK/Web/Info.php');
 try
 {
 ini_set('display_errors',true);
-Mgr::php_version_check();
+Mgr::checkPhpVersion();
 
 $args=$_SERVER['argv'];
 array_shift($args);
