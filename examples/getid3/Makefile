@@ -1,11 +1,10 @@
 
-PRODUCT=getid3
+TARGETS=getid3.phk
+PHK_BUILD = php ../../phkmgr.phk build
 
-TARGETS=$(PRODUCT).phk
+include make.vars
 
-include ./make.vars
-
-#-------------------------------------------------
+#-----------------------------------------------------------------------------
 
 all: $(TARGETS)
 
@@ -13,5 +12,6 @@ clean:
 	/bin/rm -rf $(TARGETS)
 
 getid3.phk: getid3.psf
-	SOURCE_DIR=$(GETID3_DIR) $(PHP) $(PHK_CREATOR) build $@ $<
+	$(PHK_BUILD) $@ -d GETID3_DIR=$(GETID3_DIR)
 
+#-----------------------------------------------------------------------------

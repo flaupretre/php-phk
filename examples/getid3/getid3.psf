@@ -10,8 +10,7 @@ add --target-base /auto_file -C $(GETID3_DIR) license.txt readme.txt \
 	structure.txt changelog.txt dependencies.txt
 
 #--------------------------------------------------------------------------
-%options
-<?php
+%options --syntax=php
 
 return array(
 	'name' => 'getID3',
@@ -22,7 +21,7 @@ return array(
 	'author' => 'James Heinrich <info@getid3.org>',
 	'license' => 'GNU General Public License, version 2 <http://www.gnu.org/licenses/gpl-2.0.html>',
 	'url' => 'http://www.getid3.org',
-	'packager' => 'F. Laupretre <mailto:francois@tekwire.net>',
+	'packager' => 'Your name here <your.mail@address>',
 	'license_prefix' => '/auto_file/license',
 	'lib_run_script' => '/lib/getid3.php',
 	# Additional webinfo tabs
