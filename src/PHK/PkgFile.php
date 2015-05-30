@@ -17,21 +17,26 @@
 //
 //=============================================================================
 /**
-* Contains the code to physically access PHK package files.
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK {
 
 if (!class_exists('PHK\PkgFile',false))
 {
 
-//-------------------------
+//=============================================================================
+/**
+* Contains the code to physically access PHK package files.
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
+
 class PkgFile
 {
 

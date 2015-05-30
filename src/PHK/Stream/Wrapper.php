@@ -19,8 +19,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK\Stream {
 
@@ -33,7 +32,11 @@ if (!class_exists('PHK\Stream\Wrapper',false))
 * Handles every file access to a 'phk://...' URI
 *
 * Note: Always catch exceptions before returning to PHP.
-*/
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: Yes
+*///==========================================================================
 
 class Wrapper
 {

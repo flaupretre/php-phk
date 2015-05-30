@@ -17,19 +17,26 @@
 //
 //=============================================================================
 /**
-* This class manages options for lines on the %options line of a PSF
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK\Build\PSF {
 
 if (!class_exists('PHK\Build\PSF\MetaOptions',false))
 {
+
+//=============================================================================
+/**
+* This class manages options on the %options line of a PSF
+*
+* API status: Private
+* Included in the PHK PHP runtime: No
+* Implemented in the extension: No
+*///==========================================================================
+
 class MetaOptions extends \Phool\Options\Base
 {
 

@@ -17,14 +17,20 @@
 //
 //=============================================================================
 /**
-* The PHK\Tools\Util class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
+*///==========================================================================
 //=============================================================================
+/**
+* PHK utility functions
+*
+* Static-only
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 namespace PHK\Tools {
 

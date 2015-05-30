@@ -19,8 +19,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK\Stream {
 
@@ -35,7 +34,11 @@ if (!class_exists('PHK\Stream\Backend',false))
 *
 * Note (30-NOV-2007): As long as the extension does not trap exceptions
 * correctly, we trap them here and return null instead.
-*/
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 class Backend
 {

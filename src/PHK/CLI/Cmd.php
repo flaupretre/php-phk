@@ -17,19 +17,26 @@
 //
 //=============================================================================
 /**
-* phkmgr CLI script. Builds and manages PHK packages.
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK\CLI {
 
 if (!class_exists('PHK\CLI\Cmd',false))
 {
+
+//=============================================================================
+/**
+* phkmgr CLI script. Builds and manages PHK packages.
+*
+* API status: Private
+* Included in the PHK PHP runtime: No
+* Implemented in the extension: No
+*///==========================================================================
+
 class Cmd
 {
 //---------

@@ -21,8 +21,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK {
 
@@ -30,22 +29,25 @@ if (!class_exists('PHK\Mgr',false))
 {
 //=============================================================================
 /**
-* This is a static-only class. It has the responsability to manage the table
-* of currently mounted packages. Each package is uniquely identified by a
-* 'mount point', which is a string computed at mount time. The \PHK\Mgr class
-* contains the methods allowing to get information from its table, as well
-* as methods to mount and umount a package.
+* The PHK manager
+*
+* This class manages the table of currently mounted packages.
+*
+* Each package is uniquely identified by a 'mount point' (a string computed
+* at mount time). A given package file always gets the same mount point in
+* every request, as long as it is not modified.
+*
+* Among others, this class allows to mount and umount packages.
 *
 * Runtime code -> 100% read-only.
 *
-* <Public API>
-*
-* @package PHK
-*/
+* Static-only
+* API status: Public
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: Yes
+*///==========================================================================
 
-//=============================================================================
-
-class Mgr	// Static only
+class Mgr
 {
 //-- Global static properties
 

@@ -17,18 +17,20 @@
 //
 //=============================================================================
 /**
+* @copyright Francois Laupretre <phk@tekwire.net>
+* @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
+* @category PHK
+* @package PHK
+*///==========================================================================
+
+//=============================================================================
+/**
 * A utility class used only at package creation time.
 *
 * This class maintains a string buffer and appends strings to it, returning
 * the current offset. When every strings have been appended, returns the
 * resulting buffer.
-*
-* @copyright Francois Laupretre <phk@tekwire.net>
-* @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
-* @category PHK
-* @package PHK
-*/
-//=============================================================================
+*///===========================================================================
 
 namespace PHK\Build {
 

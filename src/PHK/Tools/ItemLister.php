@@ -17,24 +17,28 @@
 //
 //=============================================================================
 /**
-* A utility class used only at package creation time.
-*
-* This class maintains an array and appends elements to it, eliminating
-* duplicate keys. When every elements have been appended, returns the resulting
-* array.
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK\Tools {
 
 if (!class_exists('PHK\Tools\ItemLister',false))
 {
-//============================================================================
+//=============================================================================
+/**
+* A utility class used only at package creation time.
+*
+* This class maintains an array and appends elements to it, eliminating
+* duplicate keys. When every elements have been appended, it returns the resulting
+* array.
+*
+* API status: Private
+* Included in the PHK PHP runtime: No
+* Implemented in the extension: No
+*///==========================================================================
 
 class ItemLister
 {

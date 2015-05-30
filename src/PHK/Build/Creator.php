@@ -21,8 +21,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK\Build {
 
@@ -39,8 +38,10 @@ if (!class_exists('PHK\Build\Creator',false))
 * case, packages generated from this creator package will display wrong version
 * information.
 *
-* <Public API>
-*/
+* API status: Public
+* Included in the PHK PHP runtime: No
+* Implemented in the extension: No
+*///==========================================================================
 
 class Creator extends \PHK\Base
 {

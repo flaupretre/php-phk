@@ -21,14 +21,23 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK\Virtual {
 
 if (!class_exists('PHK\Virtual\Node',false))
 {
 //============================================================================
+/**
+* A virtual node
+*
+* This is a node of the virtual tree. This abstract class can be extended with
+* a directory (Dir class) or a file (File class)
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 abstract class Node		// Base class - never instantiated
 {

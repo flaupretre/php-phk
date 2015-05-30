@@ -21,14 +21,22 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK\Virtual {
 
 if (!class_exists('PHK\Virtual\Tree',false))
 {
 //============================================================================
+/**
+* A virtual tree
+*
+* A virtual tree contains virtual nodes (files and directories)
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 class Tree
 {

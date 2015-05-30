@@ -17,23 +17,28 @@
 //
 //=============================================================================
 /**
-* The PHK cache gateway
-*
-* The cache key is based on the mount point because it uniquely defines the
-* PHK file on the current host.
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK {
 
 if (!class_exists('PHK\Cache',false))
 {
+
 //=============================================================================
+/**
+* The PHK cache gateway
+*
+* The cache key is based on the mount point because it uniquely defines the
+* PHK file on the current host.
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: Yes
+*///==========================================================================
 
 class Cache	// Static only
 {

@@ -21,8 +21,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace {
 
@@ -34,17 +33,18 @@ if (!class_exists('PHK',false))
 * this way so that PHK\Build\Creator uses the PHP code even if the extension
 * is present.
 *
-* <Public API>
-*
 * @see PHK\Base
-*/
+*
+* API status: Public
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: Yes
+*///==========================================================================
 
 class PHK extends \PHK\Base
 {
 
 //---------------
-// If we get here, the PHP runtime is already loaded.
-// But the method has to exist.
+// If we get here, the PHP runtime is already loaded,but the method must exist.
 
 public static function needPhpRuntime()
 {

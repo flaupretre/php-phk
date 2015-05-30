@@ -21,8 +21,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK {
 
@@ -34,28 +33,29 @@ if (!class_exists('PHK\Base',false))
 *
 * This file contains the front-end class for PHK object. This class gets its
 * data from the stream wrapper, which retrieves them from the cache or from
-* \PHK\Proxy. This class is also used as base class for \PHK\Build\Creator instances.
+* PHK\Proxy. This class is also used as base class for PHK\Build\Creator instances.
 *
 * This class does never access the package file directly.
 *
 * Note: When dealing with a sub-package, the mounted archive file is a 'phk://'
 * virtual file contained in a higher-level PHK archive (which, itself, can be
-* virtual). There is no limit to the recursion level of sub-packages.
+* virtual). There is no limit to the nesting level of sub-packages.
 *
 * Runtime code -> 100% read-only
 *
-* PHK objects are created and destructed from the PHK manager (\PHK\Mgr class).
+* PHK objects are created and destructed from the PHK manager (PHK\Mgr class).
 *
 * You get the PHK object instance by calling \PHK\Mgr::instance with a mount
 * point. This mount point is generally returned either by an include,
 * when including a package, or by \PHK\Mgr::uriToMnt().
 *
-*
-* <Public API>
-*
 * @see \PHK\Mgr
 * @see \PHK\Proxy
-* @package PHK
+*
+* API status: Public
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: Yes. Not used when extension is active.
+*///==========================================================================
 */
 
 abstract class Base

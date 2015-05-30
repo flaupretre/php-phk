@@ -21,14 +21,22 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK\Web {
 
 if (!class_exists('PHK\Web\Info',false))
 {
 //============================================================================
+/**
+* Web info
+*
+* This class handles the 'webinfo' mode
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 class Info
 {

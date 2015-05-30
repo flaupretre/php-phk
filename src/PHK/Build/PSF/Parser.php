@@ -21,13 +21,21 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK\Build\PSF {
 
 if (!class_exists('PHK\Build\PSF\Parser',false))
 {
+//=============================================================================
+/**
+* The PSF parser
+*
+* API status: Private
+* Included in the PHK PHP runtime: No
+* Implemented in the extension: No
+*///==========================================================================
+
 class Parser
 {
 private $path; // PSF absolute path

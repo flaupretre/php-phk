@@ -17,20 +17,24 @@
 //
 //=============================================================================
 /**
-* The \PHK\Virtual\File class
-*
 * @copyright Francois Laupretre <phk@tekwire.net>
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//=============================================================================
+*///==========================================================================
 
 namespace PHK\Virtual {
 
 if (!class_exists('PHK\Virtual\File',false))
 {
-//============================================================================
+//=============================================================================
+/**
+* A virtual file
+*
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 class File extends Node // Regular file
 {

@@ -19,8 +19,7 @@
 * @license http://www.apache.org/licenses/LICENSE-2.0 Apache License, V 2.0
 * @category PHK
 * @package PHK
-*/
-//============================================================================
+*///==========================================================================
 
 namespace PHK {
 
@@ -28,16 +27,15 @@ if (!class_exists('PHK\Proxy',false))
 {
 //=============================================================================
 /**
-* The 'back-end' object providing physical access to the package file. This
+* The 'back-end' object managing physical access to the package file. This
 * object is created and called by the stream wrapper on cache misses.
 *
 * Runtime code -> 100% read-only except setBufferInterp().
 *
-* @see \PHK\Stream\Wrapper
-* @see PHK
-* @see \PHK\Mgr
-* @package PHK
-*/
+* API status: Private
+* Included in the PHK PHP runtime: Yes
+* Implemented in the extension: No
+*///==========================================================================
 
 class Proxy
 {

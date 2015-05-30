@@ -612,7 +612,7 @@ return unserialize(file_get_contents($this->commandURI(__FUNCTION)));
 /**
 * Check a package
 *
-* TODO: There a lot more things to check...
+* TODO: There's a lot more to check...
 *
 * @return array of error messages
 */
@@ -620,6 +620,13 @@ return unserialize(file_get_contents($this->commandURI(__FUNCTION)));
 public function check()
 {
 $errors=array();
+
+// Check package CRC
+
+try { $this->proxy()->crcCheck(); }
+catch (\Exception $e) {	$errors[]=$e->getMessage(); }
+
+// Check symbol map
 
 $id=$this->automapID();
 if ($id)
