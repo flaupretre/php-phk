@@ -2,7 +2,6 @@
 #==============================================================================
 
 TARGETS = $(PRODUCT).phk
-SOURCE_DIR = src
 BUILD_DIR = build
 EXTRA_CLEAN = $(PRODUCT).psf $(PRODUCT)
 
@@ -16,23 +15,21 @@ include ./make.common
 .PHONY: all clean_doc clean_distrib clean doc distrib test mem_test clean_test \
 	examples clean_examples install
 
-# Don't build examples from all because each of them must be built separately
-
-all: base doc
+all: base doc examples
 
 clean: clean_base clean_doc clean_distrib clean_test clean_examples
 
 #--- How to build the package
 
 $(PRODUCT).phk: $(PRODUCT).psf
-	 $(PHPCMD) scripts/main.php build $@
+	 SOFTWARE_VERSION=$(SOFTWARE_VERSION) $(PHPCMD) scripts/main.php build $@
 
 install: $(TARGETS)
-	cp $< $(INSTALL_DIR)
+	cp $< $(PHKMGR_PATH)
 
 #--- Tests
 
-test mem_test: all
+test mem_test: base
 	$(MAKE) -C test $@
 
 clean_test:
@@ -55,10 +52,13 @@ clean_doc:
 	$(MAKE) -C doc clean
 
 #--- How to build distrib
+# As we copy the whole examples and test subdirs into the distrib, we must
+# clean them first.
+
 
 distrib: $(DISTRIB)
 
-$(DISTRIB): $(TARGETS) doc clean_test clean_examples
+$(DISTRIB): base doc clean_test clean_examples
 	BASE=$(PWD) TMP_DIR=$(TMP_DIR) PRODUCT=$(PRODUCT) \
 	SOFTWARE_VERSION=$(SOFTWARE_VERSION) \
 	SOFTWARE_RELEASE=$(SOFTWARE_RELEASE) $(MK_DISTRIB)
@@ -66,7 +66,7 @@ $(DISTRIB): $(TARGETS) doc clean_test clean_examples
 clean_distrib:
 	/bin/rm -f $(DISTRIB)
 
-#--- Sync external code - Dev private
+#--- Sync submodules - Dev private
 
 sync_automap:
 	rm -rf submodules/automap/src

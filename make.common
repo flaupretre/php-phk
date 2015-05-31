@@ -3,11 +3,11 @@
 
 PRODUCT=phkmgr
 
-# This version must be kept in sync with PHK_Creator::PHKMGR_VERSION
+# Keep this version in sync with \PHK\Base::RUNTIME_VERSION
 
 SOFTWARE_VERSION = 3.0.0
 
-SOFTWARE_RELEASE = 1
+SOFTWARE_RELEASE = b1
 
 #--------------
 
