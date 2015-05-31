@@ -1,5 +1,8 @@
 <?php
 
+// Uncomment to trace autoload
+//echo "> Autoloading env.php\n";
+
 class EnvInfo
 {
 

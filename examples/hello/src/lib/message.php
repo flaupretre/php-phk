@@ -1,5 +1,8 @@
 <?php
 
+// Uncomment to trace autoload
+//echo "> Autoloading message.php\n";
+
 class Message
 {
 

@@ -1,16 +1,21 @@
 #
+# A basic 'Hello World' example
 #
 #==============================================================================
 
-PRODUCT=hello
+TARGETS=hello.phk
+PHKMGR_PATH = ../../phkmgr.phk
 
-TARGETS=hello.phk helloa.phk
+include ../../make.vars
+include ../../make.common
 
-NO_FILTER=true
+#-----------------------------------------------------------------------------
 
-FILTER_SOURCE = $(SOURCE_DIR)
+all: $(TARGETS)
 
-include ../make.vars
-include ../make.common
+clean: clean_base
+
+%.phk: %.psf
+	$(PHK_BUILD) $@
 
 #-----------------------------------------------------------------------------

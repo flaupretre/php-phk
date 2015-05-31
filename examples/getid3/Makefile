@@ -1,15 +1,17 @@
 
 TARGETS=getid3.phk
-PHK_BUILD = php ../../phkmgr.phk build
+
+PHKMGR_PATH = ../../phkmgr.phk
 
 include make.vars
+include ../../make.vars
+include ../../make.common
 
 #-----------------------------------------------------------------------------
 
 all: $(TARGETS)
 
-clean:
-	/bin/rm -rf $(TARGETS)
+clean: clean_base
 
 getid3.phk: getid3.psf
 	$(PHK_BUILD) $@ -d GETID3_DIR=$(GETID3_DIR)

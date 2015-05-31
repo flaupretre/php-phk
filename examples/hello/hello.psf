@@ -1,6 +1,6 @@
 # Add the source files under the root virtual dir
 
-add . --no-autoload --strip --directory src
+add src
 
 %options
 
@@ -8,6 +8,6 @@ name          : My first package
 version       : 1.0
 author        : Bond... James Bond
 license       : Top secret
-cli_run_script: /hello.php # This is the entry point in CLI mode
-web_run_script: /hello.php # This is the entry point in web mode
+cli_run_script: /src/hello.php # This is the entry point in CLI mode
+web_run_script: /src/hello.php # This is the entry point in web mode
 
