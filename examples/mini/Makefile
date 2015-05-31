@@ -1,16 +1,20 @@
 #
-#
+# A (useless) minimal package
 #==============================================================================
 
-PRODUCT=mini
+TARGETS=mini.phk
+PHKMGR_PATH = ../../phkmgr.phk
 
-TARGETS=$(PRODUCT).phk
+include ../../make.vars
+include ../../make.common
 
-NO_FILTER=true
+#-----------------------------------------------------------------------------
 
-FILTER_SOURCE = $(SOURCE_DIR)
+all: $(TARGETS)
 
-include ../make.vars
-include ../make.common
+clean: clean_base
+
+%.phk: %.psf
+	$(PHK_BUILD) $@
 
 #-----------------------------------------------------------------------------
