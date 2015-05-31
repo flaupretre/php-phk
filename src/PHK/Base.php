@@ -56,15 +56,15 @@ if (!class_exists('PHK\Base',false))
 * Included in the PHK PHP runtime: Yes
 * Implemented in the extension: Yes. Not used when extension is active.
 *///==========================================================================
-*/
 
 abstract class Base
 {
 //========== Class constants ===============
 
-/** Class version */
+/** Version. Checked against package's min runtime version */
+/* Keep this value in sync with SOFTWARE_VERSION defined in make.common */
 
-const VERSION='3.0.0';
+const RUNTIME_VERSION='3.0.0';
 
 //-----
 // Mount flags

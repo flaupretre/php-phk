@@ -35,17 +35,13 @@ if (!class_exists('PHK\Cache',false))
 * The cache key is based on the mount point because it uniquely defines the
 * PHK file on the current host.
 *
-* API status: Private
+* API status: Public
 * Included in the PHK PHP runtime: Yes
 * Implemented in the extension: Yes
 *///==========================================================================
 
 class Cache	// Static only
 {
-/** Class version */
-
-const VERSION='1.1.0';
-
 const TTL=3600;	// Arbitrary TTL of one hour
 
 //-- Global static properties

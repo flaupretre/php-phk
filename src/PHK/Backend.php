@@ -454,7 +454,7 @@ self::endInfoTable($html);
 self::infoSection($html,'Module versions');
 
 self::startInfoTable($html);
-self::showInfoLine($html,'PHK Manager',$this->buildInfo('phkmgr_version'));
+self::showInfoLine($html,'PHK Creator',$this->buildInfo('phk_creator_version'));
 self::showInfoLine($html,'Automap Creator',$this->buildInfo('automap_creator_version'));
 self::showInfoLine($html,'Automap min version',$this->buildInfo('automap_minVersion'));
 self::endInfoTable($html);
@@ -713,8 +713,17 @@ switch($command)
 	case 'info':
 	case 'techinfo':
 	case 'showfiles':
-	case 'check':
 		$this->$command();
+		break;
+
+	case 'check':
+		$errs=$this->check();
+		if (count($errs))
+			{
+			foreach($errs as $err) echo "$err\n";
+			throw new \Exception("*** The check procedure found errors in $phk_path");
+			}
+		echo "Check OK\n";
 		break;
 
 	case 'option':

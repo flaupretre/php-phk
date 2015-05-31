@@ -41,10 +41,6 @@ class Proxy
 {
 //========== Class constants ===============
 
-/** Class version */
-
-const VERSION='1.3.0';
-
 /** The size of the interp line (fixed size) */
 
 const INTERP_LEN=64;

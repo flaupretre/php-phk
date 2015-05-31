@@ -40,8 +40,6 @@ if (!class_exists('PHK\Web\Info',false))
 
 class Info
 {
-const VERSION='0.2.5';
-
 private $PHK;	// Associated PHK instance
 
 private $cmd_titles=array(

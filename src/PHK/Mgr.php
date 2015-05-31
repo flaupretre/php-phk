@@ -316,7 +316,7 @@ $caching=(is_null(self::$caching) ? true : self::$caching);
 
 $mv=\PHK\Tools\Util::getMinVersion($mnt,$caching);
 
-if (version_compare($mv,\PHK::VERSION) > 0)
+if (version_compare($mv,\PHK::RUNTIME_VERSION) > 0)
 	{
 	\PHK\Tools\Util::formatError('Cannot understand this version. '
 		.'Requires at least PHK version '.$mv);

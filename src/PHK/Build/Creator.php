@@ -45,11 +45,9 @@ if (!class_exists('PHK\Build\Creator',false))
 
 class Creator extends \PHK\Base
 {
-const PHKMGR_VERSION='3.0.0'; // Must be the same as SOFTWARE_VERSION in make.common
-
-const MIN_RUNTIME_VERSION='2.0.0'; // The minimum version of PHK runtime able to
-	// understand the packages I produce. When the package is loaded, this is
-	// checked against \PHK\Base::VERSION.
+const MIN_RUNTIME_VERSION='3.0.0'; // The minimum version of PHK runtime able to
+	// understand the packages I produce. Checked against PHK\Base::RUNTIME_VERSION
+	// or, if PECL, PHP_PHK_VERSION.
 
 //-----
 
@@ -213,6 +211,20 @@ if (is_null($path)) $path=$this->path();
 $base_dir=dirname(dirname(dirname(__DIR__)));
 $this->buildPhpCode($base_dir);
 
+//-- Get creator version
+
+if (\PHK\Mgr::isPhkUri(__FILE__))
+	{
+	$pkg=\PHK\Mgr::instance(\PHK\Mgr::uriToMnt(__FILE__));
+	$creatorVersion=$pkg->option('version');
+	}
+else
+	{
+	$creatorVersion=getenv('SOFTWARE_VERSION');
+	}
+if (!is_string($creatorVersion))
+	throw new \Exception('Cannot determine creator version');
+
 //-- Build prolog if not already set
 
 if (is_null($this->prolog)) $this->buildProlog($base_dir);
@@ -247,7 +259,7 @@ foreach(array('tabs/left.gif','tabs/right.gif','tabs/bottom.gif'
 
 //-- Build info
 
-$this->updateBuildInfo('phkmgr_version',self::PHKMGR_VERSION);
+$this->updateBuildInfo('phk_creator_version',$creatorVersion);
 $this->updateBuildInfo('automap_creator_version',\Automap\Build\Creator::VERSION);
 $this->updateBuildInfo('automap_minVersion',\Automap\Build\Creator::MIN_RUNTIME_VERSION);
 
@@ -297,7 +309,7 @@ $file_size=$sig_offset;
 $buf=\PHK\Proxy::fixCrc(\PHK\Proxy::interpBlock($this->interp)
 	.'<?php '.\PHK\Proxy::MAGIC_STRING
 	.' M'  .str_pad(self::MIN_RUNTIME_VERSION,\PHK\Proxy::VERSION_SIZE)
-	.' V'  .str_pad(self::PHKMGR_VERSION,\PHK\Proxy::VERSION_SIZE)
+	.' V'  .str_pad($creatorVersion,\PHK\Proxy::VERSION_SIZE)
 	.' FS' .str_pad($file_size,\PHK\Proxy::OFFSET_SIZE)
 	.' PO' .str_pad($prolog_offset,\PHK\Proxy::OFFSET_SIZE)
 	.' SSO'.str_pad($sections_structure_offset,\PHK\Proxy::OFFSET_SIZE)
