@@ -11,8 +11,8 @@ add -C .. etc
 %options
 
 name                : PHK Cross Reference
-version             : '@SOFTWARE_VERSION@'
-release             : '@SOFTWARE_RELEASE@'
+version             : '3.0.0'
+release             : 'b1'
 icon                : /etc/phk_logo.png
 license             : Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
 copyright           : (c) Francois Laupretre

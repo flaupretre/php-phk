@@ -1,11 +1,11 @@
 
 #-- Documentation files
 
-add --strip --compress gzip -C $(SOURCE) .
+add --strip --compression gzip -C $(SOURCE) .
 
 #-- The icon and license files
 
-add -C .. etc/license.htm etc/license.txt etc/phk_logo.png
+add -C .. etc
 
 #-- The options
 %options
@@ -15,10 +15,10 @@ version             : '@SOFTWARE_VERSION@'
 release             : '@SOFTWARE_RELEASE@'
 icon                : /etc/phk_logo.png
 license             : Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
-copyright           : (c) F. Laupretre
+copyright           : (c) Francois Laupretre
 author              : F. Laupretre <mailto:phk@tekwire.net>
 url                 : http://phk.tekwire.net
-packager            : F. Laupretre <mailto:phk@tekwire.net>
+packager            : Francois Laupretre <mailto:phk@tekwire.net>
 web_run_script      : /index.html
 license_prefix      : /etc/license
 web_access          : /  #-- Open access

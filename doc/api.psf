@@ -1,7 +1,7 @@
 
 #-- Documentation files
 
-add --compression gzip --directory $(SOURCE) .
+add --strip --compression gzip -C $(SOURCE) .
 
 #-- The icon and license files
 
@@ -10,13 +10,13 @@ add -C .. etc
 #-- The options
 %options
 
-name                : PHK Cross Reference
-version             : '@SOFTWARE_VERSION@'
-release             : '@SOFTWARE_RELEASE@'
+name                : PHK API Reference
+version             : '3.0.0'
+release             : 'b1'
 icon                : /etc/phk_logo.png
 license             : Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
 copyright           : (c) Francois Laupretre
-author              : Francois Laupretre <mailto:phk@tekwire.net>
+author              : F. Laupretre <mailto:phk@tekwire.net>
 url                 : http://phk.tekwire.net
 packager            : Francois Laupretre <mailto:phk@tekwire.net>
 web_run_script      : /index.html

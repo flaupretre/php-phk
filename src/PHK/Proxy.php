@@ -229,7 +229,7 @@ return substr($buffer,self::CRC_OFFSET,8);
 
 private static function computeCrc($buffer)
 {
-return hash('crc32',self::insertCrc($buffer,'00000000'));
+return hash('adler32',self::insertCrc($buffer,'00000000'));
 }
 
 //---------------------------------

@@ -1,22 +1,22 @@
 #==============================================================================
-# As this Makefile is included in the distrib, it cannot include make templates
+
+include ../make.vars
+include ../make.common
 
 TARGETS = pkg1.phk
 EXTRA_CLEAN = php.log
-
-PHP = php
-PHK_BUILD = $(PHP) ../phkmgr.phk build
+PHKMGR_PATH = ../phkmgr.phk
 
 #-----------------------------------------------------------------------------
 
 .PHONY: all clean test mem_test
 
-all: test
+all: base
+base: test
 
-clean:
-	/bin/rm -rf $(TARGETS) $(EXTRA_CLEAN)
+clean: clean_base
 
-pkg1.phk : pkg1.psf
+%.phk : %.psf
 	$(PHK_BUILD) $@
 	
 test: $(TARGETS)
