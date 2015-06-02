@@ -1,5 +1,5 @@
 
-SUBDIRS = hello mini PHPUnit zfw Smarty getid3
+SUBDIRS = hello mini getid3
 
 all: examples
 
@@ -13,7 +13,6 @@ include ../make.common
 clean: clean_base
 
 examples:
-	@echo "As most of these examples require a specific configuration and"
-	@echo "external resources, each of them must be built and run from its subdirectory."
+	@echo "Each example must be built and run from its subdirectory."
 
 #-----------------------------------------------------------------------------
