@@ -123,12 +123,11 @@ foreach (array('creator','plain_file') as $pcode)
 		}
 	}
 
-// php_strip_whitespace takes a file as arg. So, instead of creating a temp
-// file, we use our stream wrapper to feed it with the current prolog data
+// Strip whitespaces from the prolog
 
 if (!$this->option('plain_prolog'))
 	{
-	$buffer=\PHK\Stream\Backend::_stripString($buffer);
+	$buffer=\PHK\Virtual\File::stripWhitespaces($buffer);
 	}
 }
 
