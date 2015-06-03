@@ -1,7 +1,7 @@
 #
 #==============================================================================
 
-TARGETS = $(PRODUCT).phk
+TARGETS = $(PRODUCT)
 BUILD_DIR = build
 EXTRA_CLEAN = $(PRODUCT).psf $(PRODUCT)
 
@@ -21,11 +21,13 @@ clean: clean_base clean_doc clean_distrib clean_test clean_examples
 
 #--- How to build the package
 
-$(PRODUCT).phk: $(PRODUCT).psf
-	 SOFTWARE_VERSION=$(SOFTWARE_VERSION) $(PHPCMD) scripts/main.php build $@
+$(PRODUCT): $(PRODUCT).psf
+	SOFTWARE_VERSION=$(SOFTWARE_VERSION) $(PHPCMD) scripts/main.php build $@
+	chmod +x $(PRODUCT)
+	$(PHPCMD) $(PRODUCT) @set_interp '/bin/env php'
 
 install: $(TARGETS)
-	cp $< $(PHKMGR_PATH)
+	cp -p $(PRODUCT) $(PHKMGR)
 
 #--- Tests
 

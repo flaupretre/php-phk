@@ -5,7 +5,7 @@ include ../make.common
 
 TARGETS = pkg1.phk
 EXTRA_CLEAN = php.log
-PHKMGR_PATH = ../phkmgr.phk
+PHKMGR = ../phkmgr
 
 #-----------------------------------------------------------------------------
 

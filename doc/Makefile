@@ -6,7 +6,7 @@ SOURCE_DIR = ../src
 BUILD_DIR = ../build
 TARGETS = api.phk xref.phk
 EXTRA_CLEAN = api.psf xref.psf
-PHKMGR_PATH = ../phkmgr.phk
+PHKMGR = ../phkmgr
 
 #------
 
