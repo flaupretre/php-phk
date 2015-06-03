@@ -1,11 +1,11 @@
-# Add the source files under the root virtual dir
+# Add the src subdir and its content as /src
 
 add src
 
 %options
 
 name          : My first package
-version       : 1.0
+version       : '1.0'
 author        : Bond... James Bond
 license       : Top secret
 cli_run_script: /src/hello.php # This is the entry point in CLI mode
