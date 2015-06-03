@@ -1,2 +1,4 @@
 *.phk
 phkmgr.psf
+/doc/api.psf
+/doc/xref.psf
