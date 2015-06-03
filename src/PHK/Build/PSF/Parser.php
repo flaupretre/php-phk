@@ -231,10 +231,16 @@ if (!is_null($line)) // If we met a '%'
 	$data='';
 	while (($line=fgets($fp))!==false) $data .= $line;
 
-	switch($op->option('syntax'))
+	switch(strtolower($op->option('syntax')))
 		{
 		case 'yaml':
 			$options=\Symfony\Component\Yaml\Yaml::parse($data);
+			break;
+
+		case 'json':
+			$json=new Services_JSON();
+			$options=$json->decode($data);
+			unset($json);
 			break;
 
 		case 'php':
