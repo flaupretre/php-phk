@@ -35,6 +35,13 @@ if (!class_exists('PHK',0))
 	//-- If the PHK class exists, it can have been defined by the PECL extension
 	//-- or by a previously-loaded package.
 
+	// If the extension is active, PHP version was checked
+	if (version_compare(PHP_VERSION,'5.3.0') < 0)
+			{
+			echo "** Fatal error: PHK requires PHP version 5.3.0 or more (current = ".PHP_VERSION.")\n";
+			exit(1);
+			}
+
 	$_phk_fp=fopen(__FILE__,'rb');
 	$_phk_buf=fread($_phk_fp,241);
 	fseek($_phk_fp,(int)(substr($_phk_buf,212,11)),SEEK_SET);
