@@ -1,5 +1,5 @@
 
-SUBDIRS = hello mini getid3
+SUBDIRS = hello mini getid3 zfw_doc
 
 all: examples
 

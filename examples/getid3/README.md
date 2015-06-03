@@ -1,3 +1,4 @@
+This is a typical library package :
 
 * Download the getid3 library from http://getid3.sourceforge.net
 

@@ -1,0 +1,16 @@
+
+add --compression gzip -C $(SOURCE_DIR) .
+
+#--------------------------------------------------------------------------
+%options
+
+name:           'Zend Framework 2 Documentation (Manual)'
+version:        '2.4.2'
+license:        'New BSD License <http://framework.zend.com/license/>'
+url:            http://framework.zend.com
+packager:       'Your name here <your.mail@address>'
+web_run_script: /index.html
+web_access          : /  #-- Open access
+web_main_redirect   : true
+
+#--------------------------------------------------------------------------
