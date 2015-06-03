@@ -68,10 +68,16 @@ $(DISTRIB): base doc clean_test clean_examples
 clean_distrib:
 	/bin/rm -f $(DISTRIB)
 
-#--- Sync submodules - Dev private
+#--- Sync subtrees - Dev private
+
+SYNC = rsync -av --del --exclude external --delete-excluded
+
+sync: sync_automap sync_phool
 
 sync_automap:
-	rm -rf submodules/automap/src
-	cp -rp ../../../automap/php/public/src submodules/automap
+	$(SYNC) ../../../automap/php/public external/automap/
+
+sync_phool:
+	$(SYNC) ../../../phool/public external/phool
 
 #-----------------------------------------------------------------------------

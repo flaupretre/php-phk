@@ -143,7 +143,7 @@ public function buildPhpCode($dir)
 $this->code='';
 
 $automap_base=$dir;
-if (! \PHK\Mgr::isPhkUri(__FILE__)) $automap_base .= '/submodules/automap';
+if (! \PHK\Mgr::isPhkUri(__FILE__)) $automap_base .= '/external/automap';
 $this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Mgr.php');
 $this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Tools/Display.php');
 $this->code .= \PHK\Tools\Util::readFile($automap_base.'/src/Automap/Map.php');

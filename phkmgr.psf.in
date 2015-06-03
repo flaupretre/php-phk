@@ -5,11 +5,11 @@ add src etc scripts
 
 # Automap
 
-add -C submodules/automap src
+add -C external/automap src
 
 # Phool
 
-add -C submodules/phool src
+add -C external/phool src
 
 # Yaml
 

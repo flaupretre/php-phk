@@ -23,18 +23,18 @@ namespace PHK {
 // scripts. When used in a PHK package, we use the autoloader.
 
 // <PHK:ignore>
-require(dirname(__FILE__).'/../submodules/automap/src/Automap/Mgr.php');
-require(dirname(__FILE__).'/../submodules/automap/src/Automap/Map.php');
-require(dirname(__FILE__).'/../submodules/automap/src/Automap/Build/Creator.php');
-require(dirname(__FILE__).'/../submodules/automap/src/Automap/Build/ParserInterface.php');
-require(dirname(__FILE__).'/../submodules/automap/src/Automap/Build/Parser.php');
-require(dirname(__FILE__).'/../submodules/automap/src/Automap/Tools/Display.php');
+require(dirname(__FILE__).'/../external/automap/src/Automap/Mgr.php');
+require(dirname(__FILE__).'/../external/automap/src/Automap/Map.php');
+require(dirname(__FILE__).'/../external/automap/src/Automap/Build/Creator.php');
+require(dirname(__FILE__).'/../external/automap/src/Automap/Build/ParserInterface.php');
+require(dirname(__FILE__).'/../external/automap/src/Automap/Build/Parser.php');
+require(dirname(__FILE__).'/../external/automap/src/Automap/Tools/Display.php');
 
-require(dirname(__FILE__).'/../submodules/phool/src/Phool/Display.php');
-require(dirname(__FILE__).'/../submodules/phool/src/Phool/File.php');
-require(dirname(__FILE__).'/../submodules/phool/src/Phool/Options/Getopt.php');
-require(dirname(__FILE__).'/../submodules/phool/src/Phool/Options/Base.php');
-require(dirname(__FILE__).'/../submodules/phool/src/Phool/Util.php');
+require(dirname(__FILE__).'/../external/phool/src/Phool/Display.php');
+require(dirname(__FILE__).'/../external/phool/src/Phool/File.php');
+require(dirname(__FILE__).'/../external/phool/src/Phool/Options/Getopt.php');
+require(dirname(__FILE__).'/../external/phool/src/Phool/Options/Base.php');
+require(dirname(__FILE__).'/../external/phool/src/Phool/Util.php');
 
 require(dirname(__FILE__).'/../submodules/Yaml/Dumper.php');
 require(dirname(__FILE__).'/../submodules/Yaml/Escaper.php');
