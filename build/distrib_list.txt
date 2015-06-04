@@ -1,0 +1,10 @@
+# The list of files/dir to include in the distrib
+
+phkmgr
+examples
+test
+README.md
+make.vars
+make.common
+doc/api.phk
+doc/xref.phk

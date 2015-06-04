@@ -1,0 +1,37 @@
+
+add src etc scripts
+
+# Submodules
+
+# Automap
+
+add -C external/automap src
+
+# Phool
+
+add -C external/phool src
+
+# Yaml
+
+add -b src/Yaml -C submodules/Yaml Exception Dumper.php Escaper.php \
+	Inline.php Parser.php Unescaper.php Yaml.php
+
+#---------------------------------------------------------------------
+%options
+
+name                : PHK Manager
+summary             : PHK package management tool
+version             : '@SOFTWARE_VERSION@'
+release             : '@SOFTWARE_RELEASE@'
+icon                : /etc/phk_logo.png
+crc_check           : true
+license             : Apache License, Version 2.0 <http://www.apache.org/licenses/LICENSE-2.0>
+copyright           : (c) F. Laupretre
+author              : F. Laupretre <mailto:phk@tekwire.net>
+url                 : http://phk.tekwire.net
+packager            : F. Laupretre <mailto:phk@tekwire.net>
+cli_run_script      : /scripts/main.php
+plain_prolog        : true
+prolog_code_creator : true
+help_prefix         : /etc/help
+license_prefix      : /etc/license

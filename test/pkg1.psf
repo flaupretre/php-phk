@@ -1,0 +1,19 @@
+
+#-- Documentation files
+
+add -C src1 .
+
+#-- The options
+%options
+
+name              : PKG1
+version           : 1.0.0
+release           : 1
+license           : MY LICENSE <http://www.mylicence.org/>
+copyright         : (c) John Doe
+author            : John Doe <mailto:john@doe.unknown>
+url               : http://doe.com/pkg1
+author            : John Doe <mailto:john@doe.unknown>
+license_prefix    : /etc/license
+web_access        : /scripts
+web_main_redirect : true
