@@ -7,7 +7,7 @@ PRODUCT=phkmgr
 
 SOFTWARE_VERSION = 3.0.0
 
-SOFTWARE_RELEASE = b1
+SOFTWARE_RELEASE = 1
 
 #--------------
 
