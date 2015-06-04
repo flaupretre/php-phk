@@ -246,12 +246,12 @@ switch($command)
 		$this->PHK->$command(array(__CLASS__,'viewSubfileURL'));
 		break;
 
-	case 'autoFile':
+	case 'auto_file':
 		$this->header();
 		echo $this->PHK->autoFile('/'.$arg);
 		break;
 
-	case 'autoOption':
+	case 'auto_option':
 		$this->header(ucfirst($arg));
 		echo $this->PHK->autoOption($arg);
 		break;

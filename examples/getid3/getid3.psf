@@ -6,7 +6,7 @@ add -s --target-base /lib -C $(GETID3_DIR)/getid3 .
 
 #-- Administrative & info files
 
-add --target-base /auto_file -C $(GETID3_DIR) license.txt readme.txt \
+add --target-base /admin -C $(GETID3_DIR) license.txt readme.txt \
 	structure.txt changelog.txt dependencies.txt
 
 #--------------------------------------------------------------------------
@@ -22,14 +22,14 @@ return array(
 	'license' => 'GNU General Public License, version 2 <http://www.gnu.org/licenses/gpl-2.0.html>',
 	'url' => 'http://www.getid3.org',
 	'packager' => 'Your name here <your.mail@address>',
-	'license_prefix' => '/auto_file/license',
+	'license_prefix' => '/admin/license',
 	'lib_run_script' => '/lib/getid3.php',
 	# Additional webinfo tabs
 	'tabs' => array(
-		'ChangeLog' => '/auto_file/changelog.txt',
-		'Readme' => '/auto_file/readme.txt',
-		'Structure' => '/auto_file/structure.txt',
-		'Dependencies' => '/auto_file/dependencies.txt')
+		'ChangeLog' => '/auto_file/admin/changelog.txt',
+		'Readme' => '/auto_file/admin/readme.txt',
+		'Structure' => '/auto_file/admin/structure.txt',
+		'Dependencies' => '/auto_file/admin/dependencies.txt')
 	);
 
 #--------------------------------------------------------------------------

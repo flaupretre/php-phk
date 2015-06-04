@@ -1,11 +1,11 @@
 
 TARGETS=getid3.phk
 
-PHKMGR_PATH = ../../phkmgr.phk
-
 include make.vars
 include ../../make.vars
 include ../../make.common
+
+PHKMGR = ../../phkmgr
 
 #-----------------------------------------------------------------------------
 
