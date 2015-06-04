@@ -151,7 +151,7 @@ while (!is_null($line=$this->getLine($fp)))
 	$command=strtolower(array_shift($words));
 	switch($command)
 		{
-		case 'add':	// add [-t <target-path>] [-d <target-base>] [-C <dir>]
+		case 'add':	// add [-t <target-path>] [-b <target-base>] [-C <dir>]
 					//   [-c <compression-scheme>] <source1> [<source2>...]
 			
 			$op->parseAll($words);
