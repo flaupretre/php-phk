@@ -43,8 +43,10 @@ class CmdOptions extends \Phool\Options\Base
 // Short/long modifier args
 
 protected $opt_modifiers=array(
+	array('short' => 'a', 'long' => 'autoload'  , 'value' => false),
 	array('short' => 'n', 'long' => 'no-autoload'  , 'value' => false),
 	array('short' => 's', 'long' => 'strip'  , 'value' => false),
+	array('short' => 'p', 'long' => 'plain'  , 'value' => false),
 	array('short' => 'c', 'long' => 'compression'  , 'value' => true),
 	array('short' => 't', 'long' => 'target-path'  , 'value' => true),
 	array('short' => 'b', 'long' => 'target-base'  , 'value' => true),
@@ -68,12 +70,20 @@ protected function processOption($opt,$arg)
 {
 switch($opt)
 	{
+	case 'a':
+		$this->options['autoload']=true;
+		break;
+
 	case 'n':
 		$this->options['autoload']=false;
 		break;
 
 	case 's':
 		$this->options['strip']=true;
+		break;
+
+	case 'p':
+		$this->options['strip']=false;
 		break;
 
 	case 'c':
