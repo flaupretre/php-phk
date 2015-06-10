@@ -75,9 +75,9 @@ SYNC = rsync -av --del --exclude external --delete-excluded
 sync: sync_automap sync_phool
 
 sync_automap:
-	$(SYNC) ../../../automap/php/public external/automap/
+	$(SYNC) ../../../automap/php/public/ external/automap
 
 sync_phool:
-	$(SYNC) ../../../phool/public external/phool
+	$(SYNC) ../../../phool/public/ external/phool
 
 #-----------------------------------------------------------------------------
