@@ -20,10 +20,10 @@ clean: clean_base
 	$(PHK_BUILD) $@
 	
 test: $(TARGETS)
-	$(PHP) test.php
+	$(PHP) -d phk.enable_cli=1 test.php
 
 mem_test: $(TARGETS)
 	USE_ZEND_ALLOC=0 valgrind --tool=memcheck --log-file=php.log --leak-check=full \
-		--track-origins=yes $(PHP) test.php
+		--track-origins=yes $(PHP) -d phk.enable_cli=1 test.php
 
 #==============================================================================
