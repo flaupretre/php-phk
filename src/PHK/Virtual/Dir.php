@@ -98,7 +98,7 @@ public function subpath($name)
 return $this->path.'/'.$name;
 }
 
-// <CREATOR> //---------------
+// <Prolog:creator> //---------------
 
 public function addChild($name)
 {
@@ -120,7 +120,7 @@ public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker,$
 return $this->nodeExport(implode(';',$this->children));
 }
 
-// </CREATOR> //---------------
+// </Prolog:creator> //---------------
 
 //---
 } // End of class

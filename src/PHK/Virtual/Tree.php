@@ -247,7 +247,7 @@ $this->fspace=$fspace;
 $this->nodes=array();
 }
 
-// <CREATOR> //---------------
+// <Prolog:creator> //---------------
 
 // Check for a list of forbidden chars in node names. Especially important for
 // '#*' which can create conflicts in mount points (for subpackages), and ';'
@@ -427,7 +427,7 @@ list($dir,$name)=self::dirBaseName($rpath);
 $this->rlookup($dir)->removeChild($name);
 }
 
-// </CREATOR> //---------------
+// </Prolog:creator> //---------------
 
 //---
 } // End of class

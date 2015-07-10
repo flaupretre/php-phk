@@ -122,7 +122,7 @@ list($this->flags)=array_values(unpack('va',$edata));
 return substr($edata,2);
 }
 
-// <CREATOR> //---------------
+// <Prolog:creator> //---------------
 
 abstract public function export(\PHK\Build\Creator $phk,\PHK\Build\DataStacker $stacker,$map);
 
@@ -193,7 +193,7 @@ public function modify($modifiers)
 $this->setFlags(self::computeFlags($modifiers,$this->flags));
 }
 
-// </CREATOR> //---------------
+// </Prolog:creator> //---------------
 
 //---
 } // End of class

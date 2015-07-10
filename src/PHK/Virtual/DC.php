@@ -183,7 +183,7 @@ public function setData($data)
 $this->rsz=strlen($this->data=$data);
 }
 
-// <CREATOR> //---------------
+// <Prolog:creator> //---------------
 
 public function getNeededExtensions(\PHK\Build\Creator $phk
 	,\PHK\Tools\ItemLister $item_lister)
@@ -266,7 +266,7 @@ if (($r=self::compressionRatio(strlen($buf),strlen($cbuf))) >$comp_ratio_limit)
 return $cbuf;
 }
 
-// </CREATOR> //---------------
+// </Prolog:creator> //---------------
 
 //---
 } // End of class

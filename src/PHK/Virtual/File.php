@@ -140,7 +140,7 @@ $this->dc->setFlags($flags);
 }
 
 //---
-// <CREATOR> //---------------
+// <Prolog:creator> //---------------
 
 // If PHK Package, move required extensions up
 // Don't umount the package, it will be used later.
@@ -332,7 +332,7 @@ foreach (token_get_all($source) as $token)
 return $output;
 }
 
-// </CREATOR> //---------------
+// </Prolog:creator> //---------------
 
 //---
 } // End of class
