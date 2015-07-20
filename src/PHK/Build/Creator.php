@@ -109,11 +109,11 @@ private function processPhpCode(&$buffer)
 $buffer=str_replace('?><?php','',$buffer);
 $buffer=str_replace("?>\n<?php",'',$buffer);
 
-foreach (array('creator','plain_file') as $pcode)
+foreach (array('creator','ignore') as $pcode)
 	{
 	if (!$this->option("prolog_code_$pcode"))
 		{
-		$token=strtoupper($pcode);
+		$token="Prolog:$pcode";
 		while (($pos=strpos($buffer,'<'.$token.'>'))!==false)
 			{
 			if (($pos2=strpos($buffer,'</'.$token.'>',$pos))===false)
