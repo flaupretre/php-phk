@@ -13,7 +13,7 @@ include ./make.common
 #-----------------------------
 
 .PHONY: all clean_doc clean_distrib clean doc distrib test mem_test clean_test \
-	examples clean_examples install
+	examples clean_examples install sync sync_clean
 
 all: base doc examples
 
@@ -68,16 +68,19 @@ $(DISTRIB): base doc clean_test clean_examples
 clean_distrib:
 	/bin/rm -f $(DISTRIB)
 
-#--- Sync subtrees - Dev private
+#--- Get dependencies
 
-SYNC = rsync -av --del --exclude external --exclude .git --delete-excluded
+SYNC = /bin/sh build/sync_external.sh
+
+sync_clean:
+	/bin/rm -rf external/*
 
 sync: sync_automap sync_phool
 
 sync_automap:
-	$(SYNC) ../../../automap/php/public/ external/automap
+	$(SYNC) automap ../../../automap/php/public/ https://github.com/flaupretre/automap
 
 sync_phool:
-	$(SYNC) ../../../phool/public/ external/phool
+	$(SYNC) phool ../../../phool/public/ https://github.com/flaupretre/phool
 
 #-----------------------------------------------------------------------------

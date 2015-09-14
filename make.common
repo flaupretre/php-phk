@@ -13,7 +13,9 @@ SOFTWARE_RELEASE = 1
 
 PHPCMD = $(VALGRIND) $(PHP)
 
-PHK_BUILD = $(PHKMGR) build
+# Note: Direct execution of phkmgr does not work on travis
+
+PHK_BUILD = $(PHP) $(PHKMGR) build
 
 EXPAND = SOFTWARE_VERSION=$(SOFTWARE_VERSION) SOFTWARE_RELEASE=$(SOFTWARE_RELEASE) $(SHELL) $(BUILD_DIR)/expand.sh
 
